@@ -1,19 +1,20 @@
-// app/(public)/[subdomain]/episodes/[slug]/page.tsx
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { AudioPlayer } from '@/components/public/AudioPlayer';
 import { VideoPlayer } from '@/components/public/VideoPlayer';
 
-export default async function EpisodePage(props: {
+type EpisodePageProps = {
   params: Promise<{ subdomain: string; slug: string }>;
-}) {
+};
+
+export default async function EpisodePage(props: EpisodePageProps) {
   const { params } = props;
   const { subdomain, slug } = await params;
 
-  if (!slug || slug === 'null') {
+  if (!slug || slug === 'null' || slug === 'undefined') {
     console.error('episode route: invalid slug', { subdomain, slug });
     return (
-      <main>
-        <h1>Episode not found</h1>
+      <main className="mx-auto max-w-3xl px-4 py-8 font-sans">
+        <h1 className="mb-2 text-2xl font-semibold">Episode not found</h1>
         <p>podcastId: {subdomain}</p>
         <p>slug is missing or invalid: {String(slug)}</p>
       </main>
@@ -21,23 +22,6 @@ export default async function EpisodePage(props: {
   }
 
   const supabase = await createSupabaseServerClient();
-
-  try {
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError && authError.name !== 'AuthSessionMissingError') {
-      console.error('episode auth error', authError);
-    }
-    console.log('episode auth user', user?.id);
-  } catch (e: any) {
-    if (!e?.__isAuthError) {
-      console.error('episode auth error', e);
-    } else {
-      console.log('no auth session (public route)');
-    }
-  }
 
   const { data: episode, error: episodeError } = await supabase
     .from('episodes')
@@ -49,8 +33,8 @@ export default async function EpisodePage(props: {
   if (episodeError || !episode) {
     console.error('episodeError', episodeError);
     return (
-      <main>
-        <h1>Episode not found</h1>
+      <main className="mx-auto max-w-3xl px-4 py-8 font-sans">
+        <h1 className="mb-2 text-2xl font-semibold">Episode not found</h1>
         <p>podcastId: {subdomain}</p>
         <p>slug: {slug}</p>
       </main>
@@ -58,8 +42,10 @@ export default async function EpisodePage(props: {
   }
 
   return (
-    <main>
-      <h1>{episode.title || slug}</h1>
+    <main className="mx-auto max-w-3xl px-4 py-8 font-sans">
+      <h1 className="mb-4 text-2xl font-semibold">
+        {episode.title || slug}
+      </h1>
 
       {episode.youtube_video_id ? (
         <VideoPlayer videoId={episode.youtube_video_id} />
@@ -70,7 +56,10 @@ export default async function EpisodePage(props: {
       )}
 
       {episode.description && (
-        <article dangerouslySetInnerHTML={{ __html: episode.description }} />
+        <article
+          className="prose prose-slate mt-6 max-w-none"
+          dangerouslySetInnerHTML={{ __html: episode.description }}
+        />
       )}
     </main>
   );

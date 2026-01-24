@@ -9,7 +9,7 @@ type PodcastRow = {
 };
 
 export async function GET() {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   const { data: podcasts, error: podcastsError } = await supabase
     .from('podcasts')
@@ -47,7 +47,7 @@ export async function GET() {
             title: ep.title,
             description: ep.content,
             audio_url: ep.enclosureUrl,
-            image_url: ep.imageUrl,
+            episode_image_url: ep.imageUrl,
             published_at: ep.pubDate
               ? new Date(ep.pubDate).toISOString()
               : null,

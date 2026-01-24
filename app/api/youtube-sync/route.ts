@@ -5,7 +5,7 @@ import { fetchChannelVideos } from '@/lib/youtube/fetchChannelVideos';
 import { matchEpisodesToVideos } from '@/lib/youtube/matchEpisodes';
 
 export async function POST(req: Request) {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   const { podcastId, youtubeChannelId } = await req.json();
 
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // 5. Store integration info (auth disabled → user_id null is ok for now)
+    // 5. Store integration info
     const { error: integrationError } = await supabase
       .from('integrations')
       .upsert({

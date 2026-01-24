@@ -1,17 +1,21 @@
-// app/(public)/[subdomain]/page.tsx
-import type { Metadata } from 'next';
-import Link from 'next/link';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
+import Link from 'next/link';
+import type { Metadata } from 'next';
 
 const PAGE_SIZE = 20;
 
-// Dynamic metadata for each podcast subdomain
-export async function generateMetadata(
-  { params }: { params: { subdomain: string } },
-): Promise<Metadata> {
-  const { subdomain } = params;
-  const supabase = await createSupabaseServerClient();
+type PageProps = {
+  params: Promise<{ subdomain: string }>;
+  searchParams: Promise<{ page?: string }>;
+};
 
+export async function generateMetadata(
+  props: { params: Promise<{ subdomain: string }> },
+): Promise<Metadata> {
+  const { params } = props;
+  const { subdomain } = await params;
+
+  const supabase = await createSupabaseServerClient();
   const { data: podcast } = await supabase
     .from('podcasts')
     .select('title, description')
@@ -33,20 +37,21 @@ export async function generateMetadata(
   };
 }
 
-type PageProps = {
-  params: { subdomain: string };
-  searchParams: { page?: string };
-};
+export default async function PodcastHome(props: PageProps) {
+  const { params, searchParams } = props;
+  const { subdomain } = await params;
+  const resolvedSearch = await searchParams;
 
-export default async function PodcastHome({ params, searchParams }: PageProps) {
-  const { subdomain } = params;
-  const page = Number(searchParams.page ?? '1') || 1;
+  const page = Number(resolvedSearch.page ?? '1') || 1;
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
   const supabase = await createSupabaseServerClient();
 
-  const { data: podcast, error: podcastError } = await supabase
+  const {
+    data: podcast,
+    error: podcastError,
+  } = await supabase
     .from('podcasts')
     .select('*')
     .eq('id', subdomain)
@@ -54,6 +59,25 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
 
   if (podcastError) {
     console.error('podcastError', podcastError);
+    return (
+      <main className="mx-auto max-w-3xl px-4 py-8 font-sans">
+        <h1 className="mb-2 text-3xl font-semibold">Podcast not found</h1>
+        <p className="mt-2 text-sm text-gray-600">
+          Could not load podcast with id <code>{subdomain}</code>.
+        </p>
+      </main>
+    );
+  }
+
+  if (!podcast) {
+    return (
+      <main className="mx-auto max-w-3xl px-4 py-8 font-sans">
+        <h1 className="mb-2 text-3xl font-semibold">Podcast not found</h1>
+        <p className="mt-2 text-sm text-gray-600">
+          No podcast exists with id <code>{subdomain}</code>.
+        </p>
+      </main>
+    );
   }
 
   const {
@@ -71,9 +95,11 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-8 font-sans">
         <h1 className="mb-2 text-3xl font-semibold">
-          {podcast?.title || subdomain}
+          {podcast.title || subdomain}
         </h1>
-        <p>Error loading episodes.</p>
+        <p className="mt-2 text-sm text-gray-600">
+          Error loading episodes.
+        </p>
       </main>
     );
   }
@@ -83,9 +109,9 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 font-sans">
       <h1 className="mb-2 text-3xl font-semibold">
-        {podcast?.title || subdomain}
+        {podcast.title || subdomain}
       </h1>
-      {podcast?.description && (
+      {podcast.description && (
         <p className="mb-6 text-gray-600">{podcast.description}</p>
       )}
 
