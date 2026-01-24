@@ -3,20 +3,29 @@ import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 
 export async function GET() {
-  const supabase = await createSupabaseServerClient();
+  try {
+    const supabase = await createSupabaseServerClient();
 
-  const { data, error } = await supabase
-    .from('podcasts')
-    .select('id, title, description, rss_url')
-    .order('created_at', { ascending: false });
+    const { data, error } = await supabase
+      .from('podcasts')
+      .select('id, title, description, rss_url')
+      .order('created_at', { ascending: false });
 
-  if (error) {
-    console.error('podcasts error', error);
+    if (error) {
+      console.error('podcasts error', error);
+      // return empty list so UI can still render
+      return NextResponse.json(
+        { podcasts: [], error: error.message },
+        { status: 200 },
+      );
+    }
+
+    return NextResponse.json({ podcasts: data ?? [] });
+  } catch (err: any) {
+    console.error('podcasts unexpected error', err);
     return NextResponse.json(
-      { podcasts: [], error: error.message },
-      { status: 500 },
+      { podcasts: [], error: 'Supabase fetch failed' },
+      { status: 200 },
     );
   }
-
-  return NextResponse.json({ podcasts: data ?? [] });
 }

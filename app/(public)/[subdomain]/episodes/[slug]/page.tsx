@@ -3,22 +3,30 @@ import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { AudioPlayer } from '@/components/public/AudioPlayer';
 import { VideoPlayer } from '@/components/public/VideoPlayer';
 
-export default async function EpisodePage({
-  params,
-}: {
+export default async function EpisodePage(props: {
   params: Promise<{ subdomain: string; slug: string }>;
 }) {
+  const { params } = props;
   const { subdomain, slug } = await params;
+
+  if (!slug || slug === 'null') {
+    console.error('episode route: invalid slug', { subdomain, slug });
+    return (
+      <main>
+        <h1>Episode not found</h1>
+        <p>podcastId: {subdomain}</p>
+        <p>slug is missing or invalid: {String(slug)}</p>
+      </main>
+    );
+  }
 
   const supabase = await createSupabaseServerClient();
 
-  // Optional: ignore missing auth on public route
   try {
     const {
       data: { user },
       error: authError,
     } = await supabase.auth.getUser();
-
     if (authError && authError.name !== 'AuthSessionMissingError') {
       console.error('episode auth error', authError);
     }
@@ -31,13 +39,12 @@ export default async function EpisodePage({
     }
   }
 
-  // Load episode by podcast_id (subdomain) + slug
   const { data: episode, error: episodeError } = await supabase
     .from('episodes')
     .select('*')
     .eq('podcast_id', subdomain)
     .eq('slug', slug)
-    .single();
+    .maybeSingle();
 
   if (episodeError || !episode) {
     console.error('episodeError', episodeError);
@@ -63,9 +70,7 @@ export default async function EpisodePage({
       )}
 
       {episode.description && (
-        <article
-          dangerouslySetInnerHTML={{ __html: episode.description }}
-        />
+        <article dangerouslySetInnerHTML={{ __html: episode.description }} />
       )}
     </main>
   );
