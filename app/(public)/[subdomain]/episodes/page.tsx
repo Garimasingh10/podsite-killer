@@ -2,13 +2,15 @@
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import Link from 'next/link';
 
-export default async function EpisodesIndex(props: {
-  params: Promise<{ subdomain: string }>;
-}) {
-  const { params } = props;
-  const { subdomain } = await params;
+type EpisodesIndexProps = {
+  params: { subdomain: string };
+};
 
-  const supabase = await createSupabaseServerClient();
+export default async function EpisodesIndex({ params }: EpisodesIndexProps) {
+  const { subdomain } = params;
+
+  const supabase = createSupabaseServerClient();
+
   const { data: podcast } = await supabase
     .from('podcasts')
     .select('title, description')

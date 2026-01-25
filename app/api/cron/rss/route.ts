@@ -47,7 +47,7 @@ export async function GET() {
             title: ep.title,
             description: ep.content,
             audio_url: ep.enclosureUrl,
-            episode_image_url: ep.imageUrl,
+            image_url: ep.imageUrl,
             published_at: ep.pubDate
               ? new Date(ep.pubDate).toISOString()
               : null,

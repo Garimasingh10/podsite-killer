@@ -28,7 +28,7 @@ export function matchEpisodesToVideos(
   episodes: Episode[],
   videos: YoutubeVideo[],
   threshold = 0.4,
-) {
+): { episodeId: string; videoId: string }[] {
   const matches: { episodeId: string; videoId: string }[] = [];
 
   for (const ep of episodes) {

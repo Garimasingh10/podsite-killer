@@ -20,11 +20,14 @@ export async function fetchChannelVideos(
   url.searchParams.set('type', 'video');
 
   const res = await fetch(url.toString());
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`YouTube API error: ${res.status} ${text}`);
-  }
   const data = await res.json();
+
+  console.log('fetchChannelVideos raw json', data);
+
+  if (!res.ok) {
+    const msg = (data && data.error && data.error.message) || '';
+    throw new Error(`YouTube API error: ${res.status} ${msg}`.trim());
+  }
 
   const items = (data.items ?? []) as any[];
 

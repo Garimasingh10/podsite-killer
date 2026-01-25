@@ -1,6 +1,6 @@
+// app/(public)/[subdomain]/page.tsx
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import Link from 'next/link';
-import type { Metadata } from 'next';
 
 const PAGE_SIZE = 20;
 
@@ -9,36 +9,8 @@ type PageProps = {
   searchParams: Promise<{ page?: string }>;
 };
 
-export async function generateMetadata(
-  props: { params: Promise<{ subdomain: string }> },
-): Promise<Metadata> {
-  const { params } = props;
-  const { subdomain } = await params;
-
-  const supabase = await createSupabaseServerClient();
-  const { data: podcast } = await supabase
-    .from('podcasts')
-    .select('title, description')
-    .eq('id', subdomain)
-    .maybeSingle();
-
-  const title = podcast?.title || `Podcast ${subdomain}`;
-  const description =
-    podcast?.description ||
-    'A podcast powered by PodSite-Killer. Listen to the latest episodes.';
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-    },
-  };
-}
-
-export default async function PodcastHome(props: PageProps) {
-  const { params, searchParams } = props;
+export default async function PodcastHome({ params, searchParams }: PageProps) {
+  // Unwrap dynamic route pieces (Next 15+)
   const { subdomain } = await params;
   const resolvedSearch = await searchParams;
 
@@ -46,44 +18,26 @@ export default async function PodcastHome(props: PageProps) {
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
-  const {
-    data: podcast,
-    error: podcastError,
-  } = await supabase
+  const { data: podcast, error: podcastError } = await supabase
     .from('podcasts')
     .select('*')
     .eq('id', subdomain)
     .maybeSingle();
 
-  if (podcastError) {
-    console.error('podcastError', podcastError);
+  if (podcastError || !podcast) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-8 font-sans">
         <h1 className="mb-2 text-3xl font-semibold">Podcast not found</h1>
-        <p className="mt-2 text-sm text-gray-600">
-          Could not load podcast with id <code>{subdomain}</code>.
+        <p className="mt-2 text-sm text-slate-400">
+          Could not load podcast with id <code>{String(subdomain)}</code>.
         </p>
       </main>
     );
   }
 
-  if (!podcast) {
-    return (
-      <main className="mx-auto max-w-3xl px-4 py-8 font-sans">
-        <h1 className="mb-2 text-3xl font-semibold">Podcast not found</h1>
-        <p className="mt-2 text-sm text-gray-600">
-          No podcast exists with id <code>{subdomain}</code>.
-        </p>
-      </main>
-    );
-  }
-
-  const {
-    data: episodes,
-    error: episodesError,
-  } = await supabase
+  const { data: episodes, error: episodesError } = await supabase
     .from('episodes')
     .select('id, title, slug, published_at')
     .eq('podcast_id', subdomain)
@@ -92,75 +46,117 @@ export default async function PodcastHome(props: PageProps) {
 
   if (episodesError) {
     console.error('episodesError', episodesError);
-    return (
-      <main className="mx-auto max-w-3xl px-4 py-8 font-sans">
-        <h1 className="mb-2 text-3xl font-semibold">
-          {podcast.title || subdomain}
-        </h1>
-        <p className="mt-2 text-sm text-gray-600">
-          Error loading episodes.
-        </p>
-      </main>
-    );
   }
 
   const hasMore = episodes && episodes.length === PAGE_SIZE;
+  const latest = episodes?.[0];
+  const rest = episodes?.slice(1) ?? [];
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 font-sans">
-      <h1 className="mb-2 text-3xl font-semibold">
-        {podcast.title || subdomain}
-      </h1>
-      {podcast.description && (
-        <p className="mb-6 text-gray-600">{podcast.description}</p>
+      {/* Header */}
+      <header className="mb-6">
+        <h1 className="mb-2 text-3xl font-semibold">{podcast.title}</h1>
+        {podcast.description && (
+          <p className="max-w-2xl text-sm text-slate-300">
+            {podcast.description}
+          </p>
+        )}
+      </header>
+
+      {/* Latest episode highlight */}
+      {latest && (
+        <section className="mb-8 rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-sky-400">
+            Latest episode
+          </p>
+
+          {latest.slug ? (
+            <Link
+              href={`/${subdomain}/episodes/${latest.slug}`}
+              className="text-base font-semibold text-slate-50 hover:underline"
+            >
+              {latest.title || latest.slug}
+            </Link>
+          ) : (
+            <span className="text-base font-semibold text-slate-50">
+              {latest.title || '(no slug)'}
+            </span>
+          )}
+
+          {latest.published_at && (
+            <p className="mt-1 text-xs text-slate-500">
+              {new Date(latest.published_at).toLocaleDateString()}
+            </p>
+          )}
+
+          {latest.slug && (
+            <div className="mt-3">
+              <Link
+                href={`/${subdomain}/episodes/${latest.slug}`}
+                className="inline-flex items-center rounded bg-sky-400 px-3 py-1 text-xs font-semibold text-slate-900 hover:bg-sky-300"
+              >
+                Listen now
+              </Link>
+            </div>
+          )}
+        </section>
       )}
 
-      {!episodes || episodes.length === 0 ? (
-        <p className="text-gray-500">No episodes yet.</p>
-      ) : (
-        <>
-          <ul className="divide-y divide-gray-200">
-            {episodes.map((ep) => (
+      {/* All episodes list */}
+      <section>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">
+          All episodes
+        </h2>
+
+        {!episodes?.length ? (
+          <p className="text-sm text-slate-500">No episodes yet.</p>
+        ) : (
+          <ul className="divide-y divide-slate-800">
+            {rest.map((ep) => (
               <li key={ep.id} className="py-3">
-                {ep.slug ? (
-                  <Link
-                    href={`/${subdomain}/episodes/${ep.slug}`}
-                    className="text-blue-600 hover:underline"
-                  >
-                    {ep.title || ep.slug}
-                  </Link>
-                ) : (
-                  <span className="text-gray-500">
-                    {ep.title || '(no slug)'}
-                  </span>
-                )}
-                {ep.published_at && (
-                  <div className="mt-1 text-xs text-gray-500">
-                    {new Date(ep.published_at).toISOString().slice(0, 10)}
-                  </div>
-                )}
+                <div className="flex items-baseline justify-between gap-3">
+                  {ep.slug ? (
+                    <Link
+                      href={`/${subdomain}/episodes/${ep.slug}`}
+                      className="text-sm font-medium text-slate-100 hover:underline"
+                    >
+                      {ep.title || ep.slug}
+                    </Link>
+                  ) : (
+                    <span className="text-sm font-medium text-slate-100">
+                      {ep.title || '(no slug)'}
+                    </span>
+                  )}
+                  {ep.published_at && (
+                    <span className="whitespace-nowrap text-xs text-slate-500">
+                      {new Date(ep.published_at).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
               </li>
             ))}
           </ul>
+        )}
 
-          <div className="mt-4 flex gap-2">
-            {page > 1 && (
-              <Link href={`/${subdomain}?page=${page - 1}`}>
-                <button className="rounded border px-3 py-1 text-sm">
-                  Previous
-                </button>
-              </Link>
-            )}
-            {hasMore && (
-              <Link href={`/${subdomain}?page=${page + 1}`}>
-                <button className="rounded border px-3 py-1 text-sm">
-                  Next
-                </button>
-              </Link>
-            )}
-          </div>
-        </>
-      )}
+        {/* Pagination */}
+        <div className="mt-6 flex gap-2">
+          {page > 1 && (
+            <Link href={`/${subdomain}?page=${page - 1}`}>
+              <button className="rounded border border-slate-700 px-3 py-1 text-xs">
+                Previous
+              </button>
+            </Link>
+          )}
+          {hasMore && (
+            <Link href={`/${subdomain}?page=${page + 1}`}>
+              <button className="rounded border border-slate-700 px-3 py-1 text-xs">
+                Next
+              </button>
+            </Link>
+          )}
+        </div>
+      </section>
     </main>
   );
 }

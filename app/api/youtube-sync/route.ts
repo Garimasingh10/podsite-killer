@@ -4,10 +4,25 @@ import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { fetchChannelVideos } from '@/lib/youtube/fetchChannelVideos';
 import { matchEpisodesToVideos } from '@/lib/youtube/matchEpisodes';
 
+type YoutubeSyncBody = {
+  podcastId: string;
+  youtubeChannelId: string;
+};
+
 export async function POST(req: Request) {
   const supabase = createSupabaseServerClient();
 
-  const { podcastId, youtubeChannelId } = await req.json();
+  let body: YoutubeSyncBody;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json(
+      { error: 'Invalid JSON body' },
+      { status: 400 },
+    );
+  }
+
+  const { podcastId, youtubeChannelId } = body;
 
   if (!podcastId || !youtubeChannelId) {
     return NextResponse.json(
@@ -24,16 +39,26 @@ export async function POST(req: Request) {
     );
   }
 
+  console.log('youtube-sync start', { podcastId, youtubeChannelId });
+
   try {
-    // 1. Fetch recent videos from the channel
+    // 1) Fetch videos from channel
     const videos = await fetchChannelVideos(youtubeChannelId, apiKey, 50);
     console.log('youtube-sync videos count', videos.length);
+    console.log('youtube-sync sample videos', videos.slice(0, 3));
 
-    // 2. Load episodes for this podcast
+    if (videos.length === 0) {
+      return NextResponse.json(
+        { error: 'No videos returned for this channelId' },
+        { status: 404 },
+      );
+    }
+
+    // 2) Load episodes for this podcast
     const { data: episodes, error: episodesError } = await supabase
       .from('episodes')
-      .select('id, title')
-      .eq('podcast_id', podcastId);
+      .select('id, title')                // change "id" if your PK is named differently
+      .eq('podcast_id', podcastId);       // must equal episodes.podcast_id
 
     if (episodesError) {
       console.error('youtube-sync episodes error', episodesError);
@@ -50,33 +75,30 @@ export async function POST(req: Request) {
 
     console.log('youtube-sync episodes count', episodes.length);
 
-    // 3. Match episodes to videos
-    const matches = matchEpisodesToVideos(episodes, videos);
+    // 3) Match
+    const matches = matchEpisodesToVideos(episodes, videos, 0.2);
     console.log('youtube-sync matches', matches);
 
-    // 4. Update episodes with matched YouTube video ids
+    if (matches.length === 0) {
+      return NextResponse.json(
+        { ok: true, matchesCount: 0, message: 'No matches above threshold' },
+        { status: 200 },
+      );
+    }
+
+    // 4) Update episodes.youtube_video_id
     for (const match of matches) {
-      const { error: updateError } = await supabase
+      const { data, error: updateError } = await supabase
         .from('episodes')
         .update({ youtube_video_id: match.videoId })
-        .eq('id', match.episodeId);
+        .eq('id', match.episodeId)        // change "id" here if PK is named differently
+        .select('id, youtube_video_id');
 
       if (updateError) {
         console.error('youtube-sync update error', updateError, match);
+      } else {
+        console.log('youtube-sync updated rows', data);
       }
-    }
-
-    // 5. Store integration info
-    const { error: integrationError } = await supabase
-      .from('integrations')
-      .upsert({
-        user_id: null,
-        podcast_id: podcastId,
-        youtube_channel_id: youtubeChannelId,
-      });
-
-    if (integrationError) {
-      console.error('youtube-sync integration upsert error', integrationError);
     }
 
     return NextResponse.json({ ok: true, matchesCount: matches.length });
