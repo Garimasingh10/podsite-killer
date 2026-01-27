@@ -53,6 +53,9 @@ export async function POST(req: Request) {
         title: podcast.title,
         description: podcast.description,
         image_url: podcast.imageUrl,
+        cover_image_url: podcast.imageUrl,
+        primary_color: '#0ea5e9',
+        accent_color: '#22c55e',
         rss_url: rssUrl,
       },
       { onConflict: 'rss_url' },
@@ -72,7 +75,6 @@ export async function POST(req: Request) {
 
   // 4) Upsert episodes
   for (const ep of episodes) {
-    // Always have a base id for the episode
     const guid = ep.guid || ep.title || crypto.randomUUID();
 
     const slug = String(guid)
@@ -81,15 +83,14 @@ export async function POST(req: Request) {
       .replace(/^-+|-+$/g, '');
 
     const { error: epError } = await supabase.from('episodes').upsert({
-      id: guid,
       podcast_id: podcastId,
+      guid,
+      slug,
       title: ep.title ?? 'Untitled episode',
-      slug, // always set
       description: ep.content ?? '',
       audio_url: ep.enclosureUrl ?? null,
       published_at: ep.pubDate ?? null,
-      // store episode image if your parser returns ep.imageUrl
-      image_url: (ep as any).imageUrl ?? null,
+      image_url: (ep as any).imageUrl ?? podcast.imageUrl ?? null,
     });
 
     if (epError) {

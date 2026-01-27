@@ -13,7 +13,6 @@ export async function GET() {
 
     if (error) {
       console.error('podcasts error', error);
-      // return empty list so UI can still render
       return NextResponse.json(
         { podcasts: [], error: error.message },
         { status: 200 },

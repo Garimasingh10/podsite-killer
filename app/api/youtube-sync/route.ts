@@ -43,7 +43,7 @@ export async function POST(req: Request) {
 
   try {
     // 1) Fetch videos from channel
-    const videos = await fetchChannelVideos(youtubeChannelId, apiKey, 50);
+    const videos = await fetchChannelVideos(youtubeChannelId, apiKey, 100);
     console.log('youtube-sync videos count', videos.length);
     console.log('youtube-sync sample videos', videos.slice(0, 3));
 
@@ -76,7 +76,7 @@ export async function POST(req: Request) {
     console.log('youtube-sync episodes count', episodes.length);
 
     // 3) Match
-    const matches = matchEpisodesToVideos(episodes, videos, 0.2);
+    const matches = matchEpisodesToVideos(episodes, videos, 0.25);
     console.log('youtube-sync matches', matches);
 
     if (matches.length === 0) {

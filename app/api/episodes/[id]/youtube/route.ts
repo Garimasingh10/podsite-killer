@@ -6,7 +6,8 @@ export async function POST(
   req: Request,
   { params }: { params: { id: string } },
 ) {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
+
   const {
     data: { user },
   } = await supabase.auth.getUser();

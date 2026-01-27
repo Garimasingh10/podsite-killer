@@ -4,39 +4,26 @@ export type YoutubeVideo = {
   title: string;
 };
 
-const BASE_URL = 'https://www.googleapis.com/youtube/v3/search';
-
 export async function fetchChannelVideos(
   channelId: string,
   apiKey: string,
-  maxResults = 50,
+  max = 50,
 ): Promise<YoutubeVideo[]> {
-  const url = new URL(BASE_URL);
-  url.searchParams.set('key', apiKey);
-  url.searchParams.set('part', 'snippet');
-  url.searchParams.set('channelId', channelId);
-  url.searchParams.set('order', 'date');
-  url.searchParams.set('maxResults', String(maxResults));
-  url.searchParams.set('type', 'video');
+  const searchUrl = new URL('https://www.googleapis.com/youtube/v3/search');
+  searchUrl.searchParams.set('key', apiKey);
+  searchUrl.searchParams.set('channelId', channelId);
+  searchUrl.searchParams.set('part', 'snippet');
+  searchUrl.searchParams.set('order', 'date');
+  searchUrl.searchParams.set('maxResults', String(max));
+  searchUrl.searchParams.set('type', 'video');
 
-  const res = await fetch(url.toString());
-  const data = await res.json();
+  const res = await fetch(searchUrl.toString());
+  if (!res.ok) throw new Error('YouTube search failed');
 
-  console.log('fetchChannelVideos raw json', data);
+  const json = await res.json();
 
-  if (!res.ok) {
-    const msg = (data && data.error && data.error.message) || '';
-    throw new Error(`YouTube API error: ${res.status} ${msg}`.trim());
-  }
-
-  const items = (data.items ?? []) as any[];
-
-  return items
-    .map((item) => {
-      const vid = item.id?.videoId;
-      const title = item.snippet?.title;
-      if (!vid || !title) return null;
-      return { videoId: vid as string, title: title as string };
-    })
-    .filter(Boolean) as YoutubeVideo[];
+  return (json.items ?? []).map((item: any) => ({
+    videoId: item.id.videoId,
+    title: item.snippet.title as string,
+  }));
 }
