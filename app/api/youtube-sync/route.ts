@@ -1,12 +1,13 @@
 // app/api/youtube-sync/route.ts
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
-import { fetchChannelVideos } from '@/lib/youtube/fetchChannelVideos';
+import { fetchChannelUploads } from '@/lib/youtube/fetchUploads';
 import { matchEpisodesToVideos } from '@/lib/youtube/matchEpisodes';
 
 type YoutubeSyncBody = {
-  podcastId: string;
-  youtubeChannelId: string;
+  podcastId?: string;
+  channelId?: string;
+  youtubeChannelId?: string;
 };
 
 export async function POST(req: Request) {
@@ -14,7 +15,7 @@ export async function POST(req: Request) {
 
   let body: YoutubeSyncBody;
   try {
-    body = await req.json();
+    body = (await req.json()) as YoutubeSyncBody;
   } catch {
     return NextResponse.json(
       { error: 'Invalid JSON body' },
@@ -22,11 +23,12 @@ export async function POST(req: Request) {
     );
   }
 
-  const { podcastId, youtubeChannelId } = body;
+  const podcastId = body.podcastId;
+  const channelId = body.channelId ?? body.youtubeChannelId;
 
-  if (!podcastId || !youtubeChannelId) {
+  if (!podcastId || !channelId) {
     return NextResponse.json(
-      { error: 'podcastId and youtubeChannelId required' },
+      { error: 'podcastId and channelId required', bodySeenByServer: body },
       { status: 400 },
     );
   }
@@ -34,79 +36,70 @@ export async function POST(req: Request) {
   const apiKey = process.env.YOUTUBE_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { error: 'YOUTUBE_API_KEY not set' },
+      { error: 'YOUTUBE_API_KEY not configured' },
       { status: 500 },
     );
   }
 
-  console.log('youtube-sync start', { podcastId, youtubeChannelId });
+  const { data: podcast, error: podcastError } = await supabase
+    .from('podcasts')
+    .select('id')
+    .eq('id', podcastId)
+    .maybeSingle();
 
-  try {
-    // 1) Fetch videos from channel
-    const videos = await fetchChannelVideos(youtubeChannelId, apiKey, 100);
-    console.log('youtube-sync videos count', videos.length);
-    console.log('youtube-sync sample videos', videos.slice(0, 3));
-
-    if (videos.length === 0) {
-      return NextResponse.json(
-        { error: 'No videos returned for this channelId' },
-        { status: 404 },
-      );
-    }
-
-    // 2) Load episodes for this podcast
-    const { data: episodes, error: episodesError } = await supabase
-      .from('episodes')
-      .select('id, title')                // change "id" if your PK is named differently
-      .eq('podcast_id', podcastId);       // must equal episodes.podcast_id
-
-    if (episodesError) {
-      console.error('youtube-sync episodes error', episodesError);
-      return NextResponse.json(
-        { error: episodesError.message },
-        { status: 500 },
-      );
-    }
-
-    if (!episodes || episodes.length === 0) {
-      console.warn('youtube-sync: no episodes for podcast', podcastId);
-      return NextResponse.json({ error: 'No episodes' }, { status: 404 });
-    }
-
-    console.log('youtube-sync episodes count', episodes.length);
-
-    // 3) Match
-    const matches = matchEpisodesToVideos(episodes, videos, 0.25);
-    console.log('youtube-sync matches', matches);
-
-    if (matches.length === 0) {
-      return NextResponse.json(
-        { ok: true, matchesCount: 0, message: 'No matches above threshold' },
-        { status: 200 },
-      );
-    }
-
-    // 4) Update episodes.youtube_video_id
-    for (const match of matches) {
-      const { data, error: updateError } = await supabase
-        .from('episodes')
-        .update({ youtube_video_id: match.videoId })
-        .eq('id', match.episodeId)        // change "id" here if PK is named differently
-        .select('id, youtube_video_id');
-
-      if (updateError) {
-        console.error('youtube-sync update error', updateError, match);
-      } else {
-        console.log('youtube-sync updated rows', data);
-      }
-    }
-
-    return NextResponse.json({ ok: true, matchesCount: matches.length });
-  } catch (err: any) {
-    console.error('youtube-sync unexpected error', err);
+  if (podcastError || !podcast) {
     return NextResponse.json(
-      { error: err?.message || 'Unknown YouTube sync error' },
+      { error: 'Podcast not found' },
+      { status: 404 },
+    );
+  }
+
+  const { data: episodesRaw, error: episodesError } = await supabase
+    .from('episodes')
+    .select('id, title, published_at')
+    .eq('podcast_id', podcast.id)
+    .order('published_at', { ascending: false });
+
+  if (episodesError) {
+    return NextResponse.json(
+      { error: episodesError.message },
       { status: 500 },
     );
   }
+
+  const episodes =
+    (episodesRaw as { id: string; title: string | null; published_at: string | null }[]) ??
+    [];
+
+  if (!episodes.length) {
+    return NextResponse.json(
+      { error: 'No episodes to match' },
+      { status: 404 },
+    );
+  }
+
+  const videos = await fetchChannelUploads(apiKey, channelId, 50);
+
+  if (!videos.length) {
+    return NextResponse.json(
+      { error: 'No videos returned for this channelId' },
+      { status: 404 },
+    );
+  }
+
+  // STRICter matching: at most 30, min similarity 0.5
+  const pairings = matchEpisodesToVideos(episodes, videos, 30, 0.5);
+
+  for (const { episodeId, videoId } of pairings) {
+    await supabase
+      .from('episodes')
+      .update({ youtube_video_id: videoId })
+      .eq('id', episodeId);
+  }
+
+  return NextResponse.json({
+    ok: true,
+    videosFetched: videos.length,
+    matchedCount: pairings.length,
+  });
 }

@@ -10,11 +10,10 @@ type PageProps = {
 };
 
 export default async function PodcastHome({ params, searchParams }: PageProps) {
-  // Unwrap dynamic route pieces (Next 15+)
   const { subdomain } = await params;
-  const resolvedSearch = await searchParams;
+  const { page: pageParam } = await searchParams;
 
-  const page = Number(resolvedSearch.page ?? '1') || 1;
+  const page = Number(pageParam ?? '1') || 1;
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
@@ -49,12 +48,26 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   }
 
   const hasMore = episodes && episodes.length === PAGE_SIZE;
-  const latest = episodes?.[0];
-  const rest = episodes?.slice(1) ?? [];
+
+  // Page 1: show latest highlight + rest
+  // Page 2+: show all episodes in list
+  const latest = page === 1 ? episodes?.[0] : undefined;
+  const rest =
+    page === 1 ? episodes?.slice(1) ?? [] : episodes ?? [];
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 font-sans">
-      {/* Header */}
+      {podcast.image_url && (
+        <div className="relative mb-6 h-32 w-full overflow-hidden rounded-lg bg-slate-900 sm:h-40">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={podcast.image_url}
+            alt={podcast.title}
+            className="h-full w-full object-cover"
+          />
+        </div>
+      )}
+
       <header className="mb-6">
         <h1 className="mb-2 text-3xl font-semibold">{podcast.title}</h1>
         {podcast.description && (
@@ -64,7 +77,6 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
         )}
       </header>
 
-      {/* Latest episode highlight */}
       {latest && (
         <section className="mb-8 rounded-lg border border-slate-800 bg-slate-900/60 p-4">
           <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-sky-400">
@@ -91,31 +103,41 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
           )}
 
           {latest.slug && (
-            <div className="mt-3">
+            <div className="mt-3 flex flex-col gap-1">
               <Link
                 href={`/${subdomain}/episodes/${latest.slug}`}
                 className="inline-flex items-center rounded bg-sky-400 px-3 py-1 text-xs font-semibold text-slate-900 hover:bg-sky-300"
               >
                 Listen now
               </Link>
+              <span className="text-xs text-slate-500">
+                Or browse all episodes below.
+              </span>
             </div>
           )}
         </section>
       )}
 
-      {/* All episodes list */}
       <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">
-          All episodes
-        </h2>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
+            All episodes
+          </h2>
+          <Link
+            href={`/${subdomain}/episodes`}
+            className="text-xs font-semibold text-sky-400 hover:underline"
+          >
+            View full archive →
+          </Link>
+        </div>
 
-        {!episodes?.length ? (
+        {!rest.length ? (
           <p className="text-sm text-slate-500">No episodes yet.</p>
         ) : (
           <ul className="divide-y divide-slate-800">
             {rest.map((ep) => (
               <li key={ep.id} className="py-3">
-                <div className="flex items-baseline justify-between gap-3">
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
                   {ep.slug ? (
                     <Link
                       href={`/${subdomain}/episodes/${ep.slug}`}
@@ -129,7 +151,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
                     </span>
                   )}
                   {ep.published_at && (
-                    <span className="whitespace-nowrap text-xs text-slate-500">
+                    <span className="text-xs text-slate-500">
                       {new Date(ep.published_at).toLocaleDateString()}
                     </span>
                   )}
@@ -139,7 +161,6 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
           </ul>
         )}
 
-        {/* Pagination */}
         <div className="mt-6 flex gap-2">
           {page > 1 && (
             <Link href={`/${subdomain}?page=${page - 1}`}>

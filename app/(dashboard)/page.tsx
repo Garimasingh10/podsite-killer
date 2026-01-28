@@ -1,88 +1,108 @@
-// app/(dashboard)/episodes/page.tsx
+// app/(dashboard)/page.tsx
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import Link from 'next/link';
+import { NewPodcastForm } from './_components/NewPodcastForm';
+import { SearchForm } from './_components/SearchForm';
 
-type PageProps = {
-  searchParams: Promise<{ q?: string }>;
-};
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams?: { q?: string };
+}) {
+  const supabase = await createSupabaseServerClient();
 
-export default async function EpisodesDashboardPage({ searchParams }: PageProps) {
-  const { q } = await searchParams;
-  const supabase = createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const query = (q || '').trim();
-
-  let builder = supabase
-    .from('episodes')
-    .select('id, title, slug, podcast_id, published_at')
-    .order('published_at', { ascending: false })
-    .limit(50);
-
-  if (query) {
-    builder = builder.ilike('title', `%${query}%`);
+  if (!user) {
+    // layout should already redirect, but keep fallback
+    return (
+      <main className="mx-auto max-w-4xl px-4 py-8">
+        <p>Please sign in to view your dashboard.</p>
+      </main>
+    );
   }
 
-  const { data: episodes, error } = await builder;
+  const q = (searchParams?.q ?? '').trim();
+
+  let queryBuilder = supabase
+    .from('podcasts')
+    .select('id, title, description, rss_url, youtube_channel_id')
+    .eq('owner_id', user.id)
+    .order('created_at', { ascending: false });
+
+  if (q) {
+    queryBuilder = queryBuilder.ilike('title', `%${q}%`);
+  }
+
+  const { data: podcasts, error } = await queryBuilder;
 
   if (error) {
-    console.error('episodes dashboard search error', error);
+    console.error('dashboard podcasts error', error);
   }
 
+  const rows =
+    (podcasts as {
+      id: string;
+      title: string | null;
+      description: string | null;
+      rss_url: string | null;
+      youtube_channel_id: string | null;
+    }[]) ?? [];
+
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8 font-sans">
-      <header className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <h1 className="text-2xl font-semibold">Episodes</h1>
-        <form className="flex gap-2">
-          <input
-            type="text"
-            name="q"
-            defaultValue={query}
-            placeholder="Search episodes…"
-            className="rounded bg-slate-800 px-3 py-2 text-sm text-slate-100"
-          />
-          <button
-            type="submit"
-            className="rounded bg-sky-400 px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-sky-300"
-          >
-            Search
-          </button>
-        </form>
+    <main className="mx-auto max-w-4xl px-4 py-8 space-y-6">
+      <header className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold">Your podcasts</h1>
+          <p className="mt-1 text-xs text-slate-500">
+            Import from RSS, connect YouTube, then manage episodes.
+          </p>
+        </div>
+        <NewPodcastForm />
       </header>
 
-      {!episodes?.length ? (
-        <p className="text-sm text-slate-400">
-          {query
-            ? `No episodes found for "${query}".`
-            : 'No episodes yet.'}
+      <SearchForm initialQuery={q} />
+
+      {rows.length === 0 ? (
+        <p className="text-sm text-slate-500">
+          No podcasts yet. Import one using the button above.
         </p>
       ) : (
-        <ul className="divide-y divide-slate-800">
-          {episodes.map((ep) => (
-            <li key={ep.id} className="py-3">
-              <div className="flex flex-col gap-1">
-                <div className="flex items-baseline justify-between gap-3">
-                  <span className="text-sm font-medium text-slate-100">
-                    {ep.title || '(Untitled episode)'}
-                  </span>
-                  {ep.published_at && (
-                    <span className="whitespace-nowrap text-xs text-slate-500">
-                      {new Date(ep.published_at).toLocaleDateString()}
-                    </span>
-                  )}
-                </div>
-                <div className="text-xs text-slate-500">
-                  <span className="mr-2">
-                    Podcast: <code>{ep.podcast_id}</code>
-                  </span>
-                  {ep.slug && (
-                    <Link
-                      href={`/${ep.podcast_id}/episodes/${ep.slug}`}
-                      className="text-sky-400 hover:underline"
-                    >
-                      View public page →
-                    </Link>
-                  )}
-                </div>
+        <ul className="space-y-3">
+          {rows.map((p) => (
+            <li
+              key={p.id}
+              className="flex items-start justify-between gap-3 rounded border border-slate-800 bg-slate-900/60 p-3"
+            >
+              <div className="flex-1">
+                <h2 className="text-sm font-semibold text-slate-50">
+                  {p.title}
+                </h2>
+                <p className="mt-1 line-clamp-2 text-xs text-slate-400">
+                  {p.description}
+                </p>
+                <p className="mt-1 break-all text-[11px] text-slate-500">
+                  RSS: {p.rss_url}
+                </p>
+              </div>
+              <div className="flex flex-col gap-2 text-xs text-sky-400">
+                <Link href={`/${p.id}`} className="hover:underline">
+                  View site
+                </Link>
+                <Link
+                  href={`/dashboard/podcasts/${p.id}/episodes`}
+                  className="hover:underline"
+                >
+                  Episodes
+                </Link>
+                <Link
+                  href={`/dashboard/podcasts/${p.id}/youtube`}
+                  className="hover:underline"
+                >
+                  YouTube sync
+                </Link>
               </div>
             </li>
           ))}

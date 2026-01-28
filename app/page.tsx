@@ -1,6 +1,6 @@
 // app/page.tsx
-import DashboardRoot from './ui/dashboard-root';
+import { redirect } from 'next/navigation';
 
-export default function Home() {
-  return <DashboardRoot />;
+export default function RootPage() {
+  redirect('/dashboard');
 }

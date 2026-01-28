@@ -1,85 +1,95 @@
 // app/(public)/[subdomain]/episodes/[slug]/page.tsx
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
-import { AudioPlayer } from '@/components/public/AudioPlayer';
-import { VideoPlayer } from '@/components/public/VideoPlayer';
+import Link from 'next/link';
 
-type EpisodePageParams = {
-  subdomain: string;
-  slug: string;
+type PageProps = {
+  params: Promise<{ subdomain: string; slug: string }>;
 };
 
-type EpisodePageProps = {
-  params: Promise<EpisodePageParams>;
-};
-
-export default async function EpisodePage({ params }: EpisodePageProps) {
-  // Unwrap params Promise (Next 15+)
+export default async function EpisodePage({ params }: PageProps) {
   const { subdomain, slug } = await params;
 
-  if (!slug || slug === 'null' || slug === 'undefined') {
-    console.error('episode route: invalid slug', { subdomain, slug });
+  const supabase = createSupabaseServerClient();
+
+  const { data: podcast } = await supabase
+    .from('podcasts')
+    .select('id, title')
+    .eq('id', subdomain)
+    .maybeSingle();
+
+  if (!podcast) {
     return (
-      <main className="mx-auto max-w-3xl px-4 py-8 font-sans">
-        <h1 className="mb-2 text-2xl font-semibold">Episode not found</h1>
-        <p>podcastId: {String(subdomain)}</p>
-        <p>slug is missing or invalid: {String(slug)}</p>
+      <main className="mx-auto max-w-3xl px-4 py-8">
+        <p>Podcast not found.</p>
       </main>
     );
   }
 
-  const supabase = await createSupabaseServerClient();
-
-  const { data: episode, error: episodeError } = await supabase
+  const { data: episode } = await supabase
     .from('episodes')
-    .select('*')
-    .eq('podcast_id', subdomain)
+    .select('id, title, published_at, audio_url, youtube_video_id, description')
+    .eq('podcast_id', podcast.id)
     .eq('slug', slug)
     .maybeSingle();
 
-  if (episodeError || !episode) {
-    console.error('episodeError', episodeError);
+  if (!episode) {
     return (
-      <main className="mx-auto max-w-3xl px-4 py-8 font-sans">
-        <h1 className="mb-2 text-2xl font-semibold">Episode not found</h1>
-        <p>podcastId: {String(subdomain)}</p>
-        <p>slug: {slug}</p>
+      <main className="mx-auto max-w-3xl px-4 py-8">
+        <p>Episode not found.</p>
       </main>
     );
   }
 
-  return (
-    <main className="mx-auto max-w-3xl px-4 py-8 font-sans">
-      <h1 className="mb-4 text-2xl font-semibold">
-        {episode.title || slug}
-      </h1>
+  const hasYouTube = Boolean(episode.youtube_video_id);
+  const hasAudio = Boolean(episode.audio_url);
 
-      {/* Prefer video if present, otherwise audio, otherwise fallback text */}
-      {episode.youtube_video_id ? (
-        <div className="mb-6 rounded border border-slate-800 bg-slate-900/70 p-4">
-          <VideoPlayer videoId={episode.youtube_video_id} />
+  return (
+    <main className="mx-auto max-w-3xl px-4 py-8">
+      <header className="mb-4">
+        <h1 className="text-2xl font-semibold text-slate-50">
+          {episode.title}
+        </h1>
+        {episode.published_at && (
+          <p className="mt-1 text-xs text-slate-500">
+            {new Date(episode.published_at).toLocaleDateString()}
+          </p>
+        )}
+      </header>
+
+      {hasYouTube && (
+        <div className="mb-6 aspect-video w-full overflow-hidden rounded-lg bg-black">
+          <iframe
+            className="h-full w-full"
+            src={`https://www.youtube.com/embed/${episode.youtube_video_id}`}
+            title={episode.title || 'Episode video'}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
         </div>
-      ) : episode.audio_url ? (
-        <div className="mb-6 rounded border border-slate-800 bg-slate-900/70 p-4">
-          <AudioPlayer src={episode.audio_url} />
-        </div>
-      ) : (
-        <p className="mb-6 text-sm text-slate-400">
-          No audio or video available for this episode.
-        </p>
       )}
 
-      {episode.published_at && (
-        <p className="mb-4 text-xs text-slate-500">
-          {new Date(episode.published_at).toLocaleDateString()}
-        </p>
+      {hasAudio && (
+        <div className="mb-6 rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Listen to this episode
+          </p>
+          <audio controls src={episode.audio_url} className="w-full">
+            Your browser does not support the audio element.
+          </audio>
+        </div>
       )}
 
       {episode.description && (
-        <article
-          className="prose prose-invert prose-slate mt-4 max-w-none text-sm"
-          dangerouslySetInnerHTML={{ __html: episode.description }}
-        />
+        <section className="prose prose-invert max-w-none text-sm">
+          <div dangerouslySetInnerHTML={{ __html: episode.description }} />
+        </section>
       )}
+
+      <p className="mt-6 text-xs">
+        <Link href={`/${subdomain}`} className="text-sky-400 hover:underline">
+          ← Back to show
+        </Link>
+      </p>
     </main>
   );
 }

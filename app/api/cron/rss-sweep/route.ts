@@ -10,15 +10,17 @@ export async function GET(req: Request) {
     return new NextResponse('Unauthorized', { status: 401 });
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
 
   const { data: podcasts, error } = await supabase
     .from('podcasts')
     .select('id, rss_url, owner_id');
 
   if (error || !podcasts) {
-    console.error('cron podcast fetch error', error);
-    return NextResponse.json({ error: 'Failed to fetch podcasts' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch podcasts' },
+      { status: 500 },
+    );
   }
 
   let triggered = 0;
@@ -30,7 +32,7 @@ export async function GET(req: Request) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // user is not checked here; ingest route does owner check
+        Authorization: `Bearer ${process.env.CRON_SECRET}`,
       },
       body: JSON.stringify({ podcastId: podcast.id }),
     });

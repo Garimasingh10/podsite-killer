@@ -2,8 +2,7 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'PodSite‑Killer',
-  description: 'Turn any podcast RSS feed into a modern site',
+  title: 'PodSite-Killer',
 };
 
 export default function RootLayout({
@@ -13,7 +12,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, fontFamily: 'system-ui' }}>{children}</body>
+      <body className="bg-[#050816] text-slate-100">
+        {children}
+      </body>
     </html>
   );
 }

@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import Parser from 'rss-parser';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
+import { slugify } from '@/lib/utils/slugify';
 
 const parser = new Parser({
   customFields: {
@@ -10,7 +11,7 @@ const parser = new Parser({
 });
 
 export async function POST(req: Request) {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
 
   const {
     data: { user },
@@ -57,10 +58,10 @@ export async function POST(req: Request) {
     );
   }
 
-  let insertedOrUpdated = 0;
+  let episodesProcessed = 0;
 
   for (const item of feed.items) {
-    const guid = item.guid || item.link;
+    const guid = item.guid || item.link || item.title;
     if (!guid) continue;
 
     const enclosure = item.enclosure as { url?: string } | undefined;
@@ -78,32 +79,31 @@ export async function POST(req: Request) {
       feed.image?.url ||
       null;
 
-    const publishedAt = item.isoDate ? new Date(item.isoDate).toISOString() : null;
+    const publishedAt = item.isoDate
+      ? new Date(item.isoDate).toISOString()
+      : null;
+
+    const slug = slugify(item.title || guid);
 
     const { error } = await supabase.from('episodes').upsert(
       {
         podcast_id: podcast.id,
         guid,
+        slug,
         title: item.title || '(Untitled episode)',
         description,
         audio_url: audioUrl,
         image_url: imageUrl,
         published_at: publishedAt,
       },
-      {
-        onConflict: 'podcast_id,guid',
-      },
+      { onConflict: 'podcast_id,guid' },
     );
 
-    if (!error) {
-      insertedOrUpdated += 1;
-    } else {
-      console.error('episode upsert error', error);
-    }
+    if (!error) episodesProcessed += 1;
   }
 
   return NextResponse.json({
     ok: true,
-    episodesProcessed: insertedOrUpdated,
+    episodesProcessed,
   });
 }

@@ -1,39 +1,53 @@
 // app/api/rss-sync/route.ts
 import { NextResponse } from 'next/server';
+import Parser from 'rss-parser';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
-import { fetchRssEpisodes } from '@/lib/rss/parseRss';
 import { slugify } from '@/lib/utils/slugify';
+
+const parser = new Parser({
+  customFields: {
+    item: [['content:encoded', 'contentEncoded']],
+  },
+});
 
 export async function POST(req: Request) {
   const supabase = await createSupabaseServerClient();
 
-  // TEMP: no auth check so we can develop the pipeline
-  // const {
-  //   data: { user },
-  // } = await supabase.auth.getUser();
-  // if (!user) {
-  //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  // }
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   const { rssUrl } = await req.json();
   if (!rssUrl) {
     return NextResponse.json({ error: 'rssUrl required' }, { status: 400 });
   }
 
-  const data = await fetchRssEpisodes(rssUrl);
+  let feed;
+  try {
+    feed = await parser.parseURL(rssUrl);
+  } catch (err: any) {
+    console.error('RSS parse error', err);
+    return NextResponse.json(
+      { error: 'Failed to fetch or parse RSS', details: err?.message },
+      { status: 500 },
+    );
+  }
 
-  // Podcast upsert – assumes you added a UNIQUE constraint on podcasts.rss_url
   const { data: podcast, error: podcastError } = await supabase
     .from('podcasts')
     .upsert(
       {
-        // user_id: user?.id ?? null,   // add back later when auth is stable
+        owner_id: user.id,
         rss_url: rssUrl,
-        title: data.title,
-        description: data.description,
-        cover_image_url: data.image,
+        title: feed.title || 'Untitled podcast',
+        description: feed.description || '',
+        image_url: feed.image?.url || null,
       },
-      { onConflict: 'rss_url' }
+      { onConflict: 'rss_url' },
     )
     .select()
     .single();
@@ -41,31 +55,57 @@ export async function POST(req: Request) {
   if (podcastError || !podcast) {
     return NextResponse.json(
       { error: podcastError?.message ?? 'Error upserting podcast' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
-  // Episodes upsert – relies on UNIQUE (podcast_id, guid) in episodes table
-  for (const ep of data.episodes) {
-    const guid = ep.guid || ep.enclosureUrl || ep.title;
+  let episodesProcessed = 0;
+
+  for (const item of feed.items) {
+    const guid = item.guid || item.link || item.title;
     if (!guid) continue;
 
-    const slug = slugify(ep.title || guid);
+    const enclosure = item.enclosure as { url?: string } | undefined;
+    const audioUrl = enclosure?.url || null;
 
-    await supabase.from('episodes').upsert(
+    const description =
+      (item as any).contentEncoded ||
+      item.content ||
+      item.contentSnippet ||
+      '';
+
+    const imageUrl =
+      (item as any)['itunes:image']?.href ||
+      (item as any).image?.url ||
+      feed.image?.url ||
+      null;
+
+    const publishedAt = item.isoDate
+      ? new Date(item.isoDate).toISOString()
+      : null;
+
+    const slug = slugify(item.title || guid);
+
+    const { error } = await supabase.from('episodes').upsert(
       {
         podcast_id: podcast.id,
         guid,
-        title: ep.title,
         slug,
-        description: ep.content,
-        audio_url: ep.enclosureUrl,
-        image_url: ep.imageUrl,
-        published_at: ep.pubDate ? new Date(ep.pubDate).toISOString() : null,
+        title: item.title || '(Untitled episode)',
+        description,
+        audio_url: audioUrl,
+        image_url: imageUrl,
+        published_at: publishedAt,
       },
-      { onConflict: 'podcast_id,guid' }
+      { onConflict: 'podcast_id,guid' },
     );
+
+    if (!error) episodesProcessed += 1;
   }
 
-  return NextResponse.json({ ok: true, podcastId: podcast.id });
+  return NextResponse.json({
+    ok: true,
+    podcastId: podcast.id,
+    episodesProcessed,
+  });
 }

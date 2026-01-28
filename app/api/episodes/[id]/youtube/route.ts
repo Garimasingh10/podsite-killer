@@ -6,7 +6,7 @@ export async function POST(
   req: Request,
   { params }: { params: { id: string } },
 ) {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
 
   const {
     data: { user },
@@ -17,7 +17,19 @@ export async function POST(
   }
 
   const { id } = params;
-  const { youtubeVideoId } = await req.json();
+
+  const contentType = req.headers.get('content-type') ?? '';
+  let youtubeVideoId: string | null = null;
+
+  if (contentType.includes('application/json')) {
+    const body = await req.json().catch(() => null) as
+      | { youtubeVideoId?: string }
+      | null;
+    youtubeVideoId = body?.youtubeVideoId ?? null;
+  } else {
+    const formData = await req.formData();
+    youtubeVideoId = (formData.get('youtubeVideoId') as string) || null;
+  }
 
   if (!youtubeVideoId) {
     return NextResponse.json(
@@ -32,8 +44,12 @@ export async function POST(
     .eq('id', id);
 
   if (error) {
-    console.error('episode youtube update error', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  // If called from an HTML form (dashboard), redirect back
+  if (!contentType.includes('application/json')) {
+    return NextResponse.redirect('/dashboard', 303);
   }
 
   return NextResponse.json({ ok: true });

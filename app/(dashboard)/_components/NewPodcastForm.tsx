@@ -35,7 +35,7 @@ export function NewPodcastForm() {
       } else {
         setMessage('Import successful. Podcast and episodes created.');
         setRssUrl('');
-        router.refresh(); // reloads dashboard list
+        router.refresh();
       }
     } catch (err: any) {
       setMessage(err?.message || 'Import failed');

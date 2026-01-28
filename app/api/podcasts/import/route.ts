@@ -1,105 +1,95 @@
 // app/api/podcasts/import/route.ts
 import { NextResponse } from 'next/server';
+import Parser from 'rss-parser';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
-import { fetchRssEpisodes } from '@/lib/rss/parseRss';
+
+const parser = new Parser({
+  customFields: {
+    item: [['content:encoded', 'contentEncoded']],
+  },
+});
 
 export async function POST(req: Request) {
   const supabase = createSupabaseServerClient();
 
-  // 1) Parse JSON body
-  let body: { rssUrl: string };
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json(
-      { error: 'Invalid JSON body' },
-      { status: 400 },
-    );
-  }
-
-  const { rssUrl } = body;
+  const { rssUrl } = await req.json().catch(() => ({ rssUrl: null }));
   if (!rssUrl) {
-    return NextResponse.json(
-      { error: 'rssUrl required' },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: 'rssUrl required' }, { status: 400 });
   }
 
-  // 2) Fetch & parse RSS
-  let parsed;
+  let feed;
   try {
-    parsed = await fetchRssEpisodes(rssUrl);
-  } catch (e: any) {
-    console.error('fetchRssEpisodes error', e);
+    feed = await parser.parseURL(rssUrl);
+  } catch (err: any) {
     return NextResponse.json(
-      { error: e?.message || 'Failed to parse RSS' },
-      { status: 502 },
+      { error: 'Failed to fetch/parse RSS', details: err?.message },
+      { status: 500 },
     );
   }
 
-  const podcast = {
-    title: parsed.title ?? 'Untitled podcast',
-    description: parsed.description ?? '',
-    imageUrl: parsed.image ?? null,
-  };
-
-  const episodes = parsed.episodes ?? [];
-
-  // 3) Upsert podcast row, keyed by rss_url
-  const { data: podcastRow, error: podcastError } = await supabase
+  // upsert podcast by rss_url
+  const { data: podcast, error: podcastError } = await supabase
     .from('podcasts')
     .upsert(
       {
-        title: podcast.title,
-        description: podcast.description,
-        image_url: podcast.imageUrl,
-        cover_image_url: podcast.imageUrl,
-        primary_color: '#0ea5e9',
-        accent_color: '#22c55e',
         rss_url: rssUrl,
+        title: feed.title || 'Untitled podcast',
+        description: feed.description || '',
+        image_url: feed.image?.url || null,
       },
       { onConflict: 'rss_url' },
     )
     .select()
     .single();
 
-  if (podcastError || !podcastRow) {
-    console.error('podcast upsert error', podcastError);
+  if (podcastError || !podcast) {
     return NextResponse.json(
-      { error: podcastError?.message ?? 'Failed to upsert podcast' },
+      { error: podcastError?.message ?? 'Error upserting podcast' },
       { status: 500 },
     );
   }
 
-  const podcastId = podcastRow.id as string;
+  let episodesProcessed = 0;
 
-  // 4) Upsert episodes
-  for (const ep of episodes) {
-    const guid = ep.guid || ep.title || crypto.randomUUID();
+  for (const item of feed.items) {
+    const guid = item.guid || item.link || item.title;
+    if (!guid) continue;
 
-    const slug = String(guid)
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+    const enclosure = item.enclosure as { url?: string } | undefined;
+    const audioUrl = enclosure?.url || null;
+    const description =
+      (item as any).contentEncoded ||
+      item.content ||
+      item.contentSnippet ||
+      '';
+    const imageUrl =
+      (item as any)['itunes:image']?.href ||
+      (item as any).image?.url ||
+      feed.image?.url ||
+      null;
+    const publishedAt = item.isoDate
+      ? new Date(item.isoDate).toISOString()
+      : null;
 
-    const { error: epError } = await supabase.from('episodes').upsert({
-      podcast_id: podcastId,
-      guid,
-      slug,
-      title: ep.title ?? 'Untitled episode',
-      description: ep.content ?? '',
-      audio_url: ep.enclosureUrl ?? null,
-      published_at: ep.pubDate ?? null,
-      image_url: (ep as any).imageUrl ?? podcast.imageUrl ?? null,
-    });
-
-    if (epError) {
-      console.error('episode upsert error', epError, {
-        podcastId,
+    const { error } = await supabase.from('episodes').upsert(
+      {
+        podcast_id: podcast.id,
         guid,
-      });
-    }
+        title: item.title || '(Untitled)',
+        description,
+        audio_url: audioUrl,
+        image_url: imageUrl,
+        published_at: publishedAt,
+      },
+      { onConflict: 'podcast_id,guid' },
+    );
+
+    if (!error) episodesProcessed += 1;
   }
 
-  return NextResponse.json({ ok: true, podcastId });
+  return NextResponse.json({
+    ok: true,
+    podcastId: podcast.id,
+    episodesProcessed,
+  });
 }
