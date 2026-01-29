@@ -21,7 +21,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { rssUrl } = await req.json();
+  // robust JSON parsing
+  const { rssUrl } = await req.json().catch(() => ({ rssUrl: null }));
   if (!rssUrl) {
     return NextResponse.json({ error: 'rssUrl required' }, { status: 400 });
   }

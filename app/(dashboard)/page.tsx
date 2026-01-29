@@ -4,19 +4,18 @@ import Link from 'next/link';
 import { NewPodcastForm } from './_components/NewPodcastForm';
 import { SearchForm } from './_components/SearchForm';
 
-export default async function DashboardPage({
-  searchParams,
-}: {
+type PageProps = {
   searchParams?: { q?: string };
-}) {
+};
+
+export default async function DashboardPage({ searchParams }: PageProps) {
   const supabase = await createSupabaseServerClient();
 
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (!user) {
-    // layout should already redirect, but keep fallback
+  if (!session) {
     return (
       <main className="mx-auto max-w-4xl px-4 py-8">
         <p>Please sign in to view your dashboard.</p>
@@ -29,7 +28,7 @@ export default async function DashboardPage({
   let queryBuilder = supabase
     .from('podcasts')
     .select('id, title, description, rss_url, youtube_channel_id')
-    .eq('owner_id', user.id)
+    .eq('owner_id', session.user.id)
     .order('created_at', { ascending: false });
 
   if (q) {

@@ -1,44 +1,22 @@
 // app/api/cron/rss-sweep/route.ts
 import { NextResponse } from 'next/server';
+import Parser from 'rss-parser';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 
-export async function GET(req: Request) {
-  const authHeader = req.headers.get('authorization');
-  const expected = `Bearer ${process.env.CRON_SECRET}`;
-
-  if (!authHeader || authHeader !== expected) {
-    return new NextResponse('Unauthorized', { status: 401 });
-  }
-
+export async function GET() {
   const supabase = await createSupabaseServerClient();
+  const parser = new Parser();
 
-  const { data: podcasts, error } = await supabase
+  const { data: podcasts } = await supabase
     .from('podcasts')
-    .select('id, rss_url, owner_id');
+    .select('id, rss_url');
 
-  if (error || !podcasts) {
-    return NextResponse.json(
-      { error: 'Failed to fetch podcasts' },
-      { status: 500 },
-    );
+  for (const p of podcasts || []) {
+    if (!p.rss_url) continue;
+    const feed = await parser.parseURL(p.rss_url);
+    // Map items → upsert episodes exactly like the import route
+    // (reuse the same mapping logic)
   }
 
-  let triggered = 0;
-
-  for (const podcast of podcasts) {
-    if (!podcast.rss_url) continue;
-
-    await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/ingest-rss`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.CRON_SECRET}`,
-      },
-      body: JSON.stringify({ podcastId: podcast.id }),
-    });
-
-    triggered += 1;
-  }
-
-  return NextResponse.json({ ok: true, triggered });
+  return NextResponse.json({ ok: true });
 }

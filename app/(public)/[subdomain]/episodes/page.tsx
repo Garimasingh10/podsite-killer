@@ -16,7 +16,7 @@ type EpisodeRow = {
 export default async function EpisodesIndex({ params }: EpisodesIndexProps) {
   const { subdomain } = await params;
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
 
   const { data: podcast, error: podcastError } = await supabase
     .from('podcasts')
@@ -48,6 +48,12 @@ export default async function EpisodesIndex({ params }: EpisodesIndexProps) {
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <header className="mb-6">
+        <Link
+          href={`/${subdomain}`}
+          className="mb-2 inline-block text-xs font-medium text-sky-400 hover:underline"
+        >
+          ← Back to show
+        </Link>
         <h1 className="text-2xl font-semibold text-slate-50">
           {podcast.title}
         </h1>
@@ -59,22 +65,28 @@ export default async function EpisodesIndex({ params }: EpisodesIndexProps) {
       ) : (
         <ul className="space-y-2 text-sm">
           {episodes.map((ep) => (
-            <li key={ep.id}>
+            <li
+              key={ep.id}
+              className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:justify-between py-2 border-b border-slate-800 last:border-0"
+            >
               {ep.slug ? (
                 <Link
                   href={`/${subdomain}/episodes/${ep.slug}`}
-                  className="text-sky-400 hover:underline"
+                  className="text-sky-400 hover:underline font-medium"
                 >
                   {ep.title || ep.slug}
                 </Link>
               ) : (
-                <span className="text-sky-400">
+                <span className="text-slate-300 font-medium">
                   {ep.title || '(no slug)'}
                 </span>
               )}
               {ep.published_at && (
-                <span className="ml-2 text-[11px] text-slate-500">
-                  {new Date(ep.published_at).toLocaleDateString()}
+                <span className="text-xs text-slate-500 shrink-0">
+                  {new Date(ep.published_at).toLocaleString(undefined, {
+                    dateStyle: 'short',
+                    timeStyle: 'short',
+                  })}
                 </span>
               )}
             </li>

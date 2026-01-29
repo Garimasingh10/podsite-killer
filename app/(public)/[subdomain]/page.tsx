@@ -2,8 +2,9 @@
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import Link from 'next/link';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
+// NOTE: params & searchParams are Promises here
 type PageProps = {
   params: Promise<{ subdomain: string }>;
   searchParams: Promise<{ page?: string }>;
@@ -17,7 +18,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
 
   const { data: podcast, error: podcastError } = await supabase
     .from('podcasts')
@@ -48,12 +49,8 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   }
 
   const hasMore = episodes && episodes.length === PAGE_SIZE;
-
-  // Page 1: show latest highlight + rest
-  // Page 2+: show all episodes in list
   const latest = page === 1 ? episodes?.[0] : undefined;
-  const rest =
-    page === 1 ? episodes?.slice(1) ?? [] : episodes ?? [];
+  const rest = page === 1 ? episodes?.slice(1) ?? [] : episodes ?? [];
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 font-sans">
@@ -69,6 +66,9 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
       )}
 
       <header className="mb-6">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-sky-400">
+          The Daily
+        </p>
         <h1 className="mb-2 text-3xl font-semibold">{podcast.title}</h1>
         {podcast.description && (
           <p className="max-w-2xl text-sm text-slate-300">
@@ -77,21 +77,25 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
         )}
       </header>
 
+      {/* The Latest — featured episode (changes daily as new episodes publish) */}
       {latest && (
-        <section className="mb-8 rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-sky-400">
-            Latest episode
-          </p>
+        <section
+          className="mb-8 rounded-xl border border-slate-700 bg-slate-900/80 p-5 shadow-sm"
+          aria-label="The Latest"
+        >
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-sky-400">
+            The Latest
+          </h2>
 
           {latest.slug ? (
             <Link
               href={`/${subdomain}/episodes/${latest.slug}`}
-              className="text-base font-semibold text-slate-50 hover:underline"
+              className="block text-lg font-semibold text-slate-50 hover:underline sm:text-xl"
             >
               {latest.title || latest.slug}
             </Link>
           ) : (
-            <span className="text-base font-semibold text-slate-50">
+            <span className="block text-lg font-semibold text-slate-50 sm:text-xl">
               {latest.title || '(no slug)'}
             </span>
           )}
@@ -103,22 +107,26 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
           )}
 
           {latest.slug && (
-            <div className="mt-3 flex flex-col gap-1">
+            <div className="mt-4 flex flex-wrap items-center gap-3">
               <Link
                 href={`/${subdomain}/episodes/${latest.slug}`}
-                className="inline-flex items-center rounded bg-sky-400 px-3 py-1 text-xs font-semibold text-slate-900 hover:bg-sky-300"
+                className="inline-flex items-center rounded-md bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-sky-400"
               >
                 Listen now
               </Link>
-              <span className="text-xs text-slate-500">
-                Or browse all episodes below.
-              </span>
+              <Link
+                href={`/${subdomain}/episodes`}
+                className="text-sm font-medium text-sky-400 hover:underline"
+              >
+                All episodes →
+              </Link>
             </div>
           )}
         </section>
       )}
 
-      <section>
+      {/* All episodes — clickable list */}
+      <section aria-label="All episodes">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
             All episodes
@@ -127,12 +135,22 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
             href={`/${subdomain}/episodes`}
             className="text-xs font-semibold text-sky-400 hover:underline"
           >
-            View full archive →
+            View all →
           </Link>
         </div>
 
-        {!rest.length ? (
+        {!rest.length && !latest ? (
           <p className="text-sm text-slate-500">No episodes yet.</p>
+        ) : !rest.length && latest ? (
+          <p className="text-sm text-slate-500">
+            Only the latest episode is available.{' '}
+            <Link
+              href={`/${subdomain}/episodes`}
+              className="text-sky-400 hover:underline"
+            >
+              See full archive
+            </Link>
+          </p>
         ) : (
           <ul className="divide-y divide-slate-800">
             {rest.map((ep) => (
@@ -151,8 +169,11 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
                     </span>
                   )}
                   {ep.published_at && (
-                    <span className="text-xs text-slate-500">
-                      {new Date(ep.published_at).toLocaleDateString()}
+                    <span className="text-xs text-slate-500 shrink-0">
+                      {new Date(ep.published_at).toLocaleString(undefined, {
+                        dateStyle: 'short',
+                        timeStyle: 'short',
+                      })}
                     </span>
                   )}
                 </div>

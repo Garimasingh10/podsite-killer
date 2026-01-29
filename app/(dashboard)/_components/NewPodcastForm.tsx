@@ -1,7 +1,7 @@
 // app/(dashboard)/_components/NewPodcastForm.tsx
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export function NewPodcastForm() {
@@ -10,58 +10,50 @@ export function NewPodcastForm() {
   const [message, setMessage] = useState<string | null>(null);
   const router = useRouter();
 
-  async function handleSubmit(e: FormEvent) {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!rssUrl) {
-      setMessage('Please paste an RSS feed URL.');
-      return;
-    }
-
     setLoading(true);
     setMessage(null);
 
-    try {
-      const res = await fetch('/api/podcasts/import', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rssUrl }),
-      });
+    const res = await fetch('/api/podcasts/import', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rssUrl }),
+    });
 
-      const json = await res.json();
+    const json = await res.json();
+    setLoading(false);
 
-      if (!res.ok) {
-        setMessage(json.error || 'Import failed');
-      } else {
-        setMessage('Import successful. Podcast and episodes created.');
-        setRssUrl('');
-        router.refresh();
-      }
-    } catch (err: any) {
-      setMessage(err?.message || 'Import failed');
-    } finally {
-      setLoading(false);
+    if (!res.ok) {
+      setMessage(json.error || 'Import failed');
+      return;
     }
-  }
+
+    setMessage(
+      `Imported podcast ${json.podcastId}, episodes: ${json.episodesProcessed}`,
+    );
+    router.refresh();
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
+    <form onSubmit={onSubmit} className="flex flex-col items-end gap-2 sm:flex-row">
       <input
         type="url"
-        placeholder="Paste RSS feed URL"
+        required
+        placeholder="RSS feed URL"
         value={rssUrl}
         onChange={(e) => setRssUrl(e.target.value)}
-        className="flex-1 rounded bg-slate-800 px-3 py-2 text-sm text-slate-100"
+        className="w-64 rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100"
       />
       <button
         type="submit"
         disabled={loading}
-        className="rounded bg-sky-400 px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-sky-300 disabled:opacity-60"
+        className="rounded bg-sky-500 px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-sky-400 disabled:opacity-60"
       >
         {loading ? 'Importing…' : 'New podcast'}
       </button>
       {message && (
-        <p className="text-xs text-slate-300">{message}</p>
+        <p className="w-full text-right text-xs text-slate-400">{message}</p>
       )}
     </form>
   );

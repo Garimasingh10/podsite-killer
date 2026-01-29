@@ -1,137 +1,199 @@
 // app/login/page.tsx
 'use client';
 
-import { useState, type FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabaseBrowser } from '@/lib/supabaseClient';
+import { useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+);
+
+const DASHBOARD = '/dashboard';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  const errorFromUrl = searchParams.get('error');
+  const displayMessage =
+    message ?? (errorFromUrl ? decodeURIComponent(errorFromUrl) : null);
+
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
+    setMessage(null);
 
-    try {
-      if (mode === 'login') {
-        console.log('trying login', { email, passwordLength: password.length });
-
-        const { error } = await supabaseBrowser.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        console.log('login error', error);
-
-        if (error) {
-          console.error('supabase login error', error);
-          setError(error.message);
-          return;
-        }
-
-        console.log('login success, going to /dashboard');
-
-        router.push('/dashboard');
-        router.refresh(); // force server components to see new session [web:297][web:298]
-      } else {
-        const { error } = await supabaseBrowser.auth.signUp({
-          email,
-          password,
-        });
-
-        if (error) {
-          console.error('supabase signup error', error);
-          setError(error.message);
-          return;
-        }
-
-        setError('Account created. Check your email if confirmation is required, then log in.');
-        setMode('login');
+    if (isSignUp) {
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) {
+        setMessage(error.message);
+        setLoading(false);
+        return;
       }
-    } catch (err: any) {
-      console.error('unexpected auth error', err);
-      setError(err?.message || 'Unknown error');
-    } finally {
+      setMessage('Check your email to confirm your account, then log in.');
+      setLoading(false);
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) {
+      setMessage(error.message);
+      setLoading(false);
+      return;
+    }
+
+    window.location.href = DASHBOARD;
+  };
+
+  const onGoogleLogin = async () => {
+    setLoading(true);
+    setMessage(null);
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(
+          DASHBOARD,
+        )}`,
+      },
+    });
+    if (error) {
+      setMessage(error.message);
+      setLoading(false);
+    } else if (!data?.url) {
+      setMessage('Could not start Google login.');
       setLoading(false);
     }
-  }
+  };
 
   return (
-    <main className="grid min-h-screen place-items-center bg-[#050816] text-slate-100">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm rounded-xl bg-slate-900 p-6 shadow-lg space-y-4"
-      >
-        <h1 className="text-xl font-semibold">
-          PodSite-Killer {mode === 'login' ? 'Login' : 'Sign up'}
-        </h1>
-
-        {error && (
-          <p className="text-xs text-red-400">
-            {error}
+    <main className="flex min-h-screen flex-col items-center justify-center bg-slate-950 px-4 py-8">
+      <div className="w-full max-w-md rounded-xl border border-slate-800 bg-slate-900/80 p-6 shadow-lg">
+        <header className="mb-6">
+          <h1 className="text-2xl font-semibold text-slate-50">PodSite-Killer</h1>
+          <p className="mt-1 text-sm text-slate-400">
+            {isSignUp ? 'Create an account' : 'Sign in to manage your podcasts'}
           </p>
-        )}
+        </header>
 
-        <label className="block text-xs text-slate-400 space-y-1">
-          <span>Email</span>
-          <input
-            type="email"
-            className="w-full rounded bg-slate-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </label>
-
-        <div className="block text-xs text-slate-400 space-y-1">
-          <span>Password</span>
-          <div className="flex items-center gap-2">
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-slate-300"
+            >
+              Email
+            </label>
             <input
-              type={showPassword ? 'text' : 'password'}
-              className="w-full rounded bg-slate-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400"
+              id="email"
+              type="email"
+              required
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+              placeholder="you@example.com"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-slate-300"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              required
+              autoComplete={isSignUp ? 'new-password' : 'current-password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword((v) => !v)}
-              className="rounded border border-slate-600 px-2 py-1 text-[11px] hover:border-sky-400"
-            >
-              {showPassword ? 'Hide' : 'Show'}
-            </button>
           </div>
-        </div>
 
-        <div className="flex gap-2">
+          {displayMessage && (
+            <p className="rounded-lg bg-red-950/50 px-3 py-2 text-sm text-red-400">
+              {displayMessage}
+            </p>
+          )}
+
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 rounded bg-sky-400 px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-sky-300 disabled:opacity-60"
+            className="w-full rounded-lg bg-sky-500 px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-sky-400 disabled:opacity-60"
           >
-            {loading ? 'Working…' : mode === 'login' ? 'Log in' : 'Sign up'}
+            {loading
+              ? isSignUp
+                ? 'Creating account…'
+                : 'Signing in…'
+              : isSignUp
+              ? 'Sign up'
+              : 'Login'}
           </button>
+        </form>
 
-          <button
-            type="button"
-            disabled={loading}
-            onClick={() => {
-              setMode(mode === 'login' ? 'signup' : 'login');
-              setError(null);
-            }}
-            className="flex-1 rounded border border-slate-600 px-3 py-2 text-sm hover:border-sky-400 disabled:opacity-60"
-          >
-            {mode === 'login' ? 'Need an account?' : 'Have an account?'}
-          </button>
+        <div className="my-4 flex items-center gap-3">
+          <span className="h-px flex-1 bg-slate-700" aria-hidden />
+          <span className="text-xs text-slate-500">or</span>
+          <span className="h-px flex-1 bg-slate-700" aria-hidden />
         </div>
-      </form>
+
+        <button
+          type="button"
+          disabled={loading}
+          onClick={onGoogleLogin}
+          className="w-full rounded-lg border border-slate-600 bg-slate-800/50 px-4 py-2.5 text-sm font-medium text-slate-100 hover:bg-slate-800 disabled:opacity-60"
+        >
+          Continue with Google
+        </button>
+
+        <p className="mt-5 text-center text-sm text-slate-400">
+          {isSignUp ? (
+            <>
+              Already have an account?{' '}
+              <button
+                type="button"
+                onClick={() => setIsSignUp(false)}
+                className="font-medium text-sky-400 hover:underline"
+              >
+                Log in
+              </button>
+            </>
+          ) : (
+            <>
+              No account yet?{' '}
+              <button
+                type="button"
+                onClick={() => setIsSignUp(true)}
+                className="font-medium text-sky-400 hover:underline"
+              >
+                Sign up
+              </button>{' '}
+              with email, or use Google above.
+            </>
+          )}
+        </p>
+
+        <p className="mt-2 text-center text-xs text-slate-500">
+          <Link href="/" className="text-sky-400 hover:underline">
+            ← Back to home
+          </Link>
+        </p>
+      </div>
     </main>
   );
 }

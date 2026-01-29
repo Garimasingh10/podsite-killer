@@ -9,7 +9,7 @@ type PageProps = {
 export default async function EpisodePage({ params }: PageProps) {
   const { subdomain, slug } = await params;
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
 
   const { data: podcast } = await supabase
     .from('podcasts')
@@ -27,7 +27,9 @@ export default async function EpisodePage({ params }: PageProps) {
 
   const { data: episode } = await supabase
     .from('episodes')
-    .select('id, title, published_at, audio_url, youtube_video_id, description')
+    .select(
+      'id, title, published_at, audio_url, youtube_video_id, description',
+    )
     .eq('podcast_id', podcast.id)
     .eq('slug', slug)
     .maybeSingle();

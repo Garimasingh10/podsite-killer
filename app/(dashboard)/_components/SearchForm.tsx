@@ -2,44 +2,38 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState, FormEvent } from 'react';
+import { useState, useEffect } from 'react';
 
 export function SearchForm({ initialQuery }: { initialQuery: string }) {
-  const [value, setValue] = useState(initialQuery);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [q, setQ] = useState(initialQuery);
 
   useEffect(() => {
-    setValue(initialQuery);
+    setQ(initialQuery);
   }, [initialQuery]);
 
-  function handleSubmit(e: FormEvent) {
+  const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams(searchParams.toString());
-    const trimmed = value.trim();
-    if (trimmed) {
-      params.set('q', trimmed);
-    } else {
-      params.delete('q');
-    }
+    if (q) params.set('q', q);
+    else params.delete('q');
     router.push(`/dashboard?${params.toString()}`);
-  }
+  };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex items-center gap-2"
-    >
+    <form onSubmit={onSubmit} className="flex gap-2">
       <input
         type="text"
-        placeholder="Search podcasts by title"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        className="flex-1 rounded border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-slate-100"
+        name="q"
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder="Search podcasts…"
+        className="rounded bg-slate-800 px-3 py-2 text-sm text-slate-100"
       />
       <button
         type="submit"
-        className="rounded border border-slate-700 px-3 py-1 text-xs text-slate-100"
+        className="rounded bg-sky-400 px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-sky-300"
       >
         Search
       </button>
