@@ -1,7 +1,7 @@
-// app/api/youtube-sync/route.ts
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
-import { fetchLatestVideos, matchEpisodesToVideos } from '@/lib/youtube';
+import { fetchChannelUploads } from '@/lib/youtube/fetchUploads';
+import { matchEpisodesToVideos } from '@/lib/youtube/matchEpisodes';
 
 type YoutubeSyncBody = {
   podcastId?: string;
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
 
   const { data: episodesRaw, error: episodesError } = await supabase
     .from('episodes')
-    .select('id, title')
+    .select('id, title, published_at')
     .eq('podcast_id', podcast.id)
     .order('published_at', { ascending: false });
 
@@ -73,6 +73,7 @@ export async function POST(req: Request) {
     (episodesRaw as {
       id: string;
       title: string | null;
+      published_at: string | null;
     }[]) ?? [];
 
   if (!episodes.length) {
@@ -82,8 +83,16 @@ export async function POST(req: Request) {
     );
   }
 
+  const apiKey = process.env.YOUTUBE_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json(
+      { error: 'Server misconfiguration: YOUTUBE_API_KEY is missing' },
+      { status: 500 },
+    );
+  }
+
   // Fetch last 50 uploads using your helper
-  const videos = await fetchLatestVideos(channelId);
+  const videos = await fetchChannelUploads(apiKey, channelId);
 
   if (!videos.length) {
     return NextResponse.json(
@@ -92,11 +101,12 @@ export async function POST(req: Request) {
     );
   }
 
-  // matchEpisodesToVideos(episodes, videos) expects titles, we guard against null
+  // matchEpisodesToVideos(episodes, videos)
   const pairings = matchEpisodesToVideos(
     episodes.map((e) => ({
       id: e.id,
       title: e.title ?? '',
+      published_at: e.published_at,
     })),
     videos,
   );

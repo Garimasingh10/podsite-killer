@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import type { User } from '@supabase/supabase-js';
 
-export const createSupabaseServerClient = async () => {
+export async function createSupabaseServerClient() {
   const cookieStore = await cookies();
 
   const supabase = createServerClient(
@@ -11,16 +11,27 @@ export const createSupabaseServerClient = async () => {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        // Read-only: allowed in Server Components
         async getAll() {
           return cookieStore.getAll();
         },
-      } as any,
+        async setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, {
+                ...options,
+                path: '/',
+              });
+            });
+          } catch {
+            // ignore in pure server contexts
+          }
+        },
+      },
     },
   );
 
   return supabase;
-};
+}
 
 export async function getCurrentUser(): Promise<User | null> {
   const supabase = await createSupabaseServerClient();

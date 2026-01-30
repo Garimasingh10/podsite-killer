@@ -2,7 +2,7 @@
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import Link from 'next/link';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 20;
 
 // NOTE: params & searchParams are Promises here
 type PageProps = {
@@ -114,12 +114,9 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
               >
                 Listen now
               </Link>
-              <Link
-                href={`/${subdomain}/episodes`}
-                className="text-sm font-medium text-sky-400 hover:underline"
-              >
-                All episodes →
-              </Link>
+              
+             
+              
             </div>
           )}
         </section>

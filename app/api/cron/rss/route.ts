@@ -1,7 +1,7 @@
 // app/api/cron/rss/route.ts
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
-import { fetchRssEpisodes } from '@/lib/rss/parseRss';
+import { parseRss } from '@/lib/rss/parseRss';
 
 type PodcastRow = {
   id: string;
@@ -9,7 +9,7 @@ type PodcastRow = {
 };
 
 export async function GET() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
 
   const { data: podcasts, error: podcastsError } = await supabase
     .from('podcasts')
@@ -34,23 +34,23 @@ export async function GET() {
     if (!p.rss_url) continue;
 
     try {
-      const data = await fetchRssEpisodes(p.rss_url);
+      const data = await parseRss(p.rss_url);
 
       for (const ep of data.episodes) {
-        const guid = ep.guid || ep.enclosureUrl || ep.title;
-        if (!guid) continue;
+        if (!ep.guid) continue;
 
         const { error: upsertError } = await supabase.from('episodes').upsert(
           {
             podcast_id: p.id,
-            guid,
+            guid: ep.guid,
             title: ep.title,
-            description: ep.content,
-            audio_url: ep.enclosureUrl,
-            image_url: ep.imageUrl,
-            published_at: ep.pubDate
-              ? new Date(ep.pubDate).toISOString()
+            description: ep.description,
+            audio_url: ep.audio_url,
+            image_url: ep.episode_image_url,
+            published_at: ep.publish_date
+              ? new Date(ep.publish_date).toISOString()
               : null,
+            duration: ep.duration_seconds, // Assuming DB has this column, otherwise ignore
           },
           { onConflict: 'podcast_id,guid' },
         );
@@ -58,7 +58,7 @@ export async function GET() {
         if (upsertError) {
           console.error('episode upsert error', upsertError, {
             podcastId: p.id,
-            guid,
+            guid: ep.guid,
           });
           errors.push({
             podcastId: p.id,

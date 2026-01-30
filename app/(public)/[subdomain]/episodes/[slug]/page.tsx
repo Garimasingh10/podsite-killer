@@ -20,7 +20,12 @@ export default async function EpisodePage({ params }: PageProps) {
   if (!podcast) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <p>Podcast not found.</p>
+        <p className="text-sm text-slate-300">Podcast not found.</p>
+        <p className="mt-2 text-xs">
+          <Link href="/" className="text-sky-400 hover:underline">
+            ← Back to home
+          </Link>
+        </p>
       </main>
     );
   }
@@ -37,7 +42,12 @@ export default async function EpisodePage({ params }: PageProps) {
   if (!episode) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <p>Episode not found.</p>
+        <p className="text-sm text-slate-300">Episode not found.</p>
+        <p className="mt-2 text-xs">
+          <Link href={`/${subdomain}`} className="text-sky-400 hover:underline">
+            ← Back to show
+          </Link>
+        </p>
       </main>
     );
   }
@@ -48,7 +58,10 @@ export default async function EpisodePage({ params }: PageProps) {
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <header className="mb-4">
-        <h1 className="text-2xl font-semibold text-slate-50">
+        <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+          {podcast.title}
+        </p>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-50">
           {episode.title}
         </h1>
         {episode.published_at && (
@@ -59,19 +72,21 @@ export default async function EpisodePage({ params }: PageProps) {
       </header>
 
       {hasYouTube && (
-        <div className="mb-6 aspect-video w-full overflow-hidden rounded-lg bg-black">
-          <iframe
-            className="h-full w-full"
-            src={`https://www.youtube.com/embed/${episode.youtube_video_id}`}
-            title={episode.title || 'Episode video'}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
+        <div className="mb-6 overflow-hidden rounded-xl border border-slate-800 bg-black">
+          <div className="aspect-video w-full">
+            <iframe
+              className="h-full w-full"
+              src={`https://www.youtube.com/embed/${episode.youtube_video_id}`}
+              title={episode.title || 'Episode video'}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
         </div>
       )}
 
       {hasAudio && (
-        <div className="mb-6 rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+        <div className="mb-6 rounded-xl border border-slate-800 bg-slate-900/70 p-4">
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
             Listen to this episode
           </p>

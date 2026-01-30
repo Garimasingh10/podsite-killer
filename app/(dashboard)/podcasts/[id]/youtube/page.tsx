@@ -48,7 +48,8 @@ export default async function PodcastYouTubeSyncPage({ params }: PageProps) {
             {podcast.title}
           </h1>
           <p className="mt-1 text-xs text-slate-500">
-            Connect your YouTube channel so new videos can be matched to episodes.
+            Connect your YouTube channel so new videos can be matched to
+            episodes.
           </p>
         </div>
         <Link

@@ -51,7 +51,8 @@ export function YoutubeSyncClient({ podcastId }: { podcastId: string }) {
         YouTube channel
       </h2>
       <p className="text-xs text-slate-400">
-        Paste your channel ID (starts with <code>UC</code>). We’ll use it to sync videos.
+        Paste your channel ID (for example{' '}
+        <code>UCkdnY2hNC0sdlVXPtWuNQ8g</code>).
       </p>
       <form onSubmit={onSubmit} className="space-y-2">
         <input

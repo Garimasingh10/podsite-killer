@@ -13,10 +13,11 @@ export async function POST(req: Request) {
   const supabase = await createSupabaseServerClient();
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (userError || !user) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
@@ -34,8 +35,8 @@ export async function POST(req: Request) {
   } catch (err: any) {
     console.error('Failed to fetch/parse RSS', err);
     return NextResponse.json(
-      { error: 'Failed to fetch/parse RSS', details: err?.message },
-      { status: 500 },
+      { error: `Failed to fetch/parse RSS: ${err?.message}`, details: err?.message },
+      { status: 400 },
     );
   }
 
@@ -46,23 +47,57 @@ export async function POST(req: Request) {
     (feed as any)['itunes:image']?.href ||
     null;
 
-  const { data: podcast, error: podcastError } = await supabase
+  // Check if THIS USER already has this podcast
+  const { data: existingPodcast } = await supabase
     .from('podcasts')
-    .upsert(
-      {
-        owner_id: session.user.id,
+    .select('id')
+    .eq('rss_url', rssUrl)
+    .eq('owner_id', user.id)
+    .maybeSingle();
+
+  let podcast;
+  let podcastError;
+
+  if (existingPodcast) {
+    // Update existing
+    const { data, error } = await supabase
+      .from('podcasts')
+      .update({
         title: podcastTitle,
         description: podcastDescription,
-        // image_url: podcastImage,
-        // cover_image_url: podcastImage,
+        primary_color: '#0ea5e9',
+        accent_color: '#22c55e',
+      })
+      .eq('id', existingPodcast.id)
+      .select()
+      .single();
+    podcast = data;
+    podcastError = error;
+  } else {
+    // Insert new
+    const { data: inserted, error: insertError } = await supabase
+      .from('podcasts')
+      .insert({
+        owner_id: user.id,
+        title: podcastTitle,
+        description: podcastDescription,
         primary_color: '#0ea5e9',
         accent_color: '#22c55e',
         rss_url: rssUrl,
-      },
-      { onConflict: 'rss_url' },
-    )
-    .select()
-    .single();
+      })
+      .select()
+      .single();
+
+    if (insertError?.code === '23505') {
+      return NextResponse.json(
+        { error: 'Database Restriction: The system is blocking duplicates. Please run the SQL migration I provided to allow multiple users to own the same feed.', code: 'DB_CONSTRAINT' },
+        { status: 409 }
+      );
+    }
+
+    podcast = inserted;
+    podcastError = insertError;
+  }
 
   if (podcastError || !podcast) {
     console.error('podcast upsert error', podcastError);
