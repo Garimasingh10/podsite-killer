@@ -6,31 +6,33 @@ import type { User } from '@supabase/supabase-js';
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies();
 
-  const supabase = createServerClient(
+  return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        async getAll() {
+        getAll() {
           return cookieStore.getAll();
         },
         async setAll(cookiesToSet) {
           try {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              cookieStore.set(name, value, {
-                ...options,
-                path: '/',
-              });
-            });
+            await Promise.all(
+              cookiesToSet.map(async ({ name, value, options }) => {
+                await cookieStore.set(name, value, {
+                  ...options,
+                  path: '/',
+                  secure: false,
+                  sameSite: 'lax',
+                });
+              })
+            );
           } catch {
-            // ignore in pure server contexts
+            // ignore
           }
         },
       },
-    },
+    }
   );
-
-  return supabase;
 }
 
 export async function getCurrentUser(): Promise<User | null> {

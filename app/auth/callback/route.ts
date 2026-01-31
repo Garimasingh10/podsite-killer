@@ -1,59 +1,89 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 
-export async function GET(request: NextRequest) {
-  const requestUrl = new URL(request.url);
-  const code = requestUrl.searchParams.get('code');
-  const next = requestUrl.searchParams.get('next') ?? '/dashboard';
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const code = url.searchParams.get('code');
+  const next = url.searchParams.get('next') ?? '/dashboard';
 
-  console.log('Auth Callback Hit:', request.url);
+  console.log('--- Auth Callback Start (HTML Bridge Mode) ---');
 
-  if (code) {
-    // Create a response first so we can attach cookies to it
-    const response = NextResponse.redirect(`${requestUrl.origin}${next}`);
-
-    // Create a supabase client that writes to the RESPONSE object
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return request.cookies.getAll();
-          },
-          setAll(cookiesToSet) {
-            console.log('Auth Callback: Writing cookies to response...', cookiesToSet.map(c => c.name));
-            cookiesToSet.forEach(({ name, value, options }) =>
-              response.cookies.set(name, value, {
-                ...options,
-                path: '/',
-              })
-            );
-          },
-        },
-      }
-    );
-
-    console.log('Auth Callback: Exchanging code for session...');
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-
-    if (error) {
-      console.error('Auth Callback: Exchange Error:', error.message);
-      return NextResponse.redirect(`${requestUrl.origin}/login?error=${encodeURIComponent(error.message)}`);
-    }
-
-    if (data?.session) {
-      console.log('Auth Callback: Session established for user:', data.user?.id);
-      // The cookies are now in the 'response' object thanks to setAll
-      return response;
-    } else {
-      console.warn('Auth Callback: No session returned from exchange!');
-      return NextResponse.redirect(`${requestUrl.origin}/login?error=no_session`);
-    }
+  if (!code) {
+    return NextResponse.redirect(`${url.origin}/login?error=no_code`);
   }
 
-  // No code → just go back to login
-  console.log('No code found in callback, redirecting to login');
-  return NextResponse.redirect(`${requestUrl.origin}/login`);
+  const pendingCookies: { name: string; value: string; options: any }[] = [];
+  const cookieStore = await cookies();
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          console.log('Auth Callback - Queueing cookies:', cookiesToSet.map(c => c.name));
+          pendingCookies.push(...cookiesToSet);
+
+          // Also set on server side for completeness
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, {
+              ...options,
+              path: '/',
+              secure: false,
+              sameSite: 'lax',
+            });
+          });
+        },
+      },
+    }
+  );
+
+  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+  // Micro-delay to ensure setAll internal callbacks complete (Next.js 15+ quirk)
+  if (pendingCookies.length === 0) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+
+  if (error) {
+    console.error('Auth Callback - Exchange failed:', error.message);
+    return NextResponse.redirect(`${url.origin}/login?error=${encodeURIComponent(error.message)}`);
+  }
+
+  // HTML Bridge: Sets cookies via JS and THEN redirects.
+  // This is the "Nuclear" fix for race conditions in server-side redirects.
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head><title>Verifying Studio Session...</title></head>
+      <body style="background: #020617; color: #f8fafc; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
+        <div style="text-align: center;">
+          <div style="margin-bottom: 20px;">Setting up your studio...</div>
+          <script>
+            console.log('HTML Bridge - Setting cookies...');
+            ${pendingCookies.map(c => `
+              document.cookie = "${c.name}=${c.value}; Path=/; SameSite=Lax; Max-Age=${c.options?.maxAge ?? 3600}";
+            `).join('')}
+            console.log('HTML Bridge - Done. Redirecting to ${next}');
+            window.location.href = "${next}";
+          </script>
+        </div>
+      </body>
+    </html>
+  `;
+
+  return new Response(html, {
+    headers: {
+      'Content-Type': 'text/html',
+      // Still staple to headers as a fallback
+      ...Object.fromEntries(pendingCookies.map(c => [
+        'Set-Cookie',
+        `${c.name}=${c.value}; Path=/; SameSite=Lax; Max-Age=${c.options?.maxAge ?? 3600}`
+      ]))
+    },
+  });
 }

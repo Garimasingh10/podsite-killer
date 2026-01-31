@@ -44,7 +44,7 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
-      setMessage('Check your email to confirm your account, then log in.');
+      setMessage('Account created! Please check your email for a verification link to activate your studio.');
       setLoading(false);
       return;
     }
@@ -199,9 +199,12 @@ export default function LoginPage() {
             </div>
 
             {displayMessage && (
-              <p className="rounded-lg bg-red-950/60 px-3 py-2 text-sm text-red-300">
+              <div className={`rounded-lg px-3 py-2 text-sm border ${displayMessage.includes('Account created')
+                  ? 'bg-emerald-950/40 border-emerald-800 text-emerald-300'
+                  : 'bg-red-950/60 border-red-800 text-red-300'
+                }`}>
                 {displayMessage}
-              </p>
+              </div>
             )}
 
             <button
@@ -214,8 +217,8 @@ export default function LoginPage() {
                   ? 'Creating account…'
                   : 'Signing in…'
                 : isSignUp
-                ? 'Sign up'
-                : 'Login'}
+                  ? 'Sign up'
+                  : 'Login'}
             </button>
           </form>
 

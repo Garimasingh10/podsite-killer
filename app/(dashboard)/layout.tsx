@@ -15,7 +15,6 @@ export default async function DashboardLayout({
     error,
   } = await supabase.auth.getUser();
 
-  console.log('Dashboard Layout - User:', user?.id || 'null');
   if (error) console.error('Dashboard Layout - Auth Error:', error.message);
 
   if (error || !user) {
@@ -24,11 +23,13 @@ export default async function DashboardLayout({
   }
 
 
+  // Robust name detection for different providers (Google vs Email)
   const displayName =
     user.user_metadata?.full_name ||
     user.user_metadata?.name ||
+    user.user_metadata?.user_name ||
     user.email?.split('@')[0] ||
-    'creator';
+    'Studio Creator';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-950 to-slate-900 text-slate-50">
@@ -56,13 +57,6 @@ export default async function DashboardLayout({
             >
               Dashboard
             </Link>
-            <a
-              href="https://feeds.simplecast.com/Sl5CSM3S"
-              target="_blank"
-              className="hidden rounded-full border border-slate-800/70 px-3 py-1 hover:border-sky-500 hover:text-sky-400 sm:inline"
-            >
-              The Daily RSS ↗
-            </a>
             <SignOutButton />
           </nav>
         </div>
