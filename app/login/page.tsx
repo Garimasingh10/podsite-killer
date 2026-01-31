@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createSupabaseBrowserClient } from '@/lib/supabaseBrowser';
 
 const DASHBOARD = '/dashboard';
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createSupabaseBrowserClient();
@@ -103,9 +103,9 @@ export default function LoginPage() {
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
             PodSite-Killer
           </div>
-          <h1 className="mt-4 text-2xl font-semibold text-slate-50">
+          <h2 className="mt-4 text-2xl font-semibold text-slate-50">
             {isSignUp ? 'Create your studio account' : 'Sign in to your studio'}
-          </h1>
+          </h2>
           <p className="mt-2 text-sm text-slate-400">
             Import RSS, sync episodes, and manage YouTube from one dashboard.
           </p>
@@ -200,8 +200,8 @@ export default function LoginPage() {
 
             {displayMessage && (
               <div className={`rounded-lg px-3 py-2 text-sm border ${displayMessage.includes('Account created')
-                  ? 'bg-emerald-950/40 border-emerald-800 text-emerald-300'
-                  : 'bg-red-950/60 border-red-800 text-red-300'
+                ? 'bg-emerald-950/40 border-emerald-800 text-emerald-300'
+                : 'bg-red-950/60 border-red-800 text-red-300'
                 }`}>
                 {displayMessage}
               </div>
@@ -277,5 +277,17 @@ export default function LoginPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-400">
+        Loading...
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
