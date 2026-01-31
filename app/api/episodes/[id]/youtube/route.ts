@@ -4,7 +4,7 @@ import { createSupabaseServerClient } from '@/lib/supabaseServer';
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const supabase = await createSupabaseServerClient();
 
@@ -16,7 +16,7 @@ export async function POST(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { id } = params;
+  const { id } = await params;
 
   const contentType = req.headers.get('content-type') ?? '';
   let youtubeVideoId: string | null = null;
