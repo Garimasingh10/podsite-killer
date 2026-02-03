@@ -73,7 +73,8 @@ export default async function proxy(request: NextRequest) {
                 `Path=${options?.path ?? '/'}`,
                 'SameSite=Lax',
                 `Max-Age=${options?.maxAge ?? 3600}`,
-            ].join('; ');
+                process.env.NODE_ENV === 'production' ? 'Secure' : '',
+            ].filter(Boolean).join('; ');
             response.headers.append('Set-Cookie', cookieStr);
         });
     }
