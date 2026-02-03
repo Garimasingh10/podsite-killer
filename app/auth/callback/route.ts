@@ -33,7 +33,7 @@ export async function GET(request: Request) {
             cookieStore.set(name, value, {
               ...options,
               path: '/',
-              secure: false,
+              secure: process.env.NODE_ENV === 'production',
               sameSite: 'lax',
             });
           });
@@ -66,7 +66,7 @@ export async function GET(request: Request) {
           <script>
             console.log('HTML Bridge - Setting cookies...');
             ${pendingCookies.map(c => `
-              document.cookie = "${c.name}=${c.value}; Path=/; SameSite=Lax; Max-Age=${c.options?.maxAge ?? 3600}";
+              document.cookie = "${c.name}=${c.value}; Path=/; SameSite=Lax; Max-Age=${c.options?.maxAge ?? 3600}${process.env.NODE_ENV === 'production' ? '; Secure' : ''}";
             `).join('')}
             console.log('HTML Bridge - Done. Redirecting to ${next}');
             window.location.href = "${next}";
@@ -82,7 +82,7 @@ export async function GET(request: Request) {
       // Still staple to headers as a fallback
       ...Object.fromEntries(pendingCookies.map(c => [
         'Set-Cookie',
-        `${c.name}=${c.value}; Path=/; SameSite=Lax; Max-Age=${c.options?.maxAge ?? 3600}`
+        `${c.name}=${c.value}; Path=/; SameSite=Lax; Max-Age=${c.options?.maxAge ?? 3600}${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`
       ]))
     },
   });

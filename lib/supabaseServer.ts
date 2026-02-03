@@ -21,7 +21,7 @@ export async function createSupabaseServerClient() {
                 await cookieStore.set(name, value, {
                   ...options,
                   path: '/',
-                  secure: false,
+                  secure: process.env.NODE_ENV === 'production',
                   sameSite: 'lax',
                 });
               })

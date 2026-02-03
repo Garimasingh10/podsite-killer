@@ -9,7 +9,7 @@ export function createSupabaseBrowserClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookieOptions: {
-        secure: false, // Required for localhost
+        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production (HTTPS)
         sameSite: 'lax',
         path: '/',
       }
