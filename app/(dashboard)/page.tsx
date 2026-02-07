@@ -40,7 +40,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
     .order('created_at', { ascending: false });
 
   if (q) {
-    queryBuilder = queryBuilder.ilike('title', `%${q}%`);
+    queryBuilder = queryBuilder.or(`title.ilike.%${q}%,rss_url.ilike.%${q}%`);
   }
 
   const { data: podcasts } = await queryBuilder;
@@ -178,15 +178,26 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 
             {rows.length === 0 ? (
               <div className="mt-5 rounded-xl border border-dashed border-slate-700 bg-slate-950/70 px-4 py-6 text-center">
-                <p className="text-sm text-slate-200">No podcasts yet.</p>
-                <p className="mt-2 text-xs text-slate-500">
-                  Paste an RSS feed (for example{' '}
-                  <span className="font-mono text-sky-400">
-                    https://feeds.simplecast.com/Sl5CSM3S
-                  </span>
-                  ) into <span className="font-medium text-sky-400">New podcast</span> to
-                  create your first site.
+                <p className="text-sm text-slate-200">
+                  {q ? `No matches for "${q}"` : 'No podcasts yet.'}
                 </p>
+                {q && (q.startsWith('http://') || q.startsWith('https://')) ? (
+                  <div className="mt-4">
+                    <p className="text-xs text-slate-400 mb-3">
+                      This looks like a new podcast feed.
+                    </p>
+                    <NewPodcastForm initialRss={q} />
+                  </div>
+                ) : (
+                  <p className="mt-2 text-xs text-slate-500">
+                    Paste an RSS feed (for example{' '}
+                    <span className="font-mono text-sky-400">
+                      https://feeds.simplecast.com/Sl5CSM3S
+                    </span>
+                    ) into <span className="font-medium text-sky-400">New podcast</span> to
+                    create your first site.
+                  </p>
+                )}
               </div>
             ) : (
               <ul className="mt-4 space-y-3">

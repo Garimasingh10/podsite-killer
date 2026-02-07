@@ -1,80 +1,59 @@
 'use server';
 
-import Parser from 'rss-parser';
-import { createSupabaseServerClient } from '@/lib/supabaseServer';
-
-type EpisodeItem = {
-  guid?: string;
-  title?: string;
-  link?: string;
-  enclosure?: { url?: string };
-  'content:encoded'?: string;
-  content?: string;
-  isoDate?: string;
-  pubDate?: string;
-};
+import { createSupabaseServerClient } from '../../../lib/supabaseServer';
+import { parseRss } from '../../../lib/rss/parseRss';
+import { slugify } from '../../../lib/utils/slugify';
 
 export async function syncRssAction(podcastId: string) {
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: authData } = await supabase.auth.getUser();
+  const user = authData?.user;
 
-  if (!user) return;
+  if (!user) {
+    console.error('syncRssAction: No user session found');
+    return;
+  }
 
   const { data: podcast, error: podcastError } = await supabase
     .from('podcasts')
     .select('id, rss_url, owner_id')
     .eq('id', podcastId)
     .eq('owner_id', user.id)
-    .single();
+    .maybeSingle();
 
   if (podcastError || !podcast || !podcast.rss_url) {
-    console.error('syncRssAction podcast error', podcastError);
+    console.error('syncRssAction: Podcast not found or unauthorized', podcastError);
     return;
   }
 
-  const parser = new Parser();
-  const feed = await parser.parseURL(podcast.rss_url);
+  try {
+    const parsed = await parseRss(podcast.rss_url);
 
-  const items = (feed.items as EpisodeItem[]) ?? [];
+    for (const ep of parsed.episodes) {
+      if (!ep.guid) continue;
 
-  for (const item of items) {
-    const guid = item.guid || item.link || item.title;
-    if (!guid) continue;
+      const slug = slugify(ep.title || ep.guid);
 
-    const audioUrl = item.enclosure?.url ?? null;
-    const description =
-      (item as any)['content:encoded'] || item.content || null;
-    const title = item.title ?? '(Untitled episode)';
-    const publishedAt = item.isoDate || item.pubDate || null;
-
-    const { data: existing } = await supabase
-      .from('episodes')
-      .select('id')
-      .eq('podcast_id', podcast.id)
-      .eq('guid', guid)
-      .maybeSingle();
-
-    if (existing) {
-      await supabase
-        .from('episodes')
-        .update({
-          title,
-          description,
-          audio_url: audioUrl,
-          published_at: publishedAt,
-        })
-        .eq('id', existing.id);
-    } else {
-      await supabase.from('episodes').insert({
+      const { error: upsertError } = await supabase.from('episodes').upsert({
         podcast_id: podcast.id,
-        guid,
-        title,
-        description,
-        audio_url: audioUrl,
-        published_at: publishedAt,
-      });
+        guid: ep.guid,
+        slug,
+        title: ep.title,
+        description: ep.description,
+        audio_url: ep.audio_url,
+        image_url: ep.episode_image_url,
+        published_at: ep.publish_date,
+        duration_seconds: ep.duration_seconds,
+      }, { onConflict: 'podcast_id,guid' });
+
+      if (upsertError) {
+        console.warn(`[Sync] Failed upsert for ${ep.guid}:`, upsertError.message);
+      }
     }
+
+    console.log(`[Sync] Completed for ${podcast.id}: ${parsed.episodes.length} items.`);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('syncRssAction exception:', message);
   }
 }

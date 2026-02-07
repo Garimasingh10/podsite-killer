@@ -89,17 +89,42 @@ export default async function DashboardPage({ searchParams }: PageProps) {
         </div>
       </section>
 
-      {!hasPodcasts && !q && (
+      {!hasPodcasts && (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-800 bg-slate-950/50 py-20 text-center">
-          <div className="rounded-full bg-slate-900 p-4">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-8 w-8 text-slate-700">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
-            </svg>
-          </div>
-          <h3 className="mt-4 text-lg font-medium text-slate-200">No podcasts yet</h3>
-          <p className="mt-1 max-w-sm text-sm text-slate-500">
-            Import your first RSS feed using the form above to generate your site.
-          </p>
+          {q && (q.startsWith('http://') || q.startsWith('https://')) ? (
+            <div className="max-w-md animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <div className="mb-4 flex justify-center">
+                <div className="rounded-full bg-sky-500/10 p-4 ring-1 ring-sky-500/20">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-8 w-8 text-sky-400">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-white">Import this Podcast?</h3>
+              <p className="mt-2 text-sm text-slate-400">
+                "{q}" isn't in your library yet. We can import it and sync all episodes instantly.
+              </p>
+              <div className="mt-6">
+                <NewPodcastForm initialRss={q} />
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="rounded-full bg-slate-900 p-4">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-8 w-8 text-slate-700">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                </svg>
+              </div>
+              <h3 className="mt-4 text-lg font-medium text-slate-200">
+                {q ? `No matches for "${q}"` : 'No podcasts yet'}
+              </h3>
+              <p className="mt-1 max-w-sm text-sm text-slate-500">
+                {q
+                  ? 'Try a different search term or paste an RSS URL to import a new show.'
+                  : 'Import your first RSS feed using the form above to generate your site.'}
+              </p>
+            </>
+          )}
         </div>
       )}
 

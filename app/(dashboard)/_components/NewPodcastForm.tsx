@@ -4,8 +4,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export function NewPodcastForm() {
-  const [rssUrl, setRssUrl] = useState('');
+export function NewPodcastForm({ initialRss = '' }: { initialRss?: string }) {
+  const [rssUrl, setRssUrl] = useState(initialRss);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const router = useRouter();

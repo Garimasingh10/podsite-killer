@@ -1,13 +1,9 @@
 // app/api/podcasts/import/route.ts
 import { NextResponse } from 'next/server';
-import Parser from 'rss-parser';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
-
-const parser = new Parser({
-  customFields: {
-    item: [['content:encoded', 'contentEncoded']],
-  },
-});
+import { parseRss } from '@/lib/rss/parseRss';
+import { slugify } from '@/lib/utils/slugify';
+import { extractColorsFromImage } from '@/lib/utils/colorUtils';
 
 export async function POST(req: Request) {
   const supabase = await createSupabaseServerClient();
@@ -29,23 +25,45 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'rssUrl required' }, { status: 400 });
   }
 
-  let feed;
+  let parsed;
   try {
-    feed = await parser.parseURL(rssUrl);
+    parsed = await parseRss(rssUrl);
   } catch (err: any) {
-    console.error('Failed to fetch/parse RSS', err);
+    console.error('Failed to parse RSS', err);
     return NextResponse.json(
-      { error: `Failed to fetch/parse RSS: ${err?.message}`, details: err?.message },
+      { error: `Failed to fetch/parse RSS: ${err?.message}` },
       { status: 400 },
     );
   }
 
-  const podcastTitle = feed.title || 'Untitled podcast';
-  const podcastDescription = feed.description || '';
-  const podcastImage =
-    (feed as any).image?.url ||
-    (feed as any)['itunes:image']?.href ||
-    null;
+  // 1. EXTRACT COLORS for "Magic Onboarding" (Milestone 2.2)
+  let themeConfig = {
+    primaryColor: '#0ea5e9',
+    backgroundColor: '#0f172a',
+    foregroundColor: '#f8fafc',
+    accentColor: '#22c55e',
+    borderColor: '#334155',
+    layout: 'netflix',
+  };
+
+  if (parsed.image) {
+    try {
+      const extracted = await extractColorsFromImage(parsed.image);
+      themeConfig = {
+        ...themeConfig,
+        primaryColor: extracted.primary,
+        backgroundColor: extracted.background,
+        foregroundColor: extracted.foreground,
+        accentColor: extracted.accent,
+        borderColor: extracted.border,
+      };
+    } catch (e) {
+      console.warn('Color extraction failed during import', e);
+    }
+  }
+
+  // YouTube detection is now handled by parseRss lib
+  const detectedYtId = parsed.youtube_channel_id;
 
   // Check if THIS USER already has this podcast
   const { data: existingPodcast } = await supabase
@@ -58,49 +76,40 @@ export async function POST(req: Request) {
   let podcast;
   let podcastError;
 
+  const podcastData = {
+    owner_id: user.id,
+    title: parsed.title || 'Untitled podcast',
+    description: parsed.description || '',
+    rss_url: rssUrl,
+    image_url: parsed.image,
+    primary_color: themeConfig.primaryColor,
+    accent_color: themeConfig.accentColor,
+    youtube_channel_id: detectedYtId,
+    theme_config: themeConfig,
+    page_layout: ['hero', 'shorts', 'subscribe', 'grid', 'host'],
+  };
+
   if (existingPodcast) {
-    // Update existing
     const { data, error } = await supabase
       .from('podcasts')
-      .update({
-        title: podcastTitle,
-        description: podcastDescription,
-        primary_color: '#0ea5e9',
-        accent_color: '#22c55e',
-      })
+      .update(podcastData)
       .eq('id', existingPodcast.id)
       .select()
       .single();
     podcast = data;
     podcastError = error;
   } else {
-    // Insert new
     const { data: inserted, error: insertError } = await supabase
       .from('podcasts')
-      .insert({
-        owner_id: user.id,
-        title: podcastTitle,
-        description: podcastDescription,
-        primary_color: '#0ea5e9',
-        accent_color: '#22c55e',
-        rss_url: rssUrl,
-      })
+      .insert(podcastData)
       .select()
       .single();
-
-    if (insertError?.code === '23505') {
-      return NextResponse.json(
-        { error: 'Database Restriction: The system is blocking duplicates. Please run the SQL migration I provided to allow multiple users to own the same feed.', code: 'DB_CONSTRAINT' },
-        { status: 409 }
-      );
-    }
 
     podcast = inserted;
     podcastError = insertError;
   }
 
   if (podcastError || !podcast) {
-    console.error('podcast upsert error', podcastError);
     return NextResponse.json(
       { error: podcastError?.message ?? 'Error upserting podcast' },
       { status: 500 },
@@ -108,64 +117,36 @@ export async function POST(req: Request) {
   }
 
   let episodesProcessed = 0;
+  // We limit to 150 episodes for performance
+  const episodesToProcess = parsed.episodes.slice(0, 150);
 
-  // LIMIT: avoid super long imports on huge feeds
-  const items = (feed.items ?? []).slice(0, 150);
-
-  for (const item of items) {
-    const guid = item.guid || item.link || item.title;
-    if (!guid) continue;
-
-    const slug = String(guid)
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-
-    const enclosure = item.enclosure as { url?: string } | undefined;
-    const audioUrl = enclosure?.url || null;
-    const description =
-      (item as any).contentEncoded ||
-      item.content ||
-      item.contentSnippet ||
-      '';
-    const imageUrl =
-      (item as any)['itunes:image']?.href ||
-      (item as any).image?.url ||
-      (feed as any).image?.url ||
-      null;
-    const publishedAt = item.isoDate
-      ? new Date(item.isoDate).toISOString()
-      : null;
+  for (const ep of episodesToProcess) {
+    const guid = ep.guid;
+    const slug = slugify(ep.title || guid);
 
     const { error } = await supabase.from('episodes').upsert(
       {
         podcast_id: podcast.id,
         guid,
         slug,
-        title: item.title || '(Untitled)',
-        description,
-        audio_url: audioUrl,
-        image_url: imageUrl,
-        published_at: publishedAt,
+        title: ep.title,
+        description: ep.description,
+        audio_url: ep.audio_url,
+        image_url: ep.episode_image_url,
+        published_at: ep.publish_date,
+        duration_seconds: ep.duration_seconds,
       },
       { onConflict: 'podcast_id,guid' },
     );
 
-    if (!error) {
-      episodesProcessed += 1;
-    } else {
-      console.error('episode upsert error', error, {
-        podcastId: podcast.id,
-        guid,
-      });
-    }
+    if (!error) episodesProcessed += 1;
   }
 
   return NextResponse.json({
     ok: true,
     podcastId: podcast.id,
     episodesProcessed,
-    feedItems: feed.items?.length ?? 0,
-    processedLimit: items.length,
+    totalItems: parsed.episodes.length,
+    theme: themeConfig,
   });
 }

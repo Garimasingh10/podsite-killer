@@ -27,10 +27,31 @@ type ParsedEpisode = {
   episode_image_url: string | null;
 };
 
-export async function parseRss(url: string): Promise<{
+// Helper to fetch XML using global fetch (handles protocols and redirects automatically)
+async function fetchXml(url: string): Promise<string> {
+  console.log(`[RSS V4] Fetching via global.fetch: ${url}`);
+
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (compatible; PodSiteKiller/1.0; +http://localhost:3000)',
+      'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+  }
+
+  return await response.text();
+}
+
+export async function parseRss(
+  rawUrl: string,
+): Promise<{
   title: string | null;
   description: string | null;
   image: string | null;
+  youtube_channel_id: string | null;
   episodes: ParsedEpisode[];
 }> {
   const parser: Parser<any, RssItem> = new Parser({
@@ -43,7 +64,35 @@ export async function parseRss(url: string): Promise<{
     },
   });
 
-  const feed = await parser.parseURL(url);
+  // 1) Normalize raw user input
+  let url = rawUrl.trim();
+  if (!/^https?:\/\//i.test(url)) {
+    url = 'https://' + url;
+  }
+
+  const cleanUrl = url
+    .replace(/ /g, '%20')
+    .replace(/"/g, '%22')
+    .replace(/`/g, '%60')
+    .replace(/</g, '%3C')
+    .replace(/>/g, '%3E')
+    .replace(/\[/g, '%5B')
+    .replace(/\]/g, '%5D')
+    .replace(/\{/g, '%7B')
+    .replace(/\}/g, '%7D')
+    .replace(/\|/g, '%7C')
+    .replace(/\^/g, '%5E')
+    .replace(/\\/g, '%5C');
+
+  let xml = '';
+  try {
+    xml = await fetchXml(cleanUrl);
+  } catch (err: any) {
+    console.error('RSS Native Fetch Error:', err);
+    throw new Error(`Failed to fetch RSS: ${err.message || err}`);
+  }
+
+  const feed = await parser.parseString(xml);
 
   const title = feed.title ?? null;
   const description = (feed.description as string | undefined) ?? null;
@@ -52,12 +101,22 @@ export async function parseRss(url: string): Promise<{
     (feed.itunes?.image as string | undefined) ??
     null;
 
+  // AUTO-DETECT YouTube Channel ID from feed description/link
+  const feedLink = (feed as any).link || '';
+  const searchText = ((description || '') + ' ' + (feedLink || '')).toLowerCase();
+  const channelMatch = searchText.match(/youtube\.com\/(channel|c)\/([a-z0-9_-]+)/i);
+  const handleMatch = searchText.match(/youtube\.com\/@([a-z0-9_-]+)/i);
+
+  let detectedYtId: string | null = null;
+  if (channelMatch && channelMatch[2]) detectedYtId = channelMatch[2];
+  else if (handleMatch && handleMatch[1]) detectedYtId = '@' + handleMatch[1];
+
   const episodes: ParsedEpisode[] = (feed.items ?? []).map((item: RssItem) => {
+    // ... same as before ...
     const guid =
       item.guid ||
       item.link ||
       item.title ||
-      // last‑chance fallback, but usually guid/link/title exist
       crypto.randomUUID();
 
     const desc =
@@ -68,13 +127,21 @@ export async function parseRss(url: string): Promise<{
     const enclosureUrl = item.enclosure?.url ?? null;
     const publishDate = (item.isoDate || item.pubDate) ?? null;
 
-    // duration: from itunes:duration or custom field
+    // Sanity check for future dates
+    if (publishDate) {
+      const d = new Date(publishDate);
+      const now = new Date();
+      if (d.getTime() > now.getTime() + 1000 * 60 * 60 * 24 * 30) {
+        console.warn(`[RSS Warning] Episode "${item.title}" has a date far in the future: ${publishDate}. Check if system clock is correct!`);
+      }
+    }
+
     const durationStr =
       (item as any).itunes_duration ||
       (item.itunes as any)?.duration ||
       null;
-    let durationSeconds: number | null = null;
 
+    let durationSeconds: number | null = null;
     if (durationStr && typeof durationStr === 'string') {
       const parts = durationStr.split(':').map((p) => parseInt(p, 10));
       if (parts.every((n) => !Number.isNaN(n))) {
@@ -104,5 +171,5 @@ export async function parseRss(url: string): Promise<{
     };
   });
 
-  return { title, description, image, episodes };
+  return { title, description, image, youtube_channel_id: detectedYtId, episodes };
 }

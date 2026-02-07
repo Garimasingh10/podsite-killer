@@ -79,6 +79,9 @@ function LoginContent() {
         redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(
           DASHBOARD,
         )}`,
+        queryParams: {
+          prompt: 'select_account',
+        },
       },
     });
 

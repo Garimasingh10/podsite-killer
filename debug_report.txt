@@ -1,0 +1,24 @@
+--- Debugging Sync ---
+1. Fetching RSS...
+   Found 31 episodes.
+
+2. Fetching YouTube...
+   Found 50 videos.
+
+3. Matching (First Episode Only)...
+Target Ep: "When Anesthesia Fails and the Patient Is Cut Open" (2026-02-06T10:45:00.000Z)
+[Sync Debug] Ep: "When Anesthesia Fails and the Patient Is Cut Open" vs Video: "Our Photographer Describes the Scene After the Pretti Shooting" | Sim: 0.16 | DateMatch: false (2026-02-06T10:45:00.000Z vs 2026-01-26T16:15:10Z)
+[Sync Debug] Ep: "When Anesthesia Fails and the Patient Is Cut Open" vs Video: "What Does the FBI Raid in Georgia Mean for Elections?" | Sim: 0.08 | DateMatch: true (2026-02-06T10:45:00.000Z vs 2026-02-04T23:30:01Z)
+[Sync Debug] Ep: "When Anesthesia Fails and the Patient Is Cut Open" vs Video: "Will the ICE Agent Who Shot Renee Good Be Prosecuted?" | Sim: 0.08 | DateMatch: false (2026-02-06T10:45:00.000Z vs 2026-01-17T18:00:13Z)
+[Sync Debug] Ep: "When Anesthesia Fails and the Patient Is Cut Open" vs Video: "ICE Agent Tries to Enter Ecuadoran Consulate in Minneapolis" | Sim: 0.07 | DateMatch: false (2026-02-06T10:45:00.000Z vs 2026-01-29T04:11:00Z)
+[Sync Debug] Ep: "When Anesthesia Fails and the Patient Is Cut Open" vs Video: "Latest Batch of Epstein Files Has Emails From Prominent Men" | Sim: 0.07 | DateMatch: false (2026-02-06T10:45:00.000Z vs 2026-02-03T14:35:01Z)
+[Sync Debug] No match found for episode: "When Anesthesia Fails and the Patient Is Cut Open"
+Wrote debug_titles.json
+
+Matched: 0
+No match found for the first episode. Checking top 5 video candidates manually:
+- Video: "How Is Security Different at These Olympic Games?" (2026-02-07T02:05:03Z)
+- Video: "Why the Trump EEOC Is Investigating Nike" (2026-02-06T21:20:00Z)
+- Video: "Is the Nuclear Arms Control Era Over?" (2026-02-06T17:47:00Z)
+- Video: "How We Know Iran Crushed Protests with Lethal Force" (2026-02-06T00:35:01Z)
+- Video: "Savannah Guthrie and Siblings Plead for Mother’s Release" (2026-02-05T16:13:00Z)
