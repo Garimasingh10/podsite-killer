@@ -1,6 +1,0 @@
-Starting checkPhase2...
-Using URL: https://yameixbeesqlctieqvgk.supabase.co
-Using Key (first 10 chars): eyJhbGciOi
-QueryResult podcasts: 0
-PODCASTS FOUND: 0
-PODCASTS DATA:
