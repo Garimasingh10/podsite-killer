@@ -1,8 +1,9 @@
+// components/EpisodePlayer.tsx
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
 import FloatingPlayer from './FloatingPlayer';
-import { Play, Video, Headphones, Clock } from 'lucide-react';
+import { Play, Pause, Video, Headphones, Clock, X } from 'lucide-react';
 
 interface EpisodePlayerProps {
     youtubeVideoId?: string | null;
@@ -15,9 +16,76 @@ interface EpisodePlayerProps {
 export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, description, podcastId }: EpisodePlayerProps) {
     const [mode, setMode] = useState<'video' | 'audio'>(youtubeVideoId ? 'video' : 'audio');
     const audioRef = useRef<HTMLAudioElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
     const [processedDescription, setProcessedDescription] = useState<string>(description);
+    const [isSticky, setIsSticky] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
 
     const hasBoth = !!(youtubeVideoId && audioUrl);
+
+    // Intersection Observer for Sticky Mode
+    useEffect(() => {
+        if (mode !== 'audio') {
+            setIsSticky(false);
+            return;
+        }
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                // If the player container is NOT intersecting (scrolled out of view)
+                // AND we are in audio mode, show the sticky player
+                setIsSticky(!entry.isIntersecting && entry.boundingClientRect.top < 0);
+            },
+            { threshold: 0.1, rootMargin: '-100px 0px 0px 0px' }
+        );
+
+        if (containerRef.current) {
+            observer.observe(containerRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, [mode]);
+
+    // Sync Audio State
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        const updateState = () => {
+            setCurrentTime(audio.currentTime);
+            setDuration(audio.duration || 0);
+            setIsPlaying(!audio.paused);
+        };
+
+        audio.addEventListener('timeupdate', updateState);
+        audio.addEventListener('play', updateState);
+        audio.addEventListener('pause', updateState);
+        audio.addEventListener('loadedmetadata', updateState);
+
+        return () => {
+            audio.removeEventListener('timeupdate', updateState);
+            audio.removeEventListener('play', updateState);
+            audio.removeEventListener('pause', updateState);
+            audio.removeEventListener('loadedmetadata', updateState);
+        };
+    }, [mode]);
+
+    const togglePlay = () => {
+        if (audioRef.current) {
+            if (isPlaying) audioRef.current.pause();
+            else audioRef.current.play();
+        }
+    };
+
+    const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const time = parseFloat(e.target.value);
+        if (audioRef.current) {
+            audioRef.current.currentTime = time;
+            setCurrentTime(time);
+        }
+    };
 
     // Function to seek both players
     const seekTo = (seconds: number) => {
@@ -25,9 +93,6 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
             audioRef.current.currentTime = seconds;
             audioRef.current.play();
         } else if (mode === 'video') {
-            // For TouTube, we currently use an iframe. 
-            // The simplest "Killer" way to jump is to reload the iframe source with ?t=
-            // In a more advanced version, we'd use the YT JS API, but this is a solid "Phase 2" MVP jump.
             const iframe = document.querySelector('iframe');
             if (iframe) {
                 const currentSrc = new URL(iframe.src);
@@ -48,7 +113,6 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
             } else {
                 seconds = parts[0] * 60 + parts[1];
             }
-            // Use a data attribute we can catch with a click listener
             return `<button data-timestamp="${seconds}" class="timestamp-link text-primary font-mono font-bold hover:underline cursor-pointer bg-primary/5 px-1.5 py-0.5 rounded border border-primary/20 transition-all hover:bg-primary/10 inline-flex items-center gap-1 mx-0.5">
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 ${match}
@@ -60,13 +124,18 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
         setProcessedDescription(parseTimestamps(description));
     }, [description]);
 
-    // Handle clicks on generated buttons
     const handleDescClick = (e: React.MouseEvent) => {
         const target = (e.target as HTMLElement).closest('[data-timestamp]');
         if (target) {
             const seconds = parseInt(target.getAttribute('data-timestamp') || '0');
             seekTo(seconds);
         }
+    };
+
+    const formatTime = (time: number) => {
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60);
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     };
 
     return (
@@ -94,7 +163,7 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
             )}
 
             {/* Main Player Area */}
-            <div className="relative">
+            <div ref={containerRef} className="relative min-h-[200px]">
                 {mode === 'video' && youtubeVideoId && (
                     <div className="animate-in fade-in zoom-in-95 duration-500">
                         <FloatingPlayer youtubeVideoId={youtubeVideoId} title={title} />
@@ -123,6 +192,43 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
                     </div>
                 )}
             </div>
+
+            {/* Sticky Audio Player */}
+            {isSticky && mode === 'audio' && (
+                <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-800 bg-slate-950/90 p-4 backdrop-blur-lg animate-in slide-in-from-bottom-full duration-300">
+                    <div className="mx-auto flex max-w-4xl items-center gap-4">
+                        <button
+                            onClick={togglePlay}
+                            className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+                        >
+                            {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-1" />}
+                        </button>
+
+                        <div className="flex-1 space-y-1">
+                            <h4 className="line-clamp-1 text-sm font-bold text-white">{title}</h4>
+                            <div className="flex items-center gap-3 text-xs text-slate-400">
+                                <span>{formatTime(currentTime)}</span>
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max={duration || 100}
+                                    value={currentTime}
+                                    onChange={handleSeek}
+                                    className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-slate-800 accent-primary"
+                                />
+                                <span>{formatTime(duration)}</span>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={() => setIsSticky(false)}
+                            className="hidden sm:flex h-8 w-8 items-center justify-center rounded-full text-slate-500 hover:bg-slate-800 hover:text-white"
+                        >
+                            <X size={16} />
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Description / Show Notes */}
             <section className="prose prose-invert max-w-none rounded-2xl border border-slate-800/50 bg-slate-900/20 p-8 backdrop-blur-sm">
