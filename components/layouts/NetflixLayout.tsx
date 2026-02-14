@@ -61,51 +61,7 @@ export default function NetflixLayout({ children, podcast }: NetflixLayoutProps)
                     )}
                 </header>
 
-                {/* Huge Netflix Hero */}
-                <section className="relative h-[90vh] w-full overflow-hidden">
-                    {podcast.latest_video_id ? (
-                        <div className="absolute inset-0 z-0">
-                            <iframe
-                                className="h-full w-full object-cover opacity-80"
-                                src={`https://www.youtube.com/embed/${podcast.latest_video_id}?autoplay=1&mute=1&controls=0&loop=1&playlist=${podcast.latest_video_id}&showinfo=0&rel=0&iv_load_policy=3&disablekb=1`}
-                                allow="autoplay; encrypted-media"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-                            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black to-transparent" />
-                        </div>
-                    ) : podcast.image && (
-                        <div className="absolute inset-0">
-                            <img
-                                src={podcast.image}
-                                alt={podcast.title}
-                                className="h-full w-full object-cover opacity-60"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-                            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black to-transparent" />
-                        </div>
-                    )}
-                    <div className="relative z-10 flex h-full flex-col justify-end px-8 pb-32 md:px-16">
-                        <span className="mb-2 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.4em] text-primary">
-                            <Headphones size={14} /> NEW EPISODE OUT NOW
-                        </span>
-                        <h1 className="mb-4 text-6xl font-black tracking-tighter md:text-8xl lg:text-[10rem] leading-[0.85] uppercase italic">
-                            {podcast.title}
-                        </h1>
-                        <p className="max-w-2xl text-xl text-zinc-300 font-medium line-clamp-3">
-                            {podcast.description}
-                        </p>
-                        <div className="mt-10 flex gap-4">
-                            <button className="rounded-sm bg-white px-10 py-4 text-lg font-black uppercase tracking-tight text-black transition-transform hover:scale-105 active:scale-95 shadow-2xl">
-                                Watch Latest
-                            </button>
-                            <button className="rounded-sm bg-zinc-600/40 backdrop-blur-md px-10 py-4 text-lg font-black uppercase tracking-tight text-white transition-transform hover:bg-zinc-600/60 active:scale-95">
-                                More Info
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-                <main className="relative z-10 -mt-32 px-8 pb-24 md:px-16">
+                <main className="relative z-10 px-8 pb-24 md:px-16">
                     {children}
                 </main>
             </div>
