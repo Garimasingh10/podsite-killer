@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
@@ -57,9 +58,9 @@ export default function SubstackLayout({ children, podcast }: { children: React.
 
             <main className="mx-auto max-w-2xl px-4 py-16">
                 <div className="mb-12 text-center">
-                    {podcast.image_url && (
+                    {podcast.image && (
                         <img
-                            src={podcast.image_url}
+                            src={podcast.image}
                             alt={podcast.title}
                             className="mx-auto mb-6 h-32 w-32 rounded-lg shadow-xl"
                         />

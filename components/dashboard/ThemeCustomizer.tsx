@@ -32,8 +32,18 @@ export default function ThemeCustomizer({
             .eq('id', podcastId);
 
         if (error) console.error('Error saving theme:', error);
-        setIsSaving(false);
+
+        // Brief timeout to show saving state then clear
+        setTimeout(() => setIsSaving(false), 2000);
     }
+
+    const presets = [
+        { name: 'Midnight', primary: '#0ea5e9', accent: '#38bdf8' },
+        { name: 'Emerald', primary: '#10b981', accent: '#34d399' },
+        { name: 'Sunset', primary: '#f43f5e', accent: '#fb7185' },
+        { name: 'Violet', primary: '#8b5cf6', accent: '#a78bfa' },
+        { name: 'Amber', primary: '#f59e0b', accent: '#fbbf24' },
+    ];
 
     async function handleMagicTheme() {
         if (!imageUrl) return;
@@ -83,8 +93,8 @@ export default function ThemeCustomizer({
                             key={l.id}
                             onClick={() => updateConfig({ layout: l.id as any })}
                             className={`flex flex-col items-start rounded-xl border-2 p-4 text-left transition-all ${config.layout === l.id
-                                    ? 'border-primary bg-primary/10'
-                                    : 'border-slate-800 bg-slate-950 hover:border-slate-700'
+                                ? 'border-primary bg-primary/10'
+                                : 'border-slate-800 bg-slate-950 hover:border-slate-700'
                                 }`}
                         >
                             <Layout size={20} className="mb-2 text-primary" />
@@ -96,43 +106,64 @@ export default function ThemeCustomizer({
             </div>
 
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                <div className="space-y-4">
-                    <h4 className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-slate-500">
-                        <Palette size={14} /> Colors
-                    </h4>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-xs text-slate-400">Primary Color</label>
-                            <div className="flex gap-2">
-                                <input
-                                    type="color"
-                                    value={config.primaryColor || '#0ea5e9'}
-                                    onChange={(e) => updateConfig({ primaryColor: e.target.value })}
-                                    className="h-8 w-8 cursor-pointer rounded bg-transparent"
-                                />
-                                <input
-                                    type="text"
-                                    value={config.primaryColor || '#0ea5e9'}
-                                    onChange={(e) => updateConfig({ primaryColor: e.target.value })}
-                                    className="flex-1 rounded border border-slate-800 bg-slate-900 px-2 py-1 text-xs text-white"
-                                />
-                            </div>
+                <div className="space-y-6">
+                    <div>
+                        <h4 className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-slate-500 mb-4">
+                            <Palette size={14} /> Color Presets
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                            {presets.map((p) => (
+                                <button
+                                    key={p.name}
+                                    onClick={() => updateConfig({ primaryColor: p.primary, accentColor: p.accent })}
+                                    className="group flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-300 transition-all hover:border-slate-600 hover:text-white"
+                                >
+                                    <div
+                                        className="h-3 w-3 rounded-full"
+                                        style={{ backgroundColor: p.primary }}
+                                    />
+                                    {p.name}
+                                </button>
+                            ))}
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-xs text-slate-400">Accent Color</label>
-                            <div className="flex gap-2">
-                                <input
-                                    type="color"
-                                    value={config.accentColor || '#f59e0b'}
-                                    onChange={(e) => updateConfig({ accentColor: e.target.value })}
-                                    className="h-8 w-8 cursor-pointer rounded bg-transparent"
-                                />
-                                <input
-                                    type="text"
-                                    value={config.accentColor || '#f59e0b'}
-                                    onChange={(e) => updateConfig({ accentColor: e.target.value })}
-                                    className="flex-1 rounded border border-slate-800 bg-slate-900 px-2 py-1 text-xs text-white"
-                                />
+                    </div>
+
+                    <div className="space-y-4">
+                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-600">Custom Colors</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-xs text-slate-400">Primary Color</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="color"
+                                        value={config.primaryColor || '#0ea5e9'}
+                                        onChange={(e) => updateConfig({ primaryColor: e.target.value })}
+                                        className="h-8 w-8 cursor-pointer rounded bg-transparent"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={config.primaryColor || '#0ea5e9'}
+                                        onChange={(e) => updateConfig({ primaryColor: e.target.value })}
+                                        className="flex-1 rounded border border-slate-800 bg-slate-900 px-2 py-1 text-xs text-white"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs text-slate-400">Accent Color</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="color"
+                                        value={config.accentColor || '#f59e0b'}
+                                        onChange={(e) => updateConfig({ accentColor: e.target.value })}
+                                        className="h-8 w-8 cursor-pointer rounded bg-transparent"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={config.accentColor || '#f59e0b'}
+                                        onChange={(e) => updateConfig({ accentColor: e.target.value })}
+                                        className="flex-1 rounded border border-slate-800 bg-slate-900 px-2 py-1 text-xs text-white"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -150,8 +181,8 @@ export default function ThemeCustomizer({
                                     key={r}
                                     onClick={() => updateConfig({ cornerRadius: r })}
                                     className={`flex-1 rounded-lg border py-2 text-xs font-bold transition-all ${config.cornerRadius === r
-                                            ? 'border-primary bg-primary text-white'
-                                            : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700'
+                                        ? 'border-primary bg-primary text-white'
+                                        : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700'
                                         }`}
                                 >
                                     {r === '0px' ? 'Sharp' : r === '8px' ? 'Rounded' : 'Bubble'}

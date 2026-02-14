@@ -20,9 +20,9 @@ export default function GenZLayout({ children, podcast }: { children: React.Reac
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                 <aside className="lg:col-span-1">
                     <div className="border-4 border-foreground bg-accent p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                        {podcast.image_url && (
+                        {podcast.image && (
                             <img
-                                src={podcast.image_url}
+                                src={podcast.image}
                                 alt={podcast.title}
                                 className="mb-4 w-full border-4 border-foreground grayscale contrast-125"
                             />

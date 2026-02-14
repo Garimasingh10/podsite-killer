@@ -3,6 +3,9 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import ThemeEngine, { ThemeConfig } from '@/components/ThemeEngine';
 import EpisodePlayer from '@/components/EpisodePlayer';
+import NetflixLayout from '@/components/layouts/NetflixLayout';
+import SubstackLayout from '@/components/layouts/SubstackLayout';
+import GenZLayout from '@/components/layouts/GenZLayout';
 
 type PageProps = {
   params: Promise<{ subdomain: string; slug: string }>;
@@ -48,7 +51,7 @@ export default async function EpisodePage({ params }: PageProps) {
 
   const { data: podcast } = await supabase
     .from('podcasts')
-    .select('id, title, theme_config, description')
+    .select('*')
     .eq('id', subdomain)
     .maybeSingle();
 
@@ -66,6 +69,13 @@ export default async function EpisodePage({ params }: PageProps) {
   }
 
   const themeConfig = (podcast.theme_config as unknown as ThemeConfig) || {};
+  const podcastWithImage = { ...podcast, image: themeConfig.imageUrl };
+  const layout = themeConfig.layout || 'netflix';
+
+  const LayoutComponent =
+    layout === 'substack' ? SubstackLayout :
+      layout === 'genz' ? GenZLayout :
+        NetflixLayout;
 
   const { data: episode } = await supabase
     .from('episodes')
@@ -92,28 +102,28 @@ export default async function EpisodePage({ params }: PageProps) {
   return (
     <>
       <ThemeEngine config={themeConfig} />
-      <div className="min-h-screen bg-background text-foreground transition-colors duration-700">
-        <main className="mx-auto max-w-4xl px-6 py-16">
+      <LayoutComponent podcast={podcastWithImage}>
+        <div className="mx-auto max-w-4xl py-12">
           <header className="mb-12">
             <Link
               href={`/${subdomain}`}
-              className="group inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.3em] text-primary hover:opacity-80 transition-all"
+              className="group inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.3em] text-primary hover:opacity-80 transition-all font-sans"
             >
               <span className="transition-transform group-hover:-translate-x-1">←</span>
               {podcast.title}
             </Link>
-            <h1 className="mt-6 text-4xl font-black tracking-tight md:text-6xl leading-[1.1]">
+            <h1 className="mt-6 text-4xl font-black tracking-tight md:text-6xl leading-[1.1] text-foreground">
               {episode.title}
             </h1>
             <div className="mt-6 flex items-center gap-4">
               {episode.published_at && (
-                <p className="text-sm font-medium text-muted-foreground bg-secondary/50 px-3 py-1 rounded-full border border-border/50">
+                <p className="text-sm font-medium text-slate-400 bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700/50">
                   {new Date(episode.published_at).toLocaleDateString(undefined, {
                     dateStyle: 'long'
                   })}
                 </p>
               )}
-              <div className="h-1 w-1 rounded-full bg-border" />
+              <div className="h-1 w-1 rounded-full bg-slate-700" />
               <p className="text-xs font-bold uppercase tracking-widest text-primary/80">
                 Official Site
               </p>
@@ -128,7 +138,7 @@ export default async function EpisodePage({ params }: PageProps) {
             description={episode.description || ''}
           />
 
-          <div className="mt-24 pt-12 border-t border-border/50">
+          <div className="mt-24 pt-12 border-t border-slate-800/50">
             <Link
               href={`/${subdomain}`}
               className="group inline-flex items-center gap-3 text-lg font-black uppercase tracking-tighter text-foreground transition-all hover:text-primary"
@@ -137,8 +147,8 @@ export default async function EpisodePage({ params }: PageProps) {
               <span>Keep Exploring All Episodes</span>
             </Link>
           </div>
-        </main>
-      </div>
+        </div>
+      </LayoutComponent>
     </>
   );
 }

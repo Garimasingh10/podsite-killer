@@ -1,3 +1,4 @@
+'use client';
 // components/layouts/NetflixLayout.tsx
 import React from 'react';
 import Link from 'next/link';
@@ -13,7 +14,7 @@ export default function NetflixLayout({ children, podcast }: { children: React.R
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-8">
                         <Link href={`/${podcast.id}`} className="text-2xl font-black tracking-tighter text-sky-500">
-                            {podcast.title.split(' ').map((s: string) => s[0]).join('')}
+                            {(podcast.title || 'Podcast').split(' ').map((s: string) => s[0]).join('')}
                         </Link>
                         <nav className="hidden gap-6 text-sm font-medium md:flex">
                             <Link href={`/${podcast.id}`} className="hover:text-sky-400">Home</Link>
@@ -71,10 +72,10 @@ export default function NetflixLayout({ children, podcast }: { children: React.R
 
             {/* Netflix Hero */}
             <section className="relative h-[85vh] w-full overflow-hidden">
-                {podcast.image_url && (
+                {podcast.image && (
                     <div className="absolute inset-0">
                         <img
-                            src={podcast.image_url}
+                            src={podcast.image}
                             alt={podcast.title}
                             className="h-full w-full object-cover opacity-50"
                         />
