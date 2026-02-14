@@ -1,9 +1,11 @@
 // components/layouts/NetflixLayout.tsx
 import React from 'react';
 import Link from 'next/link';
-import { Menu, Search, Headphones } from 'lucide-react';
+import { Menu, Search, Headphones, X } from 'lucide-react';
 
 export default function NetflixLayout({ children, podcast }: { children: React.ReactNode, podcast: any }) {
+    const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+
     return (
         <div className="min-h-screen bg-black text-white dark font-sans">
             {/* Nav Bar */}
@@ -21,11 +23,50 @@ export default function NetflixLayout({ children, podcast }: { children: React.R
                     </div>
                     <div className="flex items-center gap-4">
                         <Search size={20} className="hidden md:block" />
-                        <button className="flex h-8 w-8 items-center justify-center rounded-md md:hidden">
-                            <Menu size={24} />
+                        <button
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md md:hidden"
+                        >
+                            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
                     </div>
                 </div>
+
+                {/* Mobile Menu Overlay */}
+                {isMenuOpen && (
+                    <div className="fixed inset-0 top-16 z-40 flex flex-col items-center justify-center gap-8 bg-black/95 backdrop-blur-xl animate-in fade-in slide-in-from-top-4 duration-300 md:hidden">
+                        <nav className="flex flex-col items-center gap-8 text-2xl font-bold">
+                            <Link
+                                href={`/${podcast.id}`}
+                                onClick={() => setIsMenuOpen(false)}
+                                className="hover:text-sky-400"
+                            >
+                                Home
+                            </Link>
+                            <Link
+                                href={`/${podcast.id}/episodes`}
+                                onClick={() => setIsMenuOpen(false)}
+                                className="hover:text-sky-400"
+                            >
+                                Episodes
+                            </Link>
+                            <Link
+                                href="#"
+                                onClick={() => setIsMenuOpen(false)}
+                                className="hover:text-sky-400"
+                            >
+                                About
+                            </Link>
+                        </nav>
+                        <div className="h-px w-24 bg-slate-800" />
+                        <Link
+                            href={`/dashboard`}
+                            className="text-sm font-medium text-slate-500 hover:text-white"
+                        >
+                            Creator Dashboard
+                        </Link>
+                    </div>
+                )}
             </header>
 
             {/* Netflix Hero */}

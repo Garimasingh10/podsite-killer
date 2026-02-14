@@ -11,8 +11,8 @@ export default function GenZLayout({ children, podcast }: { children: React.Reac
                         {podcast.title}
                     </h1>
                     <nav className="flex gap-4">
-                        <Link href={`/${podcast.id}`} className="border-4 border-black bg-white px-4 py-1 font-black uppercase transition-transform hover:-translate-y-1">Home</Link>
-                        <Link href={`/${podcast.id}/episodes`} className="border-4 border-black bg-white px-4 py-1 font-black uppercase transition-transform hover:-translate-y-1">Episodes</Link>
+                        <Link href={`/${podcast.id}`} className="border-4 border-black bg-white px-6 py-3 font-black uppercase transition-transform hover:-translate-y-1">Home</Link>
+                        <Link href={`/${podcast.id}/episodes`} className="border-4 border-black bg-white px-6 py-3 font-black uppercase transition-transform hover:-translate-y-1">Episodes</Link>
                     </nav>
                 </div>
             </header>

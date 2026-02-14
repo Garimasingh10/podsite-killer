@@ -1,8 +1,10 @@
-// components/layouts/SubstackLayout.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { Menu, X } from 'lucide-react';
 
 export default function SubstackLayout({ children, podcast }: { children: React.ReactNode, podcast: any }) {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
     return (
         <div className="min-h-screen bg-[#fff] text-[#171717] selection:bg-primary/30">
             <header className="border-b border-border bg-white/80 backdrop-blur-md sticky top-0 z-50">
@@ -14,10 +16,43 @@ export default function SubstackLayout({ children, podcast }: { children: React.
                             <Link href={`/${podcast.id}/episodes`} className="text-slate-600 hover:text-black transition-colors">Episodes</Link>
                         </nav>
                     </div>
-                    <button className="rounded-full bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity">
-                        Subscribe
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button className="hidden sm:block rounded-full bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity">
+                            Subscribe
+                        </button>
+                        <button
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-slate-100 sm:hidden"
+                        >
+                            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                        </button>
+                    </div>
                 </div>
+
+                {/* Mobile Menu */}
+                {isMenuOpen && (
+                    <div className="border-t border-border bg-white p-4 animate-in slide-in-from-top-2 sm:hidden">
+                        <nav className="flex flex-col gap-4 text-sm font-medium">
+                            <Link
+                                href={`/${podcast.id}`}
+                                onClick={() => setIsMenuOpen(false)}
+                                className="text-slate-600 hover:text-black"
+                            >
+                                Home
+                            </Link>
+                            <Link
+                                href={`/${podcast.id}/episodes`}
+                                onClick={() => setIsMenuOpen(false)}
+                                className="text-slate-600 hover:text-black"
+                            >
+                                Episodes
+                            </Link>
+                            <button className="w-full rounded-lg bg-primary py-2 font-bold text-white">
+                                Subscribe Now
+                            </button>
+                        </nav>
+                    </div>
+                )}
             </header>
 
             <main className="mx-auto max-w-2xl px-4 py-16">
