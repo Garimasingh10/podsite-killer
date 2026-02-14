@@ -81,6 +81,26 @@ export default async function PodcastSettingsPage({ params }: PageProps) {
                         {/* General Settings */}
                         <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-8 backdrop-blur-sm">
                             <h3 className="mb-6 text-xl font-bold text-white">General Information</h3>
+
+                            <div className="mb-8 flex flex-col items-center">
+                                {themeConfig.imageUrl ? (
+                                    <div className="relative group">
+                                        <img
+                                            src={themeConfig.imageUrl}
+                                            alt={podcast.title || 'Podcast Artwork'}
+                                            className="h-40 w-40 rounded-2xl object-cover shadow-2xl border-4 border-slate-800"
+                                        />
+                                        <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
+                                            <span className="text-xs font-bold text-white">Artwork</span>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="flex h-40 w-40 items-center justify-center rounded-2xl border-4 border-dashed border-slate-800 bg-slate-900 text-4xl shadow-inner">
+                                        🎙️
+                                    </div>
+                                )}
+                            </div>
+
                             <div className="space-y-6">
                                 <div>
                                     <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Podcast Title</label>
