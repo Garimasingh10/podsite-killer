@@ -104,50 +104,56 @@ export default async function EpisodePage({ params }: PageProps) {
     <>
       <ThemeEngine config={themeConfig} />
       <LayoutComponent podcast={podcastWithImage}>
-        <div className="mx-auto max-w-4xl py-12">
-          <header className="mb-12">
+        <div className="mx-auto max-w-5xl py-20 px-4">
+          <header className="mb-16">
             <Link
               href={`/${subdomain}`}
-              className="group inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.3em] text-primary hover:opacity-80 transition-all font-sans"
+              className="group mb-8 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-red-600 hover:opacity-80 transition-all"
             >
               <span className="transition-transform group-hover:-translate-x-1">←</span>
-              {podcast.title}
+              Back to {podcast.title}
             </Link>
-            <h1 className="mt-6 text-4xl font-black tracking-tight md:text-6xl leading-[1.1] text-foreground">
+            <h1 className="mt-6 text-5xl font-black italic tracking-tighter md:text-8xl leading-[0.85] uppercase">
               {episode.title}
             </h1>
-            <div className="mt-6 flex items-center gap-4">
+            <div className="mt-8 flex items-center gap-6">
               {episode.published_at && (
-                <p className="text-sm font-medium text-slate-400 bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700/50">
+                <p className="text-sm font-black uppercase tracking-widest text-zinc-500">
                   {new Date(episode.published_at).toLocaleDateString(undefined, {
                     dateStyle: 'long'
                   })}
                 </p>
               )}
-              <div className="h-1 w-1 rounded-full bg-slate-700" />
-              <p className="text-xs font-bold uppercase tracking-widest text-primary/80">
-                Official Site
+              <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />
+              <p className="text-xs font-black uppercase tracking-widest text-zinc-400">
+                Official Release
               </p>
             </div>
           </header>
 
-          <EpisodePlayer
-            podcastId={subdomain}
-            youtubeVideoId={episode.youtube_video_id}
-            audioUrl={episode.audio_url}
-            title={episode.title || 'Untitled'}
-            description={episode.description || ''}
-            primaryColor={themeConfig.primaryColor}
-            accentColor={themeConfig.accentColor}
-          />
+          <div className={
+            layout === 'genz' ? "border-8 border-black shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] bg-white p-4" :
+              layout === 'substack' ? "border border-zinc-100 bg-white" :
+                ""
+          }>
+            <EpisodePlayer
+              podcastId={subdomain}
+              youtubeVideoId={episode.youtube_video_id}
+              audioUrl={episode.audio_url}
+              title={episode.title || 'Untitled'}
+              description={episode.description || ''}
+              primaryColor={themeConfig.primaryColor}
+              accentColor={themeConfig.accentColor}
+            />
+          </div>
 
-          <div className="mt-24 pt-12 border-t border-slate-800/50">
+          <div className="mt-32 pt-16 border-t border-zinc-100/10">
             <Link
               href={`/${subdomain}`}
-              className="group inline-flex items-center gap-3 text-lg font-black uppercase tracking-tighter text-foreground transition-all hover:text-primary"
+              className="group inline-flex items-center gap-4 text-2xl font-black italic uppercase tracking-tighter text-current transition-all hover:text-red-600"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-current transition-transform group-hover:-translate-x-2">←</span>
-              <span>Keep Exploring All Episodes</span>
+              <span className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-current transition-transform group-hover:-translate-x-3">←</span>
+              <span>Keep Exploring {podcast.title}</span>
             </Link>
           </div>
         </div>

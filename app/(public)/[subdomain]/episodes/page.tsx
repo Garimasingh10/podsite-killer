@@ -5,6 +5,7 @@ import ThemeEngine, { ThemeConfig } from '@/components/ThemeEngine';
 import NetflixLayout from '@/components/layouts/NetflixLayout';
 import SubstackLayout from '@/components/layouts/SubstackLayout';
 import GenZLayout from '@/components/layouts/GenZLayout';
+import GridBlock from '@/components/blocks/GridBlock';
 
 type EpisodesIndexProps = {
   params: Promise<{ subdomain: string }>;
@@ -60,50 +61,26 @@ export default async function EpisodesIndex({ params, searchParams }: EpisodesIn
     <>
       <ThemeEngine config={themeConfig} />
       <LayoutComponent podcast={podcastWithImage}>
-        <div className="mx-auto max-w-4xl py-12">
-          <header className="mb-8">
-            <h1 className="text-3xl font-bold">
-              {q ? `Search results for "${q}"` : 'All Episodes'}
+        <div className="mx-auto max-w-7xl px-4 py-20">
+          <header className="mb-16">
+            <h1 className="text-4xl font-black italic tracking-tighter uppercase md:text-6xl leading-none">
+              {q ? `Searching for "${q}"` : 'All Episodes'}
             </h1>
-            <p className="mt-2 text-slate-400">
-              {episodes?.length || 0} episodes found
+            <p className="mt-4 text-zinc-500 font-medium tracking-widest uppercase text-sm">
+              Showing {episodes?.length || 0} episodes
             </p>
           </header>
 
-          <div className="grid gap-6">
-            {!episodes?.length ? (
-              <div className="py-12 text-center border-2 border-dashed border-slate-800 rounded-2xl">
-                <p className="text-slate-500">No episodes found matching your search.</p>
-                <Link href={`/${subdomain}/episodes`} className="mt-4 inline-block text-sky-400 hover:underline">
-                  View all episodes
-                </Link>
-              </div>
-            ) : (
-              episodes.map((ep) => (
-                <Link
-                  key={ep.id}
-                  href={`/${subdomain}/episodes/${ep.slug}`}
-                  className="group flex flex-col sm:flex-row gap-4 p-4 rounded-xl border border-slate-800 bg-slate-900/40 hover:bg-slate-900/60 transition-all"
-                >
-                  <div className="shrink-0">
-                    <img
-                      src={ep.image_url || podcastWithImage.image}
-                      alt={ep.title || ''}
-                      className="h-24 w-40 object-cover rounded-lg shadow-lg"
-                    />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold group-hover:text-primary transition-colors">
-                      {ep.title}
-                    </h3>
-                    <p className="mt-1 text-sm text-slate-500">
-                      {ep.published_at && new Date(ep.published_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                </Link>
-              ))
-            )}
-          </div>
+          <GridBlock podcast={podcastWithImage} episodes={episodes || []} />
+
+          {!episodes?.length && (
+            <div className="py-20 text-center border-4 border-dashed border-zinc-100 rounded-sm">
+              <p className="text-zinc-500 font-bold italic">No episodes found matching your search.</p>
+              <Link href={`/${subdomain}/episodes`} className="mt-4 inline-block text-red-600 font-black uppercase tracking-tighter hover:underline">
+                View all episodes
+              </Link>
+            </div>
+          )}
         </div>
       </LayoutComponent>
     </>
