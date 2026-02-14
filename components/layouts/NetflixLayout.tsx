@@ -73,7 +73,16 @@ export default function NetflixLayout({ children, podcast }: { children: React.R
 
             {/* Netflix Hero */}
             <section className="relative h-[85vh] w-full overflow-hidden">
-                {podcast.image && (
+                {podcast.latest_video_id ? (
+                    <div className="absolute inset-0 z-0 scale-110">
+                        <iframe
+                            className="h-full w-full object-cover opacity-60 grayscale-[40%] brightness-[30%]"
+                            src={`https://www.youtube.com/embed/${podcast.latest_video_id}?autoplay=1&mute=1&controls=0&loop=1&playlist=${podcast.latest_video_id}&showinfo=0&rel=0&iv_load_policy=3&disablekb=1`}
+                            allow="autoplay; encrypted-media"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+                    </div>
+                ) : podcast.image && (
                     <div className="absolute inset-0">
                         <img
                             src={podcast.image}

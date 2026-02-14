@@ -41,13 +41,38 @@ export default function ThemeEngine({ config }: { config: ThemeConfig }) {
             .join(' ');
     }, [config]);
 
+    const fontImports = useMemo(() => {
+        const fontsToImport = new Set<string>();
+        if (config.fontHeading) {
+            fontsToImport.add(config.fontHeading);
+        }
+        if (config.fontBody && config.fontBody !== config.fontHeading) {
+            fontsToImport.add(config.fontBody);
+        }
+
+        if (fontsToImport.size === 0) {
+            return `@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');`;
+        }
+
+        const googleFontBaseUrl = 'https://fonts.googleapis.com/css2?';
+        const fontParams = Array.from(fontsToImport)
+            .map(font => `family=${encodeURIComponent(font.replace(/ /g, '+'))}:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900`)
+            .join('&');
+
+        return `@import url('${googleFontBaseUrl}${fontParams}&display=swap');`;
+    }, [config.fontHeading, config.fontBody]);
+
     return (
-        <style dangerouslySetInnerHTML={{
-            __html: `
+        <>
+            <style dangerouslySetInnerHTML={{
+                __html: `
+        ${fontImports}
+        
         :root {
           ${cssVariables}
         }
       `
-        }} />
+            }} />
+        </>
     );
 }

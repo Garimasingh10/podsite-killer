@@ -85,7 +85,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
 
   let episodesQuery = supabase
     .from('episodes')
-    .select('id, title, slug, published_at, image_url')
+    .select('id, title, slug, published_at, image_url, youtube_video_id')
     .eq('podcast_id', subdomain)
     .order('published_at', { ascending: false });
 
@@ -109,7 +109,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   return (
     <>
       <ThemeEngine config={themeConfig} />
-      <LayoutComponent podcast={podcastWithImage}>
+      <LayoutComponent podcast={{ ...podcastWithImage, latest_video_id: latest?.youtube_video_id }}>
         <div className="flex flex-col">
           {pageLayout.map((blockType) => {
             switch (blockType) {

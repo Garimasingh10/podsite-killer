@@ -75,6 +75,12 @@ export default function ThemeCustomizer({
         { id: 'genz', name: 'Gen Z', desc: 'Brutalist / Bold' },
     ];
 
+    const fontPairings = [
+        { id: 'modern_serif', name: 'Modern Serif', heading: "'Fraunces', serif", body: "'Inter', sans-serif" },
+        { id: 'tech_mono', name: 'Tech Mono', heading: "'JetBrains Mono', monospace", body: "'Inter', sans-serif" },
+        { id: 'default_sans', name: 'Classic Sans', heading: "'Inter', sans-serif", body: "'Inter', sans-serif" },
+    ];
+
     return (
         <div className="space-y-8">
             <div>
@@ -176,6 +182,28 @@ export default function ThemeCustomizer({
                     <h4 className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-slate-500">
                         <Square size={14} /> Shapes
                     </h4>
+                    <div className="space-y-2">
+                        <label className="text-xs text-slate-400">Font Pairing</label>
+                        <div className="grid grid-cols-1 gap-2">
+                            {fontPairings.map((p) => (
+                                <button
+                                    key={p.id}
+                                    onClick={() => updateConfig({ fontHeading: p.heading, fontBody: p.body })}
+                                    className={`flex items-center justify-between rounded-lg border px-4 py-3 text-sm transition-all ${config.fontHeading === p.heading
+                                        ? 'border-primary bg-primary/10 text-white'
+                                        : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700'
+                                        }`}
+                                >
+                                    <div className="flex flex-col items-start">
+                                        <span className="font-bold">{p.name}</span>
+                                        <span className="text-[10px] opacity-60">Heading + Body</span>
+                                    </div>
+                                    <Type size={18} className="opacity-40" />
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
                     <div className="space-y-2">
                         <label className="text-xs text-slate-400">Corner Radius</label>
                         <div className="flex gap-2">
