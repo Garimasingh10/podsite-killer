@@ -24,16 +24,14 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
             <div className="min-h-screen bg-white text-black font-sans selection:bg-accent">
                 {/* Aggressive Brutalist Header */}
                 <header className="sticky top-0 z-50 border-b-8 border-black bg-white">
-                    <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-                        <div className="flex items-center gap-6">
-                            {podcast.image && (
-                                <div className="h-16 w-16 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden shrink-0">
-                                    <img src={podcast.image} alt={podcast.title} className="h-full w-full object-cover" />
-                                </div>
-                            )}
-                            <Link href={`/${podcast.id}`} className="group relative">
-                                <span className="relative text-4xl font-black uppercase italic tracking-tighter leading-none group-hover:text-accent transition-colors">
+                    <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3 lg:px-8">
+                        <div className="flex items-center gap-2">
+                            <Link href={`/${podcast.id}`} className="group relative flex items-center gap-2">
+                                <span className="text-3xl font-black uppercase italic tracking-tighter leading-none transition-colors group-hover:text-accent">
                                     {podcast.title}
+                                </span>
+                                <span className="text-3xl font-black italic tracking-tighter leading-none text-zinc-400">
+                                    {">"} TOP STORIES
                                 </span>
                             </Link>
                         </div>
@@ -44,21 +42,16 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
                                     <Link
                                         key={item}
                                         href={item === 'Home' ? `/${podcast.id}` : item === 'Drops' ? `/${podcast.id}/episodes` : `/${podcast.id}#host`}
-                                        className="text-xl font-black uppercase italic border-4 border-transparent hover:border-black hover:bg-accent px-4 py-1 shadow-none hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -translate-y-0 hover:-translate-y-1 hover:-translate-x-1 transition-all duration-200"
+                                        className="text-lg font-black uppercase italic transition-all hover:text-accent"
                                     >
                                         {item}
                                     </Link>
                                 ))}
                             </nav>
-                            <div className="hidden md:block transition-transform hover:-translate-y-1 hover:-translate-x-1 active:translate-x-0 active:translate-y-0">
+                            <div className="hidden md:block">
                                 <PublicSearch podcastId={podcast.id} />
                             </div>
-                            <button
-                                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                className="border-4 border-black bg-accent p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all md:hidden"
-                            >
-                                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                            </button>
+                            {/* ... buttons ... */}
                         </div>
                     </div>
 

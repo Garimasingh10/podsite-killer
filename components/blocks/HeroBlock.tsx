@@ -93,27 +93,52 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
     if (layout === 'genz') {
         return (
             <section className="relative mb-32 group">
-                <div className="border-8 border-black bg-white p-12 shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-2 hover:translate-y-2 transition-all">
-                    <div className="flex flex-col gap-8">
-                        <div className="flex items-center gap-4">
-                            <span className="bg-accent px-4 py-1 text-sm font-black uppercase tracking-widest border-4 border-black">New Drop</span>
-                            <span className="font-black uppercase tracking-tighter italic">No. {latestEpisode?.id?.slice(0, 4)}</span>
+                {/* Main Skewed Container */}
+                <div className="relative border-x-8 border-b-8 border-black bg-white p-12 shadow-[24px_24px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+                    {/* Pink/Red Top Border Accent */}
+                    <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-pink-500 to-red-600" />
+
+                    <div className="flex flex-col md:flex-row gap-12 items-center relative z-10">
+                        {/* Image Box on Left */}
+                        <div className="w-full md:w-1/2 shrink-0">
+                            <div className="aspect-square border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] overflow-hidden bg-white group-hover:shadow-none group-hover:translate-x-2 group-hover:translate-y-2 transition-all">
+                                <img
+                                    src={latestEpisode?.image_url || podcast.image}
+                                    alt={latestEpisode?.title}
+                                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                                />
+                            </div>
                         </div>
-                        <h2 className="text-6xl font-black uppercase italic tracking-tighter md:text-8xl leading-[0.85]">
-                            {latestEpisode?.title}
-                        </h2>
-                        <p className="text-2xl font-black leading-tight max-w-2xl">
-                            {latestEpisode?.description?.replace(/<[^>]*>?/gm, '').slice(0, 150)}
-                        </p>
-                        <div className="flex flex-wrap gap-6 pt-4">
-                            <Link
-                                href={`/${podcast.id}/episodes/${latestEpisode?.slug}`}
-                                className="bg-black text-white px-12 py-5 text-2xl font-black uppercase italic tracking-tighter hover:bg-accent hover:text-black transition-colors"
-                            >
-                                Tap In
-                            </Link>
+
+                        {/* Text Content */}
+                        <div className="flex flex-col gap-6">
+                            <div className="flex items-center gap-4">
+                                <span className="bg-black text-white px-4 py-1 text-sm font-black uppercase tracking-widest">
+                                    {latestEpisode?.published_at ? new Date(latestEpisode.published_at).toLocaleDateString() : 'LATEST DROP'}
+                                </span>
+                            </div>
+
+                            <h2 className="text-6xl font-black uppercase italic tracking-tighter md:text-8xl leading-[0.8] mb-4">
+                                {latestEpisode?.title || podcast.title}
+                            </h2>
+
+                            <p className="text-xl font-bold leading-tight max-w-xl text-zinc-800">
+                                {latestEpisode?.description?.replace(/<[^>]*>?/gm, '').slice(0, 180)}...
+                            </p>
+
+                            <div className="flex flex-wrap gap-6 pt-6">
+                                <Link
+                                    href={`/${podcast.id}/episodes/${latestEpisode?.slug}`}
+                                    className="group/btn relative inline-block bg-black text-white px-12 py-5 text-2xl font-black uppercase italic tracking-tighter hover:bg-accent hover:text-black transition-colors"
+                                >
+                                    <span className="relative z-10 transition-transform group-hover/btn:scale-110">TAP IN</span>
+                                </Link>
+                            </div>
                         </div>
                     </div>
+
+                    {/* Skewed Background Element */}
+                    <div className="absolute top-0 right-0 w-1/3 h-full bg-zinc-50 -skew-x-12 translate-x-1/2 z-0" />
                 </div>
             </section>
         );
