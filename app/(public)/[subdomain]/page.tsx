@@ -78,7 +78,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   const podcastWithImage = {
     ...podcast,
     image: themeConfig.imageUrl,
-    latest_video_id: undefined as string | undefined
+    latest_video_id: latest?.youtube_video_id
   };
   const layout = themeConfig.layout || 'netflix';
 
