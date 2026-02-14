@@ -13,11 +13,10 @@ interface EpisodePlayerProps {
     podcastId: string;
 }
 
-export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, description, podcastId }: EpisodePlayerProps) {
+export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, description }: EpisodePlayerProps) {
     const [mode, setMode] = useState<'video' | 'audio'>(youtubeVideoId ? 'video' : 'audio');
     const audioRef = useRef<HTMLAudioElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const [processedDescription, setProcessedDescription] = useState<string>(description);
     const [isSticky, setIsSticky] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
@@ -27,10 +26,7 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
 
     // Intersection Observer for Sticky Mode
     useEffect(() => {
-        if (mode !== 'audio') {
-            setIsSticky(false);
-            return;
-        }
+        if (mode !== 'audio') return;
 
         const observer = new IntersectionObserver(
             ([entry]) => {
@@ -103,25 +99,24 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
         }
     };
 
-    const parseTimestamps = (text: string) => {
-        const timestampRegex = /\b(\d{1,2}:\d{2}(?::\d{2})?)\b/g;
-        return text.replace(timestampRegex, (match) => {
-            const parts = match.split(':').map(Number);
-            let seconds = 0;
-            if (parts.length === 3) {
-                seconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
-            } else {
-                seconds = parts[0] * 60 + parts[1];
-            }
-            return `<button data-timestamp="${seconds}" class="timestamp-link text-primary font-mono font-bold hover:underline cursor-pointer bg-primary/5 px-1.5 py-0.5 rounded border border-primary/20 transition-all hover:bg-primary/10 inline-flex items-center gap-1 mx-0.5">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                ${match}
-            </button>`;
-        });
-    };
-
-    useEffect(() => {
-        setProcessedDescription(parseTimestamps(description));
+    const processedDescription = React.useMemo(() => {
+        const parseTimestamps = (text: string) => {
+            const timestampRegex = /\b(\d{1,2}:\d{2}(?::\d{2})?)\b/g;
+            return text.replace(timestampRegex, (match) => {
+                const parts = match.split(':').map(Number);
+                let seconds = 0;
+                if (parts.length === 3) {
+                    seconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
+                } else {
+                    seconds = parts[0] * 60 + parts[1];
+                }
+                return `<button data-timestamp="${seconds}" class="timestamp-link text-primary font-mono font-bold hover:underline cursor-pointer bg-primary/5 px-1.5 py-0.5 rounded border border-primary/20 transition-all hover:bg-primary/10 inline-flex items-center gap-1 mx-0.5">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    ${match}
+                </button>`;
+            });
+        };
+        return parseTimestamps(description);
     }, [description]);
 
     const handleDescClick = (e: React.MouseEvent) => {
