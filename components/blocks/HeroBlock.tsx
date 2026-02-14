@@ -9,22 +9,22 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
 
     if (isNetflix) {
         return (
-            <section className="relative h-[95vh] w-full overflow-hidden -mt-[88px]">
+            <section className="relative min-h-[95vh] w-full overflow-hidden">
                 <div className="absolute inset-0 z-0 bg-black">
                     {podcast.latest_video_id ? (
                         <iframe
-                            className="h-full w-full scale-150 object-cover opacity-60 brightness-[0.4]"
+                            className="h-full w-full scale-110 object-cover opacity-60 brightness-[0.4]"
                             src={`https://www.youtube.com/embed/${podcast.latest_video_id}?autoplay=1&mute=1&controls=0&loop=1&playlist=${podcast.latest_video_id}&showinfo=0`}
                             allow="autoplay"
                         />
                     ) : (
                         <div className="h-full w-full bg-gradient-to-tr from-black via-zinc-900 to-zinc-800 opacity-20" />
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-[#000000]/40 to-transparent" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#000000] via-[#000000]/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-black/40 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black to-transparent" />
                 </div>
 
-                <div className="relative z-10 flex h-full flex-col justify-end px-8 pb-24 md:px-16 lg:pb-32">
+                <div className="relative z-10 flex h-screen flex-col justify-end px-8 pb-32 md:px-16 lg:pb-40">
                     <div className="flex items-center gap-3 mb-6">
                         <div className="flex items-center gap-1.5 rounded-sm bg-red-600 px-2 py-0.5 text-[10px] font-black uppercase tracking-tighter">
                             <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
@@ -32,6 +32,7 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
                         </div>
                         <span className="text-xs font-bold uppercase tracking-[0.3em] text-zinc-400">Premium Series</span>
                     </div>
+                    {/* ... rest of content ... */}
                     <h1 className="max-w-4xl text-6xl font-black tracking-tighter text-white uppercase italic md:text-8xl lg:text-9xl leading-[0.8] drop-shadow-2xl">
                         {latestEpisode?.title || podcast.title}
                     </h1>
