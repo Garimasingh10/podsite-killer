@@ -10,37 +10,38 @@ export default function GenZLayout({ children, podcast }: { children: React.Reac
 
     return (
         <div className="min-h-screen bg-background p-4 md:p-8 selection:bg-primary">
-            <header className="relative mb-12 border-8 border-foreground bg-primary p-6 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
-                <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-                    <h1 className="text-5xl font-black uppercase italic tracking-tighter md:text-9xl leading-none">
+            <header className="relative mb-16 rounded-[2.5rem] bg-indigo-600 dark:bg-zinc-900 px-8 py-10 shadow-2xl overflow-hidden">
+                <div className="absolute -right-20 -top-20 h-80 w-80 rounded-full bg-white/10 blur-3xl opacity-50" />
+                <div className="relative flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+                    <h1 className="text-4xl font-bold tracking-tight text-white md:text-7xl leading-tight">
                         {podcast.title}
                     </h1>
                     <div className="flex items-center gap-4">
                         <nav className="hidden flex-wrap gap-4 items-center md:flex">
-                            <Link href={`/${podcast.id}`} className="border-4 border-black bg-white px-6 py-3 font-black uppercase transition-transform hover:-translate-y-1">Home</Link>
-                            <Link href={`/${podcast.id}/episodes`} className="border-4 border-black bg-white px-6 py-3 font-black uppercase transition-transform hover:-translate-y-1">Episodes</Link>
-                            <Link href={`/${podcast.id}#host`} className="border-4 border-black bg-white px-6 py-3 font-black uppercase transition-transform hover:-translate-y-1">About</Link>
-                            <div className="border-4 border-black bg-white p-1">
+                            <Link href={`/${podcast.id}`} className="rounded-full bg-white/10 backdrop-blur-md px-6 py-2.5 font-bold text-white transition-all hover:bg-white/20">Home</Link>
+                            <Link href={`/${podcast.id}/episodes`} className="rounded-full bg-white/10 backdrop-blur-md px-6 py-2.5 font-bold text-white transition-all hover:bg-white/20">Episodes</Link>
+                            <Link href={`/${podcast.id}#host`} className="rounded-full bg-white/10 backdrop-blur-md px-6 py-2.5 font-bold text-white transition-all hover:bg-white/20">About</Link>
+                            <div className="rounded-full bg-white/10 backdrop-blur-md p-1">
                                 <PublicSearch podcastId={podcast.id} />
                             </div>
                         </nav>
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="flex h-14 w-14 items-center justify-center border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:hidden transition-all active:translate-x-1 active:translate-y-1 active:shadow-none"
+                            className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-white backdrop-blur-md md:hidden transition-all hover:bg-white/20"
                         >
-                            {isMenuOpen ? <X size={32} /> : <Menu size={32} />}
+                            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
                     </div>
                 </div>
 
                 {/* Mobile Menu */}
                 {isMenuOpen && (
-                    <div className="mt-8 border-t-8 border-black pt-8 animate-in slide-in-from-top-4 md:hidden">
-                        <nav className="flex flex-col gap-6">
-                            <Link href={`/${podcast.id}`} onClick={() => setIsMenuOpen(false)} className="border-4 border-black bg-white px-8 py-4 text-2xl font-black uppercase italic shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">Home</Link>
-                            <Link href={`/${podcast.id}/episodes`} onClick={() => setIsMenuOpen(false)} className="border-4 border-black bg-white px-8 py-4 text-2xl font-black uppercase italic shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">Episodes</Link>
-                            <Link href={`/${podcast.id}#host`} onClick={() => setIsMenuOpen(false)} className="border-4 border-black bg-white px-8 py-4 text-2xl font-black uppercase italic shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">About</Link>
-                            <div className="border-4 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="relative mt-10 border-t border-white/10 pt-10 animate-in slide-in-from-top-4 md:hidden">
+                        <nav className="flex flex-col gap-4">
+                            <Link href={`/${podcast.id}`} onClick={() => setIsMenuOpen(false)} className="rounded-2xl bg-white/10 p-5 text-xl font-bold text-white transition-all">Home</Link>
+                            <Link href={`/${podcast.id}/episodes`} onClick={() => setIsMenuOpen(false)} className="rounded-2xl bg-white/10 p-5 text-xl font-bold text-white transition-all">Episodes</Link>
+                            <Link href={`/${podcast.id}#host`} onClick={() => setIsMenuOpen(false)} className="rounded-2xl bg-white/10 p-5 text-xl font-bold text-white transition-all">About</Link>
+                            <div className="rounded-2xl bg-white/10 p-4">
                                 <PublicSearch podcastId={podcast.id} />
                             </div>
                         </nav>
@@ -48,22 +49,22 @@ export default function GenZLayout({ children, podcast }: { children: React.Reac
                 )}
             </header>
 
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
                 <aside className="lg:col-span-1">
-                    <div className="border-4 border-foreground bg-accent p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="rounded-[2rem] bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm">
                         {podcast.image && (
                             <img
                                 src={podcast.image}
                                 alt={podcast.title}
-                                className="mb-4 w-full border-4 border-foreground grayscale contrast-125"
+                                className="mb-6 w-full rounded-2xl shadow-xl"
                             />
                         )}
-                        <p className="font-bold uppercase tracking-widest">{podcast.description}</p>
+                        <p className="text-lg font-medium leading-relaxed text-zinc-600 dark:text-zinc-400">{podcast.description}</p>
                     </div>
                 </aside>
 
                 <main className="lg:col-span-2">
-                    <div className="border-4 border-foreground bg-background p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="rounded-[2.5rem] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm">
                         {children}
                     </div>
                 </main>

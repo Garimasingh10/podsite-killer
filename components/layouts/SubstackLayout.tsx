@@ -60,7 +60,7 @@ export default function SubstackLayout({ children, podcast }: { children: React.
                             >
                                 About
                             </Link>
-                            <button className="w-full rounded-lg bg-primary py-4 font-black uppercase text-white shadow-lg shadow-primary/20">
+                            <button className="w-full rounded-2xl bg-indigo-600 py-4 font-bold text-white shadow-xl shadow-indigo-500/10 transition-all hover:bg-indigo-500 active:scale-[0.98]">
                                 Subscribe Now
                             </button>
                         </nav>
