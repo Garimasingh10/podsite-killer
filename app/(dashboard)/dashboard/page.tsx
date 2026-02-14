@@ -28,7 +28,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
   let queryBuilder = supabase
     .from('podcasts')
     .select(
-      'id, title, description, rss_url, owner_id, youtube_channel_id, created_at',
+      'id, title, description, rss_url, owner_id, youtube_channel_id, theme_config, created_at',
     )
     .eq('owner_id', user.id)
     .order('created_at', { ascending: false });
@@ -51,6 +51,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
       rss_url: string | null;
       owner_id: string | null;
       youtube_channel_id: string | null;
+      theme_config: any;
     }[]) ?? [];
 
   // Logic: First podcast in list is "Active", others are "Library"
@@ -133,19 +134,35 @@ export default async function DashboardPage({ searchParams }: PageProps) {
         <section className="grid gap-6 lg:grid-cols-[2fr_1fr]">
           <div className="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900/80 to-slate-900/40 p-6 shadow-xl backdrop-blur-md">
             <div className="mb-6 flex items-start justify-between">
-              <div>
-                <span className="inline-block rounded-md bg-emerald-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 ring-1 ring-inset ring-emerald-500/20">
-                  Active Podcast
-                </span>
-                <h2 className="mt-3 text-2xl font-bold text-white">
-                  {active.title || 'Untitled Podcast'}
-                </h2>
-                {active.rss_url && (
-                  <a href={active.rss_url} target="_blank" className="mt-1 block text-xs text-slate-500 hover:text-sky-400 hover:underline">
-                    {active.rss_url}
-                  </a>
-                )}
+              <div className="flex gap-6">
+                <div className="shrink-0">
+                  {(active.theme_config as any)?.imageUrl ? (
+                    <img
+                      src={(active.theme_config as any).imageUrl}
+                      alt={active.title || ''}
+                      className="h-24 w-24 rounded-xl object-cover shadow-lg border border-slate-700/50"
+                    />
+                  ) : (
+                    <div className="h-24 w-24 rounded-xl bg-slate-800 flex items-center justify-center text-4xl shadow-inner border border-slate-700/50">
+                      🎙️
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <span className="inline-block rounded-md bg-emerald-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 ring-1 ring-inset ring-emerald-500/20">
+                    Active Podcast
+                  </span>
+                  <h2 className="mt-3 text-2xl font-bold text-white">
+                    {active.title || 'Untitled Podcast'}
+                  </h2>
+                  {active.rss_url && (
+                    <a href={active.rss_url} target="_blank" className="mt-1 block text-xs text-slate-500 hover:text-sky-400 hover:underline">
+                      {active.rss_url}
+                    </a>
+                  )}
+                </div>
               </div>
+
               <Link
                 href={`/${active.id}`}
                 target="_blank"
@@ -199,58 +216,61 @@ export default async function DashboardPage({ searchParams }: PageProps) {
             </div>
           </div>
         </section>
-      )}
+      )
+      }
 
       {/* Other Podcasts */}
-      {(active && others.length > 0) || (q && others.length > 0) ? (
-        <section className="space-y-4 pt-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-slate-200">
-              {q ? `More results for "${q}"` : 'Your Library'}
-            </h3>
-            {!q && (
-              <div className="w-64">
-                <SearchForm initialQuery={q} />
-              </div>
-            )}
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {others.map((p) => (
-              <Link
-                key={p.id}
-                href={`/podcasts/${p.id}/episodes`} // Make the whole card clickable for convenience
-                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-slate-800 bg-slate-900/40 p-5 transition-all hover:border-sky-500/30 hover:bg-slate-900/60 hover:shadow-lg hover:shadow-sky-500/5"
-              >
-                <div className="space-y-2">
-                  <h4 className="font-semibold text-slate-200 group-hover:text-sky-400 transition-colors">
-                    {p.title || 'Untitled'}
-                  </h4>
-                  {p.description && (
-                    <p className="text-xs leading-relaxed text-slate-500 line-clamp-2">
-                      {p.description}
-                    </p>
-                  )}
+      {
+        (active && others.length > 0) || (q && others.length > 0) ? (
+          <section className="space-y-4 pt-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-slate-200">
+                {q ? `More results for "${q}"` : 'Your Library'}
+              </h3>
+              {!q && (
+                <div className="w-64">
+                  <SearchForm initialQuery={q} />
                 </div>
+              )}
+            </div>
 
-                <div className="mt-4 flex items-center justify-between border-t border-slate-800/50 pt-3 text-[10px] text-slate-500">
-                  <div className="flex items-center gap-2">
-                    {p.youtube_channel_id ? (
-                      <span className="flex items-center gap-1 text-emerald-400">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                        YT Connected
-                      </span>
-                    ) : (
-                      <span>Audio Only</span>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {others.map((p) => (
+                <Link
+                  key={p.id}
+                  href={`/podcasts/${p.id}/episodes`} // Make the whole card clickable for convenience
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-slate-800 bg-slate-900/40 p-5 transition-all hover:border-sky-500/30 hover:bg-slate-900/60 hover:shadow-lg hover:shadow-sky-500/5"
+                >
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-slate-200 group-hover:text-sky-400 transition-colors">
+                      {p.title || 'Untitled'}
+                    </h4>
+                    {p.description && (
+                      <p className="text-xs leading-relaxed text-slate-500 line-clamp-2">
+                        {p.description}
+                      </p>
                     )}
                   </div>
-                  <span className="group-hover:translate-x-1 transition-transform">Manage →</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-      ) : null}
-    </div>
+
+                  <div className="mt-4 flex items-center justify-between border-t border-slate-800/50 pt-3 text-[10px] text-slate-500">
+                    <div className="flex items-center gap-2">
+                      {p.youtube_channel_id ? (
+                        <span className="flex items-center gap-1 text-emerald-400">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                          YT Connected
+                        </span>
+                      ) : (
+                        <span>Audio Only</span>
+                      )}
+                    </div>
+                    <span className="group-hover:translate-x-1 transition-transform">Manage →</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null
+      }
+    </div >
   );
 }
