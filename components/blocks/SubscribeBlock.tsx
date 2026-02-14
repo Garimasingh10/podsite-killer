@@ -32,11 +32,11 @@ export default function SubscribeBlock({ podcast }: { podcast: any }) {
 
     if (layout === 'genz') {
         return (
-            <section className="relative mb-32 bg-black p-12 lg:p-20 text-white border-8 border-black shadow-[16px_16px_0px_0px_rgba(34,197,94,1)] rotate-[-1deg]">
+            <section className="relative mb-32 bg-black p-12 lg:p-20 text-white border-8 border-black shadow-[16px_16px_0px_0px_rgba(var(--accent-rgb),1)] rotate-[-1deg]">
                 <h3 className="text-6xl font-black uppercase italic tracking-tighter mb-12 leading-none">JOIN THE FAM</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     {platforms.map((p) => (
-                        <button key={p.name} className="border-4 border-white bg-white text-black p-6 font-black uppercase italic text-xl shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:bg-green-400 hover:shadow-none translate-x-1 translate-y-1 transition-all">
+                        <button key={p.name} className="border-4 border-white bg-white text-black p-6 font-black uppercase italic text-xl shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:bg-accent hover:shadow-none translate-x-1 translate-y-1 transition-all">
                             {p.name}
                         </button>
                     ))}

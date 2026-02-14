@@ -25,7 +25,7 @@ export default function HostBlock({ podcast }: { podcast: any }) {
             <section id="host" className="relative mb-32 group">
                 <div className="absolute -inset-4 bg-black rotate-1 border-8 border-black shadow-[12px_12px_0px_0px_rgba(255,255,255,0.1)]" />
                 <div className="relative border-8 border-black bg-white p-12 z-10 flex flex-col md:flex-row gap-12 items-center">
-                    <div className="shrink-0 h-40 w-40 border-8 border-black bg-yellow-400 flex items-center justify-center text-6xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="shrink-0 h-40 w-40 border-8 border-black bg-accent flex items-center justify-center text-6xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                         👤
                     </div>
                     <div>
@@ -53,7 +53,7 @@ export default function HostBlock({ podcast }: { podcast: any }) {
                 </div>
                 <div>
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="h-6 w-1 bg-red-600" />
+                        <div className="h-6 w-1 bg-primary" />
                         <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400">Creator</span>
                     </div>
                     <h3 className="text-4xl font-black tracking-tighter uppercase italic mb-6">About the Host</h3>

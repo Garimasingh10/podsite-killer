@@ -27,7 +27,7 @@ export default function NetflixLayout({ children, podcast }: NetflixLayoutProps)
                 <header className="fixed top-0 z-50 w-full bg-gradient-to-b from-black via-black/40 to-transparent px-8 py-4 transition-colors hover:bg-black md:px-16">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-8">
-                            <Link href={`/${podcast.id}`} className="text-3xl font-black tracking-tighter text-red-600 py-2">
+                            <Link href={`/${podcast.id}`} className="text-3xl font-black tracking-tighter text-primary py-2">
                                 NETFLIX
                             </Link>
                             <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
@@ -85,7 +85,7 @@ export default function NetflixLayout({ children, podcast }: NetflixLayoutProps)
                         </div>
                     )}
                     <div className="relative z-10 flex h-full flex-col justify-end px-8 pb-32 md:px-16">
-                        <span className="mb-2 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.4em] text-red-600">
+                        <span className="mb-2 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.4em] text-primary">
                             <Headphones size={14} /> NEW EPISODE OUT NOW
                         </span>
                         <h1 className="mb-4 text-6xl font-black tracking-tighter md:text-8xl lg:text-[10rem] leading-[0.85] uppercase italic">

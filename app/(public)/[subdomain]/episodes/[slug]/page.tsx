@@ -108,7 +108,7 @@ export default async function EpisodePage({ params }: PageProps) {
           <header className="mb-16">
             <Link
               href={`/${subdomain}`}
-              className="group mb-8 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-red-600 hover:opacity-80 transition-all"
+              className="group mb-8 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-primary hover:opacity-80 transition-all"
             >
               <span className="transition-transform group-hover:-translate-x-1">←</span>
               Back to {podcast.title}
@@ -124,7 +124,7 @@ export default async function EpisodePage({ params }: PageProps) {
                   })}
                 </p>
               )}
-              <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />
+              <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
               <p className="text-xs font-black uppercase tracking-widest text-zinc-400">
                 Official Release
               </p>
@@ -150,7 +150,7 @@ export default async function EpisodePage({ params }: PageProps) {
           <div className="mt-32 pt-16 border-t border-zinc-100/10">
             <Link
               href={`/${subdomain}`}
-              className="group inline-flex items-center gap-4 text-2xl font-black italic uppercase tracking-tighter text-current transition-all hover:text-red-600"
+              className="group inline-flex items-center gap-4 text-2xl font-black italic uppercase tracking-tighter text-current transition-all hover:text-primary"
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-current transition-transform group-hover:-translate-x-3">←</span>
               <span>Keep Exploring {podcast.title}</span>

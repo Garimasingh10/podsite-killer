@@ -30,7 +30,7 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
     if (layout === 'genz') {
         return (
             <section className="relative mb-32 group">
-                <div className="absolute -inset-4 bg-yellow-400 rotate-1 border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]" />
+                <div className="absolute -inset-4 bg-accent rotate-1 border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]" />
                 <div className="relative border-8 border-black bg-white p-12 md:p-20 z-10 flex flex-col md:flex-row gap-12 items-center">
                     {podcast.image && (
                         <div className="shrink-0 rotate-[-3deg] border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
@@ -51,7 +51,7 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
                         <div className="flex flex-wrap gap-6">
                             <Link
                                 href={`/${podcast.id}/episodes/${latestEpisode?.slug}`}
-                                className="bg-yellow-400 border-8 border-black px-12 py-4 text-2xl font-black uppercase italic shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
+                                className="bg-accent border-8 border-black px-12 py-4 text-2xl font-black uppercase italic shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
                             >
                                 Play Now
                             </Link>
@@ -67,7 +67,7 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
         <section className="relative mb-24 max-w-4xl">
             <div className="flex flex-col gap-6">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-1 bg-red-600" />
+                    <div className="h-10 w-1 bg-primary" />
                     <span className="text-sm font-black uppercase tracking-[0.3em] text-zinc-400">Episode Info</span>
                 </div>
                 <h2 className="text-4xl font-black tracking-tighter uppercase italic md:text-6xl leading-none">

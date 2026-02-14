@@ -76,7 +76,7 @@ export default async function EpisodesIndex({ params, searchParams }: EpisodesIn
           {!episodes?.length && (
             <div className="py-20 text-center border-4 border-dashed border-zinc-100 rounded-sm">
               <p className="text-zinc-500 font-bold italic">No episodes found matching your search.</p>
-              <Link href={`/${subdomain}/episodes`} className="mt-4 inline-block text-red-600 font-black uppercase tracking-tighter hover:underline">
+              <Link href={`/${subdomain}/episodes`} className="mt-4 inline-block text-primary font-black uppercase tracking-tighter hover:underline">
                 View all episodes
               </Link>
             </div>

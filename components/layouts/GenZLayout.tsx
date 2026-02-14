@@ -20,12 +20,12 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
 
     return (
         <LayoutProvider value="genz">
-            <div className="min-h-screen bg-white text-black font-sans selection:bg-yellow-400">
+            <div className="min-h-screen bg-white text-black font-sans selection:bg-accent">
                 {/* Aggressive Brutalist Header */}
                 <header className="sticky top-0 z-50 border-b-8 border-black bg-white">
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-8">
                         <Link href={`/${podcast.id}`} className="group relative">
-                            <div className="absolute -inset-2 bg-yellow-400 opacity-0 transition-opacity group-hover:opacity-100" />
+                            <div className="absolute -inset-2 bg-accent opacity-0 transition-opacity group-hover:opacity-100" />
                             <span className="relative text-4xl font-black uppercase italic tracking-tighter leading-none">
                                 {podcast.title}
                             </span>
@@ -39,7 +39,7 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
                             </nav>
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                className="border-4 border-black bg-yellow-400 p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all md:hidden"
+                                className="border-4 border-black bg-accent p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all md:hidden"
                             >
                                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
                             </button>
@@ -68,7 +68,7 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
                 </main>
 
                 {/* Loud Footer */}
-                <footer className="border-t-8 border-black bg-yellow-400 p-12 lg:p-24">
+                <footer className="border-t-8 border-black bg-accent p-12 lg:p-24">
                     <div className="mx-auto max-w-7xl">
                         <div className="flex flex-col gap-12 lg:flex-row lg:items-end lg:justify-between">
                             <div className="max-w-xl">
