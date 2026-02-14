@@ -16,13 +16,17 @@ export async function GET(
 
     const { data: podcast } = await supabase
         .from('podcasts')
-        .select('title, image_url')
+        .select('title, theme_config')
         .eq('id', id)
         .maybeSingle();
 
     if (!podcast) {
         return new Response('Podcast not found', { status: 404 });
     }
+
+    // Extract image from theme_config
+    const themeConfig = (podcast.theme_config as any) || {};
+    const podcastImage = themeConfig.imageUrl || null;
 
     return new ImageResponse(
         (
@@ -40,10 +44,10 @@ export async function GET(
                 }}
             >
                 <div style={{ display: 'flex', gap: '40px', alignItems: 'center' }}>
-                    {podcast.image_url && (
+                    {podcastImage && (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                            src={podcast.image_url}
+                            src={podcastImage}
                             alt={podcast.title}
                             style={{
                                 width: '300px',

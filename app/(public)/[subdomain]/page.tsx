@@ -73,6 +73,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   }
 
   const themeConfig = (podcast.theme_config as unknown as ThemeConfig) || {};
+  const podcastWithImage = { ...podcast, image: themeConfig.imageUrl }; // Backwards compat for blocks
   const layout = themeConfig.layout || 'netflix';
 
   const LayoutComponent =
@@ -101,20 +102,20 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   return (
     <>
       <ThemeEngine config={themeConfig} />
-      <LayoutComponent podcast={podcast}>
+      <LayoutComponent podcast={podcastWithImage}>
         <div className="flex flex-col">
           {pageLayout.map((blockType) => {
             switch (blockType) {
               case 'hero':
-                return <HeroBlock key="hero" podcast={podcast} latestEpisode={latest} />;
+                return <HeroBlock key="hero" podcast={podcastWithImage} latestEpisode={latest} />;
               case 'shorts':
-                return <ShortsBlock key="shorts" podcast={podcast} />;
+                return <ShortsBlock key="shorts" podcast={podcastWithImage} />;
               case 'grid':
-                return <GridBlock key="grid" podcast={podcast} episodes={episodes || []} />;
+                return <GridBlock key="grid" podcast={podcastWithImage} episodes={episodes || []} />;
               case 'subscribe':
-                return <SubscribeBlock key="subscribe" podcast={podcast} />;
+                return <SubscribeBlock key="subscribe" podcast={podcastWithImage} />;
               case 'host':
-                return <HostBlock key="host" podcast={podcast} />;
+                return <HostBlock key="host" podcast={podcastWithImage} />;
               default:
                 return null;
             }

@@ -13,6 +13,7 @@ export interface ThemeConfig {
     fontBody?: string;
     cornerRadius?: string; // '0px', '8px', '24px'
     layout?: 'netflix' | 'substack' | 'genz';
+    imageUrl?: string;
 }
 
 export default function ThemeEngine({ config }: { config: ThemeConfig }) {

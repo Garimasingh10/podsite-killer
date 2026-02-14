@@ -25,7 +25,7 @@ export default async function PodcastSettingsPage({ params }: PageProps) {
 
     const { data: podcast, error: podcastError } = await supabase
         .from('podcasts')
-        .select('id, title, description, rss_url, image_url, theme_config, page_layout')
+        .select('id, title, description, rss_url, theme_config, page_layout')
         .eq('id', podcastId)
         .eq('owner_id', user.id)
         .maybeSingle();
@@ -73,7 +73,7 @@ export default async function PodcastSettingsPage({ params }: PageProps) {
                         <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-8 backdrop-blur-sm">
                             <ThemeCustomizer
                                 podcastId={podcast.id}
-                                imageUrl={podcast.image_url || undefined}
+                                imageUrl={themeConfig.imageUrl || undefined}
                                 initialConfig={themeConfig}
                             />
                         </div>

@@ -48,7 +48,7 @@ export default async function EpisodePage({ params }: PageProps) {
 
   const { data: podcast } = await supabase
     .from('podcasts')
-    .select('id, title, theme_config, image, description')
+    .select('id, title, theme_config, description')
     .eq('id', subdomain)
     .maybeSingle();
 
