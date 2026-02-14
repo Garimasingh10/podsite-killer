@@ -24,20 +24,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!episode) return { title: 'Episode Not Found' };
 
-  const ogUrl = new URL(`${process.env.NEXT_PUBLIC_APP_URL || ''}/api/og/${subdomain}`);
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://podsite-killer.vercel.app';
+  const ogUrl = new URL(`${baseUrl}/api/og/${subdomain}`);
   ogUrl.searchParams.set('title', episode.title || '');
 
   return {
-    title: episode.title,
+    title: episode.title || 'Episode',
     description: episode.description?.replace(/<[^>]*>/g, '').slice(0, 160),
     openGraph: {
-      title: episode.title,
+      title: episode.title || 'Episode',
       description: episode.description?.replace(/<[^>]*>/g, '').slice(0, 160) || '',
       images: [ogUrl.toString()],
     },
     twitter: {
       card: 'summary_large_image',
-      title: episode.title,
+      title: episode.title || 'Episode',
       description: episode.description?.replace(/<[^>]*>/g, '').slice(0, 160) || '',
       images: [ogUrl.toString()],
     },

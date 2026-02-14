@@ -241,15 +241,26 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                   href={`/podcasts/${p.id}/episodes`} // Make the whole card clickable for convenience
                   className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-slate-800 bg-slate-900/40 p-5 transition-all hover:border-sky-500/30 hover:bg-slate-900/60 hover:shadow-lg hover:shadow-sky-500/5"
                 >
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-slate-200 group-hover:text-sky-400 transition-colors">
-                      {p.title || 'Untitled'}
-                    </h4>
-                    {p.description && (
-                      <p className="text-xs leading-relaxed text-slate-500 line-clamp-2">
-                        {p.description}
-                      </p>
+                  <div className="flex gap-4">
+                    {p.theme_config?.imageUrl && (
+                      <div className="shrink-0">
+                        <img
+                          src={p.theme_config.imageUrl}
+                          alt={p.title || ''}
+                          className="h-12 w-12 rounded-lg object-cover border border-slate-700/50"
+                        />
+                      </div>
                     )}
+                    <div className="space-y-1">
+                      <h4 className="font-semibold text-slate-200 group-hover:text-sky-400 transition-colors">
+                        {p.title || 'Untitled'}
+                      </h4>
+                      {p.description && (
+                        <p className="text-[11px] leading-relaxed text-slate-500 line-clamp-2">
+                          {p.description}
+                        </p>
+                      )}
+                    </div>
                   </div>
 
                   <div className="mt-4 flex items-center justify-between border-t border-slate-800/50 pt-3 text-[10px] text-slate-500">

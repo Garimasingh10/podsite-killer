@@ -1,5 +1,5 @@
-// app/api/podcasts/import/route.ts
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { parseRss } from '@/lib/rss/parseRss';
 import { slugify } from '@/lib/utils/slugify';
@@ -140,6 +140,8 @@ export async function POST(req: Request) {
 
     if (!error) episodesProcessed += 1;
   }
+
+  revalidatePath('/dashboard');
 
   return NextResponse.json({
     ok: true,

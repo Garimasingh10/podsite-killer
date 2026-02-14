@@ -26,19 +26,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!podcast) return { title: 'Podcast Not Found' };
 
-  const ogUrl = new URL(`${process.env.NEXT_PUBLIC_APP_URL || ''}/api/og/${subdomain}`);
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://podsite-killer.vercel.app';
+  const ogUrl = new URL(`${baseUrl}/api/og/${subdomain}`);
 
   return {
-    title: podcast.title,
+    title: podcast.title || 'Podcast',
     description: podcast.description,
     openGraph: {
-      title: podcast.title,
+      title: podcast.title || 'Podcast',
       description: podcast.description || '',
       images: [ogUrl.toString()],
     },
     twitter: {
       card: 'summary_large_image',
-      title: podcast.title,
+      title: podcast.title || 'Podcast',
       description: podcast.description || '',
       images: [ogUrl.toString()],
     },

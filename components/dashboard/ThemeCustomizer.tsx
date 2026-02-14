@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabaseBrowser';
 import { ThemeConfig } from '@/components/ThemeEngine';
 import { extractColorsFromImage } from '@/lib/utils/colorUtils';
@@ -20,6 +21,7 @@ export default function ThemeCustomizer({
     const [isSaving, setIsSaving] = useState(false);
     const [isExtracting, setIsExtracting] = useState(false);
     const supabase = createSupabaseBrowserClient();
+    const router = useRouter();
 
     async function updateConfig(newConfig: Partial<ThemeConfig>) {
         const updated = { ...config, ...newConfig };
@@ -33,6 +35,7 @@ export default function ThemeCustomizer({
 
         if (error) console.error('Error saving theme:', error);
 
+        router.refresh();
         // Brief timeout to show saving state then clear
         setTimeout(() => setIsSaving(false), 2000);
     }
