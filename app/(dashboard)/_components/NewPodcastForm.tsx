@@ -54,13 +54,13 @@ export function NewPodcastForm({ initialRss = '' }: { initialRss?: string }) {
           placeholder="Paste RSS Url..."
           value={rssUrl}
           onChange={(e) => setRssUrl(e.target.value)}
-          className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-5 py-3 text-sm text-zinc-900 dark:text-zinc-100 shadow-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:border-indigo-500/50 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all"
+          className="w-full rounded-2xl border-2 border-white/10 bg-black/40 px-5 py-4 text-sm text-white shadow-inner backdrop-blur-md placeholder:text-zinc-500 focus:border-[var(--podcast-primary)]/50 focus:outline-none focus:ring-4 focus:ring-[var(--podcast-primary)]/10 transition-all font-bold"
         />
       </div>
       <button
         type="submit"
         disabled={loading}
-        className="shrink-0 rounded-2xl bg-indigo-600 px-6 py-3 text-sm font-bold text-white shadow-xl shadow-indigo-500/10 hover:bg-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
+        className="shrink-0 rounded-2xl bg-[var(--podcast-primary)] px-8 py-4 text-xs font-black uppercase tracking-[0.2em] text-black shadow-2xl hover:scale-[1.05] disabled:opacity-60 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
       >
         {loading ? (
           <span className="flex items-center gap-2">

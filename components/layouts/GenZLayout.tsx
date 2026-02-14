@@ -2,73 +2,108 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
-import PublicSearch from '../PublicSearch';
 import { Menu, X } from 'lucide-react';
 
-export default function GenZLayout({ children, podcast }: { children: React.ReactNode, podcast: any }) {
+interface LayoutProps {
+    children: React.ReactNode;
+    podcast: any;
+}
+
+const GenZLayout: React.FC<LayoutProps> = ({ podcast, children }) => {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
     return (
-        <div className="min-h-screen bg-background p-4 md:p-8 selection:bg-primary">
-            <header className="relative mb-16 rounded-[2.5rem] bg-indigo-600 dark:bg-zinc-900 px-8 py-10 shadow-2xl overflow-hidden">
-                <div className="absolute -right-20 -top-20 h-80 w-80 rounded-full bg-white/10 blur-3xl opacity-50" />
-                <div className="relative flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
-                    <h1 className="text-4xl font-bold tracking-tight text-white md:text-7xl leading-tight">
-                        {podcast.title}
-                    </h1>
-                    <div className="flex items-center gap-4">
-                        <nav className="hidden flex-wrap gap-4 items-center md:flex">
-                            <Link href={`/${podcast.id}`} className="rounded-full bg-white/10 backdrop-blur-md px-6 py-2.5 font-bold text-white transition-all hover:bg-white/20">Home</Link>
-                            <Link href={`/${podcast.id}/episodes`} className="rounded-full bg-white/10 backdrop-blur-md px-6 py-2.5 font-bold text-white transition-all hover:bg-white/20">Episodes</Link>
-                            <Link href={`/${podcast.id}#host`} className="rounded-full bg-white/10 backdrop-blur-md px-6 py-2.5 font-bold text-white transition-all hover:bg-white/20">About</Link>
-                            <div className="rounded-full bg-white/10 backdrop-blur-md p-1">
-                                <PublicSearch podcastId={podcast.id} />
-                            </div>
-                        </nav>
-                        <button
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-white backdrop-blur-md md:hidden transition-all hover:bg-white/20"
-                        >
-                            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                        </button>
-                    </div>
-                </div>
+        <div className="min-h-screen bg-black text-white font-sans selection:bg-primary/30">
+            {/* High-Energy Header */}
+            <header className="sticky top-0 z-50 border-b-4 border-white/5 bg-black/80 backdrop-blur-xl">
+                <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-8">
+                    <Link href={`/${podcast.id}`} className="group flex items-center gap-4">
+                        {podcast.image && (
+                            <img
+                                src={podcast.image}
+                                alt=""
+                                className="h-12 w-12 rounded-xl object-cover ring-2 ring-primary/20 transition-transform group-hover:rotate-6 group-hover:scale-110"
+                            />
+                        )}
+                        <span className="text-3xl font-black italic tracking-tighter uppercase leading-none">
+                            {podcast.title}
+                        </span>
+                    </Link>
 
-                {/* Mobile Menu */}
+                    {/* Desktop Menu */}
+                    <div className="hidden md:flex md:items-center md:gap-10">
+                        {['Episodes', 'Watch', 'About'].map((item) => (
+                            <Link
+                                key={item}
+                                href={`/${podcast.id}${item === 'Episodes' ? '/episodes' : item === 'About' ? '/about' : ''}`}
+                                className="text-sm font-black uppercase tracking-[0.2em] text-zinc-400 transition-all hover:text-primary hover:tracking-[0.3em] italic"
+                            >
+                                {item}
+                            </Link>
+                        ))}
+                        <Link
+                            href="#subscribe"
+                            className="rounded-full bg-primary px-8 py-3 text-sm font-black uppercase tracking-widest text-black shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:scale-105 hover:shadow-primary/20 active:scale-95 transition-all"
+                        >
+                            Subscribe
+                        </Link>
+                    </div>
+
+                    {/* Mobile Button - 44px+ touch target */}
+                    <button
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white md:hidden hover:bg-white/10"
+                        aria-label="Toggle menu"
+                    >
+                        {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+                    </button>
+                </nav>
+
+                {/* Mobile Menu Overlay */}
                 {isMenuOpen && (
-                    <div className="relative mt-10 border-t border-white/10 pt-10 animate-in slide-in-from-top-4 md:hidden">
-                        <nav className="flex flex-col gap-4">
-                            <Link href={`/${podcast.id}`} onClick={() => setIsMenuOpen(false)} className="rounded-2xl bg-white/10 p-5 text-xl font-bold text-white transition-all">Home</Link>
-                            <Link href={`/${podcast.id}/episodes`} onClick={() => setIsMenuOpen(false)} className="rounded-2xl bg-white/10 p-5 text-xl font-bold text-white transition-all">Episodes</Link>
-                            <Link href={`/${podcast.id}#host`} onClick={() => setIsMenuOpen(false)} className="rounded-2xl bg-white/10 p-5 text-xl font-bold text-white transition-all">About</Link>
-                            <div className="rounded-2xl bg-white/10 p-4">
-                                <PublicSearch podcastId={podcast.id} />
-                            </div>
-                        </nav>
+                    <div className="absolute inset-x-0 top-full animate-in slide-in-from-top duration-300 border-b-4 border-white/5 bg-black p-8 md:hidden">
+                        <div className="flex flex-col gap-8">
+                            {['Episodes', 'Watch', 'About'].map((item) => (
+                                <Link
+                                    key={item}
+                                    href={`/${podcast.id}${item === 'Episodes' ? '/episodes' : item === 'About' ? '/about' : ''}`}
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="text-4xl font-black italic tracking-tighter uppercase text-white hover:text-primary"
+                                >
+                                    {item}
+                                </Link>
+                            ))}
+                            <Link
+                                href="#subscribe"
+                                onClick={() => setIsMenuOpen(false)}
+                                className="mt-4 rounded-2xl bg-primary py-5 text-center text-xl font-black uppercase italic text-black"
+                            >
+                                Subscribe
+                            </Link>
+                        </div>
                     </div>
                 )}
             </header>
 
-            <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
-                <aside className="lg:col-span-1">
-                    <div className="rounded-[2rem] bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm">
-                        {podcast.image && (
-                            <img
-                                src={podcast.image}
-                                alt={podcast.title}
-                                className="mb-6 w-full rounded-2xl shadow-xl"
-                            />
-                        )}
-                        <p className="text-lg font-medium leading-relaxed text-zinc-600 dark:text-zinc-400">{podcast.description}</p>
-                    </div>
-                </aside>
+            <main className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
+                {children}
+            </main>
 
-                <main className="lg:col-span-2">
-                    <div className="rounded-[2.5rem] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm">
-                        {children}
+            {/* Hyper-Footer */}
+            <footer className="mt-32 border-t-4 border-white/5 bg-black py-20">
+                <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                    <div className="flex flex-col items-center gap-12 text-center">
+                        <span className="text-6xl font-black italic tracking-tighter uppercase opacity-10">
+                            {podcast.title}
+                        </span>
+                        <p className="max-w-md text-zinc-500 font-bold uppercase tracking-widest text-xs">
+                            © 2026. Built with Podsite. Re-imagining the audio universe.
+                        </p>
                     </div>
-                </main>
-            </div>
+                </div>
+            </footer>
         </div>
     );
-}
+};
+
+export default GenZLayout;

@@ -11,9 +11,18 @@ interface EpisodePlayerProps {
     title: string;
     description: string;
     podcastId: string;
+    primaryColor?: string;
+    accentColor?: string;
 }
 
-export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, description }: EpisodePlayerProps) {
+export default function EpisodePlayer({
+    youtubeVideoId,
+    audioUrl,
+    title,
+    description,
+    primaryColor = '#6366f1',
+    accentColor = '#8b5cf6'
+}: EpisodePlayerProps) {
     const [mode, setMode] = useState<'video' | 'audio' | null>(null);
     const audioRef = useRef<HTMLAudioElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -142,40 +151,49 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
     };
 
     return (
-        <div className="space-y-8 min-h-[400px]">
-            {/* Selection Overlay (Minimal & Premium) */}
+        <div
+            className="space-y-12 min-h-[400px]"
+            style={{
+                '--podcast-primary': primaryColor,
+                '--podcast-accent': accentColor,
+            } as React.CSSProperties}
+        >
+            {/* Selection Overlay (Vibrant Magic) */}
             {hasBoth && mode === null && (
-                <div className="animate-in fade-in zoom-in-95 duration-700 flex flex-col items-center justify-center rounded-[2.5rem] bg-zinc-50 dark:bg-zinc-900 px-8 py-16 text-center border border-zinc-200 dark:border-zinc-800 shadow-2xl">
-                    <div className="max-w-md">
-                        <h3 className="text-3xl font-bold tracking-tight mb-3 text-zinc-900 dark:text-zinc-100">
-                            How do you want to experience this?
+                <div
+                    className="relative animate-in fade-in zoom-in-95 duration-700 flex flex-col items-center justify-center rounded-[3rem] bg-zinc-950 px-8 py-20 text-center border-4 border-white/5 shadow-2xl overflow-hidden"
+                >
+                    <div className="absolute inset-0 bg-[var(--podcast-primary)]/5 opacity-50 blur-3xl rounded-full -top-1/2 -right-1/4 h-[200%] w-[200%]" />
+                    <div className="max-w-md relative z-10">
+                        <h3 className="text-4xl font-black tracking-tighter mb-4 text-white italic leading-tight">
+                            Choose Your Experience
                         </h3>
-                        <p className="text-zinc-500 mb-10 text-lg">Choose your preferred playback style.</p>
+                        <p className="text-zinc-400 mb-12 text-lg font-bold uppercase tracking-widest opacity-80">Watch on YouTube or Listen in Hi-Fi</p>
 
-                        <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex flex-col sm:flex-row gap-6">
                             <button
                                 onClick={() => setMode('video')}
-                                className="group flex-1 flex flex-col items-center gap-4 rounded-[2rem] bg-white dark:bg-zinc-800 p-8 transition-all hover:scale-[1.02] active:scale-[0.98] border border-zinc-200 dark:border-zinc-700 shadow-sm hover:shadow-xl hover:border-primary/50"
+                                className="group flex-1 flex flex-col items-center gap-6 rounded-[2.5rem] bg-white/5 p-10 transition-all hover:scale-[1.05] active:scale-[0.98] border-2 border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:border-[var(--podcast-primary)]/50 hover:shadow-[0_0_40px_-10px_var(--podcast-primary)]"
                             >
-                                <div className="h-16 w-16 rounded-2xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center text-red-600 dark:text-red-400">
-                                    <Video size={32} strokeWidth={1.5} />
+                                <div className="h-20 w-20 rounded-[1.5rem] bg-red-500/10 flex items-center justify-center text-red-500 border border-red-500/20">
+                                    <Video size={36} strokeWidth={2} />
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-lg font-bold">Watch Video</p>
-                                    <p className="text-xs font-medium text-zinc-400 uppercase tracking-widest">YouTube</p>
+                                    <p className="text-xl font-black uppercase italic text-white tracking-tighter">Watch</p>
+                                    <p className="text-[10px] font-black text-red-500 uppercase tracking-widest">Video Experience</p>
                                 </div>
                             </button>
 
                             <button
                                 onClick={() => setMode('audio')}
-                                className="group flex-1 flex flex-col items-center gap-4 rounded-[2rem] bg-white dark:bg-zinc-800 p-8 transition-all hover:scale-[1.02] active:scale-[0.98] border border-zinc-200 dark:border-zinc-700 shadow-sm hover:shadow-xl hover:border-primary/50"
+                                className="group flex-1 flex flex-col items-center gap-6 rounded-[2.5rem] bg-white/5 p-10 transition-all hover:scale-[1.05] active:scale-[0.98] border-2 border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:border-[var(--podcast-primary)]/50 hover:shadow-[0_0_40px_-10px_var(--podcast-primary)]"
                             >
-                                <div className="h-16 w-16 rounded-2xl bg-sky-50 dark:bg-sky-500/10 flex items-center justify-center text-sky-600 dark:text-sky-400">
-                                    <Headphones size={32} strokeWidth={1.5} />
+                                <div className="h-20 w-20 rounded-[1.5rem] bg-[var(--podcast-primary)]/10 flex items-center justify-center text-[var(--podcast-primary)] border border-[var(--podcast-primary)]/20">
+                                    <Headphones size={36} strokeWidth={2} />
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-lg font-bold">Listen Audio</p>
-                                    <p className="text-xs font-medium text-zinc-400 uppercase tracking-widest">High Fidelity</p>
+                                    <p className="text-xl font-black uppercase italic text-white tracking-tighter">Listen</p>
+                                    <p className="text-[10px] font-black text-[var(--podcast-primary)] uppercase tracking-widest">Hi-Fi Audio</p>
                                 </div>
                             </button>
                         </div>
@@ -183,22 +201,22 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
                 </div>
             )}
 
-            {/* Mode Switcher (Sleek Segmented Control) */}
+            {/* Mode Switcher (Vibrant Dynamic) */}
             {hasBoth && mode !== null && (
                 <div className="flex justify-center animate-in fade-in duration-700">
-                    <div className="inline-flex rounded-2xl bg-zinc-100 dark:bg-zinc-900 p-1 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                    <div className="inline-flex rounded-3xl bg-zinc-950 p-2 border-2 border-white/5 shadow-2xl">
                         <button
                             onClick={() => setMode('video')}
-                            className={`flex items-center gap-2 rounded-[0.9rem] px-5 py-2.5 text-sm font-semibold transition-all ${mode === 'video' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'}`}
+                            className={`flex items-center gap-3 rounded-2xl px-6 py-3 text-sm font-black uppercase tracking-widest transition-all ${mode === 'video' ? 'bg-[var(--podcast-primary)] text-black shadow-[0_0_20px_var(--podcast-primary)]' : 'text-zinc-500 hover:text-white'}`}
                         >
-                            <Video size={16} strokeWidth={2} />
+                            <Video size={18} strokeWidth={2.5} />
                             Watch
                         </button>
                         <button
                             onClick={() => setMode('audio')}
-                            className={`flex items-center gap-2 rounded-[0.9rem] px-5 py-2.5 text-sm font-semibold transition-all ${mode === 'audio' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'}`}
+                            className={`flex items-center gap-3 rounded-2xl px-6 py-3 text-sm font-black uppercase tracking-widest transition-all ${mode === 'audio' ? 'bg-[var(--podcast-primary)] text-black shadow-[0_0_20px_var(--podcast-primary)]' : 'text-zinc-500 hover:text-white'}`}
                         >
-                            <Headphones size={16} strokeWidth={2} />
+                            <Headphones size={18} strokeWidth={2.5} />
                             Listen
                         </button>
                     </div>
@@ -214,21 +232,22 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
                 )}
 
                 {mode === 'audio' && audioUrl && (
-                    <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 p-10 shadow-xl backdrop-blur-xl">
-                        <div className="flex items-center gap-6 mb-8">
-                            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                                <Headphones size={28} strokeWidth={1.5} />
+                    <div className="animate-in fade-in slide-in-from-bottom-10 duration-700 rounded-[3rem] border-4 border-white/5 bg-zinc-950 p-12 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden relative">
+                        <div className="absolute top-0 right-0 h-40 w-40 bg-[var(--podcast-primary)]/10 blur-[80px]" />
+                        <div className="flex items-center gap-8 mb-12 relative z-10">
+                            <div className="h-20 w-20 rounded-[1.5rem] bg-[var(--podcast-primary)]/10 flex items-center justify-center text-[var(--podcast-primary)] border border-[var(--podcast-primary)]/20 shadow-xl">
+                                <Headphones size={36} strokeWidth={2} />
                             </div>
                             <div className="flex-1">
-                                <h4 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Audio Experience</h4>
-                                <p className="text-sm text-zinc-500">Crystal clear production</p>
+                                <h4 className="text-3xl font-black tracking-tighter text-white italic">Audio Experience</h4>
+                                <p className="text-[10px] font-black text-[var(--podcast-primary)] uppercase tracking-[0.3em] mt-1">High Fidelity Production</p>
                             </div>
                         </div>
                         <audio
                             ref={audioRef}
                             controls
                             src={audioUrl}
-                            className="w-full focus:outline-none"
+                            className="w-full focus:outline-none filter invert brightness-100 opacity-90 transition-opacity hover:opacity-100"
                         >
                             Your browser does not support the audio element.
                         </audio>
@@ -236,12 +255,15 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
                 )}
 
                 {!audioUrl && !youtubeVideoId && mode !== null && (
-                    <div className="animate-in fade-in zoom-in-95 duration-700 rounded-[2rem] bg-indigo-50 dark:bg-zinc-900 border border-indigo-100 dark:border-zinc-800 p-12 text-center">
-                        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-100 dark:bg-zinc-800 text-indigo-600 dark:text-indigo-400">
-                            <Clock size={32} strokeWidth={1.5} />
+                    <div className="animate-in fade-in zoom-in-95 duration-700 rounded-[3rem] bg-zinc-950 border-4 border-white/5 p-16 text-center shadow-2xl overflow-hidden relative">
+                        <div className="absolute inset-0 bg-[var(--podcast-accent)]/5 blur-3xl opacity-30" />
+                        <div className="relative z-10">
+                            <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-[1.5rem] bg-[var(--podcast-accent)]/10 text-[var(--podcast-accent)] border border-[var(--podcast-accent)]/20 shadow-xl">
+                                <Clock size={40} strokeWidth={1.5} />
+                            </div>
+                            <h4 className="text-4xl font-black tracking-tighter text-white italic mb-4">Reading Mode</h4>
+                            <p className="text-zinc-400 max-w-sm mx-auto font-bold uppercase tracking-widest text-[10px] opacity-60 leading-relaxed">This episode is text-only. Enjoy the full story below.</p>
                         </div>
-                        <h4 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 italic transition-all">Reading Mode</h4>
-                        <p className="mt-3 text-zinc-500 max-w-sm mx-auto">This episode is text-only. Enjoy the full story below.</p>
                     </div>
                 )}
             </div>
@@ -281,20 +303,21 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
                 </div>
             )}
 
-            {/* Show Notes (Minimal & High Readability) */}
-            <section className="animate-fade-in-up [animation-delay:200ms] rounded-[2.5rem] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-10 shadow-sm">
-                <div className="flex items-center gap-4 mb-10 border-b border-zinc-100 dark:border-zinc-800 pb-8">
-                    <div className="h-12 w-12 bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 rounded-2xl border border-indigo-100 dark:border-indigo-500/20">
-                        <Clock size={24} strokeWidth={1.5} />
+            {/* Show Notes (Vibrant & High Reading Energy) */}
+            <section className="animate-fade-in-up [animation-delay:200ms] rounded-[3rem] bg-zinc-950 border-4 border-white/5 p-12 shadow-2xl relative overflow-hidden">
+                <div className="absolute h-80 w-80 bg-[var(--podcast-primary)]/5 blur-[120px] -left-20 -bottom-20" />
+                <div className="flex items-center gap-6 mb-12 border-b-2 border-white/5 pb-10 relative z-10">
+                    <div className="h-14 w-14 bg-[var(--podcast-primary)]/10 flex items-center justify-center text-[var(--podcast-primary)] rounded-[1.2rem] border-2 border-[var(--podcast-primary)]/30 shadow-[0_0_20px_var(--podcast-primary)]/20 transition-transform hover:rotate-6">
+                        <Clock size={28} strokeWidth={2.5} />
                     </div>
                     <div className="space-y-1">
-                        <h3 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 m-0">The Full Story</h3>
-                        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">Detailed Show Notes</p>
+                        <h3 className="text-3xl font-black tracking-tighter text-white uppercase italic leading-none">The Full Story</h3>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--podcast-primary)] opacity-60">Deep Dive Show Notes</p>
                     </div>
                 </div>
                 <div
                     onClick={handleDescClick}
-                    className="prose prose-zinc dark:prose-invert max-w-none text-lg leading-relaxed text-zinc-600 dark:text-zinc-300 space-y-8"
+                    className="prose prose-zinc dark:prose-invert max-w-none text-xl leading-relaxed text-zinc-300 space-y-10 relative z-10 selection:bg-[var(--podcast-primary)]/30"
                     dangerouslySetInnerHTML={{ __html: processedDescription }}
                 />
             </section>

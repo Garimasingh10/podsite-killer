@@ -137,6 +137,8 @@ export default async function EpisodePage({ params }: PageProps) {
             audioUrl={episode.audio_url}
             title={episode.title || 'Untitled'}
             description={episode.description || ''}
+            primaryColor={themeConfig.primaryColor}
+            accentColor={themeConfig.accentColor}
           />
 
           <div className="mt-24 pt-12 border-t border-slate-800/50">
