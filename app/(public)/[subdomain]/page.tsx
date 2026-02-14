@@ -83,7 +83,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
 
   const { data: episodes, error: episodesError } = await supabase
     .from('episodes')
-    .select('id, title, slug, published_at')
+    .select('id, title, slug, published_at, image_url')
     .eq('podcast_id', subdomain)
     .order('published_at', { ascending: false })
     .range(from, to);

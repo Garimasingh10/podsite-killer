@@ -15,7 +15,7 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                     >
                         <div className="aspect-video w-full overflow-hidden bg-secondary">
                             <img
-                                src={ep.image_url || podcast.image_url}
+                                src={ep.image_url || podcast.image}
                                 alt={ep.title}
                                 className="h-full w-full object-cover transition-transform group-hover:scale-105"
                             />
