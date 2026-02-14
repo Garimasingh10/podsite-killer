@@ -76,25 +76,32 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
 
     // Default: Netflix Style
     return (
-        <section className="mb-24">
-            <h3 className="mb-8 text-xl font-bold uppercase tracking-widest text-zinc-400">Popular on {podcast.title}</h3>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 lg:gap-2">
+        <section className="mb-24 px-4 md:px-0">
+            <h3 className="mb-6 text-2xl font-black uppercase tracking-tighter text-zinc-100 flex items-center gap-3">
+                <span className="h-6 w-1 bg-red-600 rounded-full" />
+                Popular on {podcast.title}
+            </h3>
+            <div className="grid grid-cols-2 gap-x-2 gap-y-12 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {episodes.map((ep) => (
                     <Link
                         key={ep.id}
                         href={`/${podcast.id}/episodes/${ep.slug}`}
-                        className="group relative aspect-[2/3] overflow-hidden rounded-sm transition-transform duration-300 hover:z-20 hover:scale-125 hover:shadow-2xl"
+                        className="group relative aspect-video overflow-visible rounded-sm transition-transform duration-500 ease-out hover:z-50 hover:scale-115"
                     >
-                        <img
-                            src={ep.image_url || podcast.image}
-                            alt={ep.title}
-                            className="h-full w-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100 p-4 flex flex-col justify-end">
-                            <h4 className="text-xs font-black leading-tight uppercase italic">{ep.title}</h4>
-                            <div className="mt-2 flex items-center gap-1 text-[8px] font-black text-red-600">
-                                <div className="h-1.5 w-1.5 rounded-full bg-red-600 animate-pulse" />
-                                <span>WATCH NOW</span>
+                        <div className="h-full w-full overflow-hidden rounded-sm ring-1 ring-white/10 shadow-2xl transition-all group-hover:ring-red-600/50">
+                            <img
+                                src={ep.image_url || podcast.image}
+                                alt={ep.title}
+                                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
+                        </div>
+
+                        {/* Netflix-style Card Details on Hover */}
+                        <div className="absolute inset-x-0 -bottom-2 translate-y-full p-4 opacity-0 transition-all duration-300 group-hover:opacity-100 bg-zinc-900 rounded-b-md border-x border-b border-white/5 shadow-2xl">
+                            <h4 className="text-sm font-black leading-tight uppercase tracking-tighter text-white line-clamp-2 italic">{ep.title}</h4>
+                            <div className="mt-3 flex items-center justify-between">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-red-600 animate-pulse">Watch Now</span>
+                                <span className="text-[10px] font-bold text-zinc-500">{new Date(ep.published_at).getFullYear()}</span>
                             </div>
                         </div>
                     </Link>
