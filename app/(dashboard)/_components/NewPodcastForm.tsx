@@ -46,7 +46,7 @@ export function NewPodcastForm({ initialRss = '' }: { initialRss?: string }) {
   };
 
   return (
-    <form onSubmit={onSubmit} className="relative flex w-full max-w-md flex-col gap-2 sm:flex-row">
+    <form onSubmit={onSubmit} className="relative flex w-full max-w-lg flex-col gap-3 sm:flex-row">
       <div className="relative flex-1">
         <input
           type="url"
@@ -54,13 +54,13 @@ export function NewPodcastForm({ initialRss = '' }: { initialRss?: string }) {
           placeholder="Paste RSS Url..."
           value={rssUrl}
           onChange={(e) => setRssUrl(e.target.value)}
-          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 shadow-inner backdrop-blur-md placeholder:text-slate-500 focus:border-sky-500/50 focus:bg-slate-900/50 focus:outline-none focus:ring-4 focus:ring-sky-500/10 transition-all"
+          className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-5 py-3 text-sm text-zinc-900 dark:text-zinc-100 shadow-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:border-indigo-500/50 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all"
         />
       </div>
       <button
         type="submit"
         disabled={loading}
-        className="shrink-0 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-500/20 hover:from-sky-400 hover:to-cyan-300 hover:shadow-sky-500/40 disabled:opacity-60 disabled:cursor-not-allowed transition-all active:scale-95"
+        className="shrink-0 rounded-2xl bg-indigo-600 px-6 py-3 text-sm font-bold text-white shadow-xl shadow-indigo-500/10 hover:bg-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
       >
         {loading ? (
           <span className="flex items-center gap-2">
@@ -68,10 +68,10 @@ export function NewPodcastForm({ initialRss = '' }: { initialRss?: string }) {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
             </svg>
-            Syncing
+            Syncing...
           </span>
         ) : (
-          'Import Podcast'
+          'Import Show'
         )}
       </button>
 

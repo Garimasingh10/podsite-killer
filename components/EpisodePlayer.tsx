@@ -143,57 +143,62 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
 
     return (
         <div className="space-y-8 min-h-[400px]">
-            {/* Selection Overlay (Ask: Watch vs Listen) */}
+            {/* Selection Overlay (Minimal & Premium) */}
             {hasBoth && mode === null && (
-                <div className="animate-in fade-in zoom-in-95 duration-500 flex flex-col items-center justify-center rounded-3xl border-4 border-foreground bg-accent p-12 text-center shadow-[16px_16px_0px_0px_rgba(0,0,0,1)]">
-                    <h3 className="text-4xl font-black uppercase italic tracking-tighter mb-8 bg-white px-4 py-2 border-4 border-black -rotate-2">
-                        PICK YOUR VIBE
-                    </h3>
-                    <div className="flex flex-col sm:flex-row gap-6 w-full max-w-lg">
-                        <button
-                            onClick={() => setMode('video')}
-                            className="group flex-1 flex flex-col items-center gap-4 rounded-2xl border-4 border-black bg-white p-8 transition-all hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] active:scale-95"
-                        >
-                            <div className="h-20 w-20 rounded-full bg-red-100 flex items-center justify-center text-red-600 transition-transform group-hover:scale-110">
-                                <Video size={40} />
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-xl font-black uppercase italic tracking-tighter">Watch Video</p>
-                                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">YouTube Clips</p>
-                            </div>
-                        </button>
-                        <button
-                            onClick={() => setMode('audio')}
-                            className="group flex-1 flex flex-col items-center gap-4 rounded-2xl border-4 border-black bg-white p-8 transition-all hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] active:scale-95"
-                        >
-                            <div className="h-20 w-20 rounded-full bg-sky-100 flex items-center justify-center text-sky-600 transition-transform group-hover:scale-110">
-                                <Headphones size={40} />
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-xl font-black uppercase italic tracking-tighter">Listen Only</p>
-                                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Hi-Fi Audio</p>
-                            </div>
-                        </button>
+                <div className="animate-in fade-in zoom-in-95 duration-700 flex flex-col items-center justify-center rounded-[2.5rem] bg-zinc-50 dark:bg-zinc-900 px-8 py-16 text-center border border-zinc-200 dark:border-zinc-800 shadow-2xl">
+                    <div className="max-w-md">
+                        <h3 className="text-3xl font-bold tracking-tight mb-3 text-zinc-900 dark:text-zinc-100">
+                            How do you want to experience this?
+                        </h3>
+                        <p className="text-zinc-500 mb-10 text-lg">Choose your preferred playback style.</p>
+
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <button
+                                onClick={() => setMode('video')}
+                                className="group flex-1 flex flex-col items-center gap-4 rounded-[2rem] bg-white dark:bg-zinc-800 p-8 transition-all hover:scale-[1.02] active:scale-[0.98] border border-zinc-200 dark:border-zinc-700 shadow-sm hover:shadow-xl hover:border-primary/50"
+                            >
+                                <div className="h-16 w-16 rounded-2xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center text-red-600 dark:text-red-400">
+                                    <Video size={32} strokeWidth={1.5} />
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-lg font-bold">Watch Video</p>
+                                    <p className="text-xs font-medium text-zinc-400 uppercase tracking-widest">YouTube</p>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => setMode('audio')}
+                                className="group flex-1 flex flex-col items-center gap-4 rounded-[2rem] bg-white dark:bg-zinc-800 p-8 transition-all hover:scale-[1.02] active:scale-[0.98] border border-zinc-200 dark:border-zinc-700 shadow-sm hover:shadow-xl hover:border-primary/50"
+                            >
+                                <div className="h-16 w-16 rounded-2xl bg-sky-50 dark:bg-sky-500/10 flex items-center justify-center text-sky-600 dark:text-sky-400">
+                                    <Headphones size={32} strokeWidth={1.5} />
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-lg font-bold">Listen Audio</p>
+                                    <p className="text-xs font-medium text-zinc-400 uppercase tracking-widest">High Fidelity</p>
+                                </div>
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
 
-            {/* Mode Switcher */}
+            {/* Mode Switcher (Sleek Segmented Control) */}
             {hasBoth && mode !== null && (
-                <div className="flex justify-center animate-in fade-in duration-500">
-                    <div className="inline-flex rounded-full bg-slate-900 p-1 border border-slate-800 shadow-xl">
+                <div className="flex justify-center animate-in fade-in duration-700">
+                    <div className="inline-flex rounded-2xl bg-zinc-100 dark:bg-zinc-900 p-1 border border-zinc-200 dark:border-zinc-800 shadow-sm">
                         <button
                             onClick={() => setMode('video')}
-                            className={`flex items-center gap-2 rounded-full px-6 py-2 text-sm font-bold transition-all ${mode === 'video' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-slate-400 hover:text-white'}`}
+                            className={`flex items-center gap-2 rounded-[0.9rem] px-5 py-2.5 text-sm font-semibold transition-all ${mode === 'video' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'}`}
                         >
-                            <Video size={16} />
+                            <Video size={16} strokeWidth={2} />
                             Watch
                         </button>
                         <button
                             onClick={() => setMode('audio')}
-                            className={`flex items-center gap-2 rounded-full px-6 py-2 text-sm font-bold transition-all ${mode === 'audio' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-slate-400 hover:text-white'}`}
+                            className={`flex items-center gap-2 rounded-[0.9rem] px-5 py-2.5 text-sm font-semibold transition-all ${mode === 'audio' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'}`}
                         >
-                            <Headphones size={16} />
+                            <Headphones size={16} strokeWidth={2} />
                             Listen
                         </button>
                     </div>
@@ -203,20 +208,20 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
             {/* Content Area */}
             <div ref={containerRef} className="relative">
                 {mode === 'video' && youtubeVideoId && (
-                    <div className="animate-in fade-in zoom-in-95 duration-500">
+                    <div className="animate-in fade-in zoom-in-95 duration-700 overflow-hidden rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-2xl">
                         <FloatingPlayer youtubeVideoId={youtubeVideoId} title={title} />
                     </div>
                 )}
 
                 {mode === 'audio' && audioUrl && (
-                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 rounded-2xl border border-slate-800 bg-slate-900/40 p-8 shadow-2xl backdrop-blur-md">
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary animate-pulse">
-                                <Headphones size={24} />
+                    <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 p-10 shadow-xl backdrop-blur-xl">
+                        <div className="flex items-center gap-6 mb-8">
+                            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                                <Headphones size={28} strokeWidth={1.5} />
                             </div>
                             <div className="flex-1">
-                                <h4 className="font-bold text-white">Audio Experience</h4>
-                                <p className="text-xs text-slate-500">Hi-Fi Audio Player</p>
+                                <h4 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Audio Experience</h4>
+                                <p className="text-sm text-zinc-500">Crystal clear production</p>
                             </div>
                         </div>
                         <audio

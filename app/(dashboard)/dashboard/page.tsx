@@ -62,24 +62,23 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
-      {/* Top Welcome / Search Hero */}
-      <section className="animate-fade-in-up rounded-3xl glass-card relative overflow-hidden p-8 mb-8">
-        <div className="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-sky-500/10 blur-3xl opacity-50" />
-        <div className="relative flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-          <div className="space-y-2">
-            <h1 className="text-4xl font-black tracking-tighter text-white leading-none">
-              Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-cyan-400">Creator.</span>
+      {/* Top Welcome Section (Modern & Minimal) */}
+      <section className="animate-fade-in-up rounded-[2rem] bg-indigo-600 dark:bg-zinc-900 border border-indigo-500/20 dark:border-zinc-800 relative overflow-hidden p-10 mb-10 shadow-xl">
+        <div className="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-white/10 blur-3xl opacity-50" />
+        <div className="relative flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
+          <div className="space-y-3">
+            <h1 className="text-4xl font-bold tracking-tight text-white leading-none">
+              Welcome back, <span className="opacity-80">Creator</span>
             </h1>
-            <p className="max-w-md text-sm leading-relaxed text-slate-400">
-              Manage your podcast sites, sync your content, and grow your audience.
-              Paste an RSS feed to get started instantly.
+            <p className="max-w-md text-sm leading-relaxed text-indigo-100 dark:text-zinc-400 font-medium">
+              Your studio is synchronized and your audience is growing.
+              Paste an RSS feed to launch a new site.
             </p>
           </div>
-          <div className="flex w-full flex-col gap-3 sm:w-auto">
-            <NewPodcastForm />
-            <p className="text-[10px] text-slate-500 text-center md:text-left uppercase tracking-widest font-bold opacity-50">
-              Search library or paste RSS to import
-            </p>
+          <div className="flex w-full flex-col gap-4 sm:w-auto">
+            <div className="rounded-2xl bg-white/10 dark:bg-white/[0.03] p-1 ring-1 ring-white/20">
+              <NewPodcastForm />
+            </div>
           </div>
         </div>
       </section>
@@ -119,46 +118,47 @@ export default async function DashboardPage({ searchParams }: PageProps) {
         </div>
       )}
 
-      {/* Featured / Active Podcast Section */}
+      {/* Active Selection (Premium Card) */}
       {active && (
-        <section className="animate-fade-in-up [animation-delay:100ms] grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <section className="animate-fade-in-up [animation-delay:100ms] grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            <div className="group relative flex h-full flex-col justify-between overflow-hidden rounded-3xl glass-card p-6 transition-all hover:bg-slate-900/60 hover:shadow-2xl">
-              <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-sky-500/5 blur-3xl transition-all group-hover:bg-sky-500/10" />
+            <div className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[2.5rem] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-8 transition-all hover:shadow-2xl">
+              <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-zinc-500/5 blur-3xl" />
 
               <div className="relative flex flex-col gap-8 sm:flex-row">
                 {active.theme_config?.imageUrl && (
-                  <div className="shrink-0">
+                  <div className="shrink-0 relative">
                     <img
                       src={active.theme_config.imageUrl}
                       alt={active.title || 'Podcast'}
-                      className="h-40 w-40 rounded-2xl object-cover shadow-2xl ring-1 ring-white/10 group-hover:scale-105 transition-transform duration-500"
+                      className="h-44 w-44 rounded-3xl object-cover shadow-2xl ring-1 ring-black/5 dark:ring-white/10 group-hover:scale-[1.02] transition-transform duration-500"
                     />
+                    <div className="absolute inset-0 rounded-3xl ring-inset ring-1 ring-white/10" />
                   </div>
                 )}
-                <div className="flex-1 space-y-4">
+                <div className="flex-1 space-y-5">
                   <div className="flex flex-wrap items-center gap-3">
-                    <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-400 ring-1 ring-emerald-500/20">
-                      Active Workspace
+                    <span className="rounded-full bg-indigo-50 dark:bg-indigo-500/10 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20">
+                      Primary Site
                     </span>
                     <Link
                       href={`/${active.id}`}
                       target="_blank"
-                      className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1 text-xs font-black uppercase tracking-wider text-white transition-all hover:bg-white hover:text-black hover:shadow-lg"
+                      className="flex items-center gap-2 rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 px-5 py-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300 transition-all hover:bg-zinc-100 dark:hover:bg-zinc-700"
                     >
-                      Visit Local Site <span className="text-[10px]">↗</span>
+                      Browse Site <span className="text-[10px]">↗</span>
                     </Link>
                   </div>
                   <div>
-                    <h2 className="text-4xl font-black tracking-tighter text-white leading-tight">
+                    <h2 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
                       {active.title}
                     </h2>
-                    <p className="mt-1 text-xs font-mono text-slate-500 truncate max-w-xs opacity-60">
+                    <p className="mt-1.5 text-xs font-medium text-zinc-400 font-mono opacity-80">
                       {active.rss_url}
                     </p>
                   </div>
-                  <p className="text-sm leading-relaxed text-slate-400 line-clamp-2">
-                    {active.description || 'No description available for this podcast.'}
+                  <p className="text-base leading-relaxed text-zinc-500 dark:text-zinc-400 line-clamp-2">
+                    {active.description || 'Launch your podcast world. No description set.'}
                   </p>
                 </div>
               </div>
@@ -166,109 +166,109 @@ export default async function DashboardPage({ searchParams }: PageProps) {
               <div className="relative mt-8 grid grid-cols-2 gap-4">
                 <Link
                   href={`/podcasts/${active.id}/episodes`}
-                  className="flex items-center justify-center gap-3 rounded-2xl border border-white/5 bg-white/[0.03] py-4 text-sm font-black uppercase tracking-widest transition-all hover:bg-white/[0.08] hover:scale-[1.02] hover:shadow-xl active:scale-95"
+                  className="flex items-center justify-center gap-3 rounded-2xl bg-zinc-900 dark:bg-white py-4 text-sm font-bold uppercase tracking-widest text-white dark:text-zinc-950 transition-all hover:scale-[1.02] shadow-sm"
                 >
-                  <span className="text-lg">🎧</span>
-                  Episodes
+                  <Headphones size={18} />
+                  Manage Episodes
                 </Link>
                 <Link
                   href={`/podcasts/${active.id}/settings`}
-                  className="flex items-center justify-center gap-3 rounded-2xl border border-white/5 bg-white/[0.03] py-4 text-sm font-black uppercase tracking-widest transition-all hover:bg-white/[0.08] hover:scale-[1.02] hover:shadow-xl active:scale-95"
+                  className="flex items-center justify-center gap-3 rounded-2xl bg-zinc-100 dark:bg-zinc-800 py-4 text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700 transition-all hover:scale-[1.02]"
                 >
-                  <span className="text-lg">⚙️</span>
-                  Settings
+                  <Clock size={18} />
+                  Site Settings
                 </Link>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-6">
-            <div className="rounded-3xl glass-card p-6 shadow-xl relative overflow-hidden group">
-              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-red-500/5 blur-2xl group-hover:bg-red-500/10 transition-all" />
-              <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
-                YouTube Connection
+          <div className="flex flex-col gap-8">
+            <div className="rounded-[2rem] bg-zinc-50 dark:bg-zinc-900/50 p-8 border border-zinc-200 dark:border-zinc-800 shadow-sm transition-all hover:shadow-md">
+              <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-400 mb-2">
+                YouTube Sync
               </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Sync your YouTube videos with your podcast episodes automatically.
+              <p className="text-xs text-zinc-500 leading-relaxed font-medium">
+                Link your channel to automatically pull Shorts and video episodes.
               </p>
-              <div className="mt-6 flex flex-col gap-3">
+              <div className="mt-6 space-y-4">
                 <input
                   type="text"
-                  placeholder="UC123abc..."
-                  className="w-full rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3 text-xs text-white placeholder:text-slate-700 focus:border-sky-500/50 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-all font-mono"
+                  placeholder="Channel ID (UC...)"
+                  className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-5 py-3.5 text-sm text-zinc-900 dark:text-white placeholder:text-zinc-300 dark:placeholder:text-zinc-700 focus:border-indigo-500/50 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 transition-all"
                 />
-                <button className="rounded-xl bg-sky-500 py-3 text-xs font-black uppercase tracking-widest text-slate-950 transition-all hover:bg-sky-400 hover:shadow-lg hover:shadow-sky-500/20 active:scale-95">
-                  Link Channel
+                <button className="w-full rounded-xl bg-indigo-600 py-3.5 text-xs font-bold uppercase tracking-widest text-white transition-all hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/20 active:scale-[0.98]">
+                  Connect Channel
                 </button>
               </div>
             </div>
 
-            <div className="rounded-3xl glass-card p-6 shadow-xl relative overflow-hidden group">
-              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-emerald-500/5 blur-2xl group-hover:bg-emerald-500/10 transition-all" />
-              <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
-                Audience Data
+            <div className="rounded-[2rem] bg-indigo-50/50 dark:bg-indigo-500/5 p-8 border border-indigo-100 dark:border-indigo-500/10 transition-all text-center">
+              <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-indigo-400 mb-2">
+                Insights
               </h3>
-              <div className="mt-12 flex items-center justify-center border-t border-white/5 pt-6">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 opacity-30">Coming Phase 3</p>
+              <div className="py-6 flex flex-col items-center justify-center">
+                <div className="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-2">
+                  <Clock size={20} />
+                </div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-300 dark:text-indigo-400/50">Analytics Coming Soon</p>
               </div>
             </div>
           </div>
         </section>
       )}
 
-      {/* Library Section */}
+      {/* Library Section (Clean Grid) */}
       {others.length > 0 && (
-        <section className="animate-fade-in-up [animation-delay:200ms] space-y-8 pt-12 pb-24">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-white/5 pb-8">
-            <div className="space-y-1">
-              <h3 className="text-3xl font-black tracking-tighter text-white leading-none">
-                {q ? `Results for "${q}"` : 'Studio Library'}
+        <section className="animate-fade-in-up [animation-delay:200ms] space-y-10 pt-16 pb-32">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between border-b border-zinc-200 dark:border-zinc-800 pb-10">
+            <div className="space-y-2">
+              <h3 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+                {q ? `Results for "${q}"` : 'Your Studio Library'}
               </h3>
-              <p className="text-sm font-bold text-slate-500 uppercase tracking-widest opacity-60">Manage your entire collection</p>
+              <p className="text-sm font-medium text-zinc-500 uppercase tracking-widest opacity-80">Connected RSS Feeds</p>
             </div>
             {!q && (
-              <div className="w-full sm:w-72">
-                <SearchForm initialQuery={q} placeholder="Filter library..." />
+              <div className="w-full sm:w-80">
+                <SearchForm initialQuery={q} placeholder="Filter your shows..." />
               </div>
             )}
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {others.map((p) => (
               <Link
                 key={p.id}
                 href={`/podcasts/${p.id}/episodes`}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-3xl glass-card p-6 transition-all hover:-translate-y-2 hover:bg-white/[0.04] hover:shadow-2xl"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-[2rem] bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 p-8 transition-all hover:scale-[1.03] hover:bg-white dark:hover:bg-zinc-900 hover:shadow-2xl hover:border-indigo-500/30"
               >
-                <div className="flex gap-4">
+                <div className="flex gap-6">
                   {p.theme_config?.imageUrl && (
-                    <div className="shrink-0 relative">
+                    <div className="shrink-0">
                       <img
                         src={p.theme_config.imageUrl}
                         alt={p.title || 'Show'}
-                        className="h-16 w-16 rounded-2xl object-cover shadow-lg ring-1 ring-white/10 group-hover:scale-110 transition-transform duration-500"
+                        className="h-20 w-20 rounded-2xl object-cover shadow-md ring-1 ring-black/5 dark:ring-white/10"
                       />
-                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/20 to-transparent" />
                     </div>
                   )}
-                  <div className="space-y-1 min-w-0">
-                    <h4 className="text-lg font-black tracking-tight text-slate-100 group-hover:text-sky-400 transition-colors truncate">
+                  <div className="space-y-2 min-w-0">
+                    <h4 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
                       {p.title || 'Untitled'}
                     </h4>
                     {p.description && (
-                      <p className="text-xs leading-relaxed text-slate-500 line-clamp-2 opacity-80">
+                      <p className="text-sm leading-relaxed text-zinc-500 line-clamp-2">
                         {p.description}
                       </p>
                     )}
                   </div>
                 </div>
 
-                <div className="mt-6 flex items-center justify-between border-t border-white/5 pt-4">
+                <div className="mt-8 flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-6">
                   <div className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.5)]" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Live Workspace</span>
+                    <div className="h-2 w-2 rounded-full bg-indigo-500 shadow-sm" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-400">Live Workspace</span>
                   </div>
-                  <span className="rounded-lg bg-white/5 px-2 py-1 text-[9px] font-mono text-slate-600 tracking-tighter">
+                  <span className="rounded-lg bg-zinc-100 dark:bg-zinc-800 px-2 py-1 text-[10px] font-mono text-zinc-400">
                     {p.id.slice(0, 8)}
                   </span>
                 </div>
