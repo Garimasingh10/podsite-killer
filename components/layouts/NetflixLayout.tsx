@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Menu, Search, Headphones, X } from 'lucide-react';
+import PublicSearch from '../PublicSearch';
 
 export default function NetflixLayout({ children, podcast }: { children: React.ReactNode, podcast: any }) {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -16,14 +17,14 @@ export default function NetflixLayout({ children, podcast }: { children: React.R
                         <Link href={`/${podcast.id}`} className="text-2xl font-black tracking-tighter text-sky-500">
                             {(podcast.title || 'Podcast').split(' ').map((s: string) => s[0]).join('')}
                         </Link>
-                        <nav className="hidden gap-6 text-sm font-medium md:flex">
-                            <Link href={`/${podcast.id}`} className="hover:text-sky-400">Home</Link>
-                            <Link href={`/${podcast.id}/episodes`} className="hover:text-sky-400">Episodes</Link>
-                            <Link href="#" className="hover:text-sky-400">About</Link>
-                        </nav>
+                        <Link href={`/${podcast.id}`} className="hover:text-sky-400">Home</Link>
+                        <Link href={`/${podcast.id}/episodes`} className="hover:text-sky-400">Episodes</Link>
+                        <Link href={`/${podcast.id}#host`} className="hover:text-sky-400">About</Link>
                     </div>
                     <div className="flex items-center gap-4">
-                        <Search size={20} className="hidden md:block" />
+                        <div className="hidden md:block">
+                            <PublicSearch podcastId={podcast.id} />
+                        </div>
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                             className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md md:hidden"

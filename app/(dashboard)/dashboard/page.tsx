@@ -56,7 +56,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 
   // Logic: First podcast in list is "Active", others are "Library"
   const active = rows.length > 0 ? rows[0] : null;
-  const others = rows.length > 1 ? rows.slice(1) : [];
+  const others = rows.length > 0 ? rows : []; // Show all in library for better visibility
 
   const hasPodcasts = rows.length > 0;
   if (active) console.log('Dashboard Active ID:', active.id);
@@ -219,13 +219,13 @@ export default async function DashboardPage({ searchParams }: PageProps) {
       )
       }
 
-      {/* Other Podcasts */}
+      {/* Other Podcasts / Library */}
       {
-        (active && others.length > 0) || (q && others.length > 0) ? (
+        others.length > 0 ? (
           <section className="space-y-4 pt-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-slate-200">
-                {q ? `More results for "${q}"` : 'Your Library'}
+                {q ? `Search results for "${q}"` : 'Your Library'}
               </h3>
               {!q && (
                 <div className="w-64">

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import PublicSearch from '../PublicSearch';
 
 export default function SubstackLayout({ children, podcast }: { children: React.ReactNode, podcast: any }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,9 +16,13 @@ export default function SubstackLayout({ children, podcast }: { children: React.
                         <nav className="hidden gap-4 text-sm font-medium sm:flex">
                             <Link href={`/${podcast.id}`} className="text-slate-600 hover:text-black transition-colors">Home</Link>
                             <Link href={`/${podcast.id}/episodes`} className="text-slate-600 hover:text-black transition-colors">Episodes</Link>
+                            <Link href={`/${podcast.id}#host`} className="text-slate-600 hover:text-black transition-colors">About</Link>
                         </nav>
                     </div>
                     <div className="flex items-center gap-3">
+                        <div className="hidden md:block">
+                            <PublicSearch podcastId={podcast.id} />
+                        </div>
                         <button className="hidden sm:block rounded-full bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity">
                             Subscribe
                         </button>

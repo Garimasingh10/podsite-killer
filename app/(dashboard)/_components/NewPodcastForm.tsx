@@ -30,10 +30,16 @@ export function NewPodcastForm({ initialRss = '' }: { initialRss?: string }) {
     }
 
     setMessage(
-      `Success! Imported ${json.episodesProcessed} episodes.`,
+      `Success! Imported "${json.podcastId}" with ${json.episodesProcessed} episodes.`,
     );
     setRssUrl('');
     router.refresh();
+
+    // Explicitly pushing to dashboard to trigger a full server-side refresh if needed
+    setTimeout(() => {
+      router.push('/dashboard');
+      router.refresh();
+    }, 100);
 
     // Clear success message after 3s
     setTimeout(() => setMessage(null), 3000);

@@ -16,7 +16,7 @@ const PAGE_SIZE = 20;
 // NOTE: params & searchParams are Promises here
 type PageProps = {
   params: Promise<{ subdomain: string }>;
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; q?: string }>;
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -48,7 +48,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PodcastHome({ params, searchParams }: PageProps) {
   const { subdomain } = await params;
-  const { page: pageParam } = await searchParams;
+  const { page: pageParam, q: qParam } = await searchParams;
+  const q = qParam?.trim();
 
   const page = Number(pageParam ?? '1') || 1;
   const from = (page - 1) * PAGE_SIZE;
@@ -82,12 +83,17 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
       layout === 'genz' ? GenZLayout :
         NetflixLayout;
 
-  const { data: episodes, error: episodesError } = await supabase
+  let episodesQuery = supabase
     .from('episodes')
     .select('id, title, slug, published_at, image_url')
     .eq('podcast_id', subdomain)
-    .order('published_at', { ascending: false })
-    .range(from, to);
+    .order('published_at', { ascending: false });
+
+  if (q) {
+    episodesQuery = episodesQuery.ilike('title', `%${q}%`);
+  }
+
+  const { data: episodes, error: episodesError } = await episodesQuery.range(from, to);
 
   if (episodesError) {
     console.error('episodesError', episodesError);

@@ -1,6 +1,7 @@
 // components/layouts/GenZLayout.tsx
 import React from 'react';
 import Link from 'next/link';
+import PublicSearch from '../PublicSearch';
 
 export default function GenZLayout({ children, podcast }: { children: React.ReactNode, podcast: any }) {
     return (
@@ -10,9 +11,13 @@ export default function GenZLayout({ children, podcast }: { children: React.Reac
                     <h1 className="text-6xl font-black uppercase italic tracking-tighter md:text-9xl">
                         {podcast.title}
                     </h1>
-                    <nav className="flex gap-4">
+                    <nav className="flex flex-wrap gap-4 items-center">
                         <Link href={`/${podcast.id}`} className="border-4 border-black bg-white px-6 py-3 font-black uppercase transition-transform hover:-translate-y-1">Home</Link>
                         <Link href={`/${podcast.id}/episodes`} className="border-4 border-black bg-white px-6 py-3 font-black uppercase transition-transform hover:-translate-y-1">Episodes</Link>
+                        <Link href={`/${podcast.id}#host`} className="border-4 border-black bg-white px-6 py-3 font-black uppercase transition-transform hover:-translate-y-1">About</Link>
+                        <div className="border-4 border-black bg-white p-1">
+                            <PublicSearch podcastId={podcast.id} />
+                        </div>
                     </nav>
                 </div>
             </header>
