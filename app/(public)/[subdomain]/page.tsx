@@ -74,6 +74,10 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     );
   }
 
+  const hasMore = episodes && episodes.length === PAGE_SIZE;
+  const latest = page === 1 ? episodes?.[0] : undefined;
+  const rest = page === 1 ? episodes?.slice(1) ?? [] : episodes ?? [];
+
   const themeConfig = (podcast.theme_config as unknown as ThemeConfig) || {};
   const podcastWithImage = {
     ...podcast,
@@ -81,31 +85,6 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     latest_video_id: latest?.youtube_video_id
   };
   const layout = themeConfig.layout || 'netflix';
-
-  const LayoutComponent =
-    layout === 'substack' ? SubstackLayout :
-      layout === 'genz' ? GenZLayout :
-        NetflixLayout;
-
-  let episodesQuery = supabase
-    .from('episodes')
-    .select('id, title, slug, published_at, image_url, youtube_video_id')
-    .eq('podcast_id', subdomain)
-    .order('published_at', { ascending: false });
-
-  if (q) {
-    episodesQuery = episodesQuery.ilike('title', `%${q}%`);
-  }
-
-  const { data: episodes, error: episodesError } = await episodesQuery.range(from, to);
-
-  if (episodesError) {
-    console.error('episodesError', episodesError);
-  }
-
-  const hasMore = episodes && episodes.length === PAGE_SIZE;
-  const latest = page === 1 ? episodes?.[0] : undefined;
-  const rest = page === 1 ? episodes?.slice(1) ?? [] : episodes ?? [];
 
   const defaultLayout = ['hero', 'shorts', 'subscribe', 'grid', 'host'];
   const pageLayout = (podcast.page_layout as string[]) || defaultLayout;
