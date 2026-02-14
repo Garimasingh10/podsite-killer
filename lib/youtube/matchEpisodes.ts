@@ -32,18 +32,19 @@ export function matchEpisodesToVideos(
 ): MatchResult[] {
   if (!episodes.length || !videos.length) return [];
 
-  // Fuse settings: include score, look for title
+  // Fuse settings for multi-field search
   const fuse = new Fuse(videos, {
     includeScore: true,
-    // Lower threshold = stricter. 0.0 is exact, 1.0 is anything.
-    // We relax it to 0.6 to catch partial matches, then filter manually.
     threshold: 0.6,
-    keys: ['title'],
-    ignoreLocation: true, // matching anywhere in the string is fine
+    keys: [
+      { name: 'title', weight: 0.7 },
+      { name: 'description', weight: 0.3 }
+    ],
+    ignoreLocation: true,
   });
 
   const results: MatchResult[] = [];
-  const MAX_LINKS = 50; // Safety cap
+  const MAX_LINKS = 100;
 
   for (const ep of episodes) {
     if (!ep.title) continue;
@@ -51,45 +52,41 @@ export function matchEpisodesToVideos(
     const matches = fuse.search(ep.title);
     if (!matches.length) continue;
 
-    // Find the best candidate among the top matches
     let bestMatch: MatchResult | null = null;
 
     for (const m of matches) {
       const vid = m.item;
-      const score = m.score ?? 1; // Fuse score: 0 is best
-      const similarity = 1 - score; // Convert to 0..1 where 1 is best
+      const score = m.score ?? 1;
+      const similarity = 1 - score;
 
-      // Heuristic:
-      // 1. High confidence title match
-      const highConfidenceTitle = similarity > 0.8;
+      const isDateClose = areDatesClose(ep.published_at, vid.publishedAt, 7); // 7 day tolerance
 
-      // 2. Medium confidence title match + Date match
-      const isDateClose = areDatesClose(ep.published_at, vid.publishedAt, 4); // 4 days tolerance
-      const mediumConfidenceTitle = similarity > 0.4;
+      // Multi-stage criteria:
+      // A) High similarity title match (>0.75)
+      // B) Medium similarity (>0.3) + Close date
+      // C) Topic Discovery: High similarity in description or partial title match
 
-      const isAccepted = highConfidenceTitle || (mediumConfidenceTitle && isDateClose);
+      const strongTitleMatch = similarity > 0.75;
+      const probableMatch = similarity > 0.3 && isDateClose;
+      const topicMatch = similarity > 0.5 && vid.description.toLowerCase().includes(ep.title.toLowerCase().slice(0, 15));
 
-      if (isAccepted) {
-        console.log(`   -> MATCH ACCEPTED! (Sim: ${similarity.toFixed(2)}, DateMatch: ${isDateClose})`);
-        // Take the one with best similarity (lowest score)
-        if (!bestMatch || score < (1 - bestMatch.score)) { // Compare Fuse score (0=best) with 1-similarity (0=best)
+      if (strongTitleMatch || probableMatch || topicMatch) {
+        // Boost similarity if dates match
+        const finalSimilarity = isDateClose ? Math.min(1, similarity + 0.2) : similarity;
+
+        if (!bestMatch || finalSimilarity > bestMatch.score) {
           bestMatch = {
             episodeId: ep.id,
             videoId: vid.id,
-            score: similarity, // Store similarity (1=best)
+            score: finalSimilarity,
           };
         }
-      } else {
-        // console.log(`   -> Rejected. Best Sim was ${similarity.toFixed(2)} but date gap or sim too low.`);
       }
     }
 
     if (bestMatch) {
       results.push(bestMatch);
-      console.log(`[Sync Debug] Best match for "${ep.title}": Video "${bestMatch.videoId}" with score ${bestMatch.score.toFixed(2)}`);
       if (results.length >= MAX_LINKS) break;
-    } else {
-      console.log(`[Sync Debug] No match found for episode: "${ep.title}"`);
     }
   }
 

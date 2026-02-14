@@ -5,7 +5,18 @@ import Link from 'next/link';
 import { Menu, Search, Headphones, X } from 'lucide-react';
 import PublicSearch from '../PublicSearch';
 
-export default function NetflixLayout({ children, podcast }: { children: React.ReactNode, podcast: any }) {
+interface NetflixLayoutProps {
+    children: React.ReactNode;
+    podcast: {
+        id: string;
+        title: string;
+        image?: string;
+        description?: string;
+        latest_video_id?: string;
+    };
+}
+
+export default function NetflixLayout({ children, podcast }: NetflixLayoutProps) {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
     return (

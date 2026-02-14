@@ -4,7 +4,17 @@ import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import PublicSearch from '../PublicSearch';
 
-export default function SubstackLayout({ children, podcast }: { children: React.ReactNode, podcast: any }) {
+interface SubstackLayoutProps {
+    children: React.ReactNode;
+    podcast: {
+        id: string;
+        title: string;
+        image?: string;
+        description?: string;
+    };
+}
+
+export default function SubstackLayout({ children, podcast }: SubstackLayoutProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (

@@ -6,7 +6,12 @@ import { Menu, X } from 'lucide-react';
 
 interface LayoutProps {
     children: React.ReactNode;
-    podcast: any;
+    podcast: {
+        id: string;
+        title: string;
+        image?: string;
+        description?: string;
+    };
 }
 
 const GenZLayout: React.FC<LayoutProps> = ({ podcast, children }) => {

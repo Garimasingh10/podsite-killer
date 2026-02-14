@@ -5,11 +5,9 @@ import { useRouter } from 'next/navigation';
 
 export function ActivePodcastSync({
   podcastId,
-  rssUrl,
   youtubeChannelId,
 }: {
   podcastId: string;
-  rssUrl: string | null;
   youtubeChannelId: string | null;
 }) {
   const [channelId, setChannelId] = useState(youtubeChannelId || '');
@@ -40,49 +38,45 @@ export function ActivePodcastSync({
       }
 
       setMessage(
-        `Matched ${json.matchedCount} videos from ${json.videosFetched} fetched.`
+        `Success: Matched ${json.matchedCount} videos.`
       );
       router.refresh();
-    } catch (err: any) {
-      setMessage(err.message);
+    } catch (err: unknown) {
+      setMessage(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="space-y-3 rounded-xl border border-white/5 bg-white/5 p-4 backdrop-blur-sm">
-      <div className="flex flex-col gap-1">
-        <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-          YouTube Sync
-        </label>
-        <p className="text-[11px] text-slate-400">
-          Link your YouTube channel to automatically match videos to episodes.
-        </p>
-      </div>
-
-      <div className="flex items-center gap-2">
+    <div className="rounded-[2.5rem] bg-zinc-950 p-8 border-4 border-white/5 shadow-2xl transition-all hover:border-[var(--podcast-accent)]/50">
+      <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-[var(--podcast-accent)] mb-2 italic">
+        YouTube Sync
+      </h3>
+      <p className="text-xs text-zinc-500 leading-relaxed font-bold uppercase tracking-tighter">
+        Link your channel & automate video matching.
+      </p>
+      <div className="mt-8 space-y-4">
         <input
           type="text"
-          placeholder="Channel ID (e.g. UC123...)"
+          placeholder="Channel ID (UC...)"
           value={channelId}
           onChange={(e) => setChannelId(e.target.value)}
-          className="flex-1 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-600 focus:border-sky-500 focus:outline-none"
+          className="w-full rounded-2xl border-2 border-white/5 bg-white/5 px-5 py-4 text-sm text-white placeholder:text-zinc-700 focus:border-[var(--podcast-accent)]/50 focus:outline-none focus:ring-4 focus:ring-[var(--podcast-accent)]/10 transition-all font-bold"
         />
         <button
           onClick={onSync}
           disabled={loading || !channelId}
-          className="shrink-0 rounded-lg bg-gradient-to-r from-sky-500 to-cyan-400 px-3 py-2 text-xs font-bold text-slate-950 shadow-lg shadow-sky-500/20 hover:from-sky-400 hover:to-cyan-300 hover:shadow-sky-500/40 disabled:opacity-50"
+          className="w-full rounded-2xl bg-zinc-900 py-4 text-xs font-black uppercase tracking-[0.2em] text-white border-2 border-white/10 transition-all hover:bg-[var(--podcast-accent)] hover:text-black hover:border-transparent active:scale-[0.98] disabled:opacity-50"
         >
-          {loading ? 'Syncing...' : 'Sync YouTube'}
+          {loading ? 'Syncing...' : 'Connect Channel'}
         </button>
+        {message && (
+          <p className={`text-[10px] font-black uppercase tracking-widest text-center mt-2 ${message.includes('Success') ? 'text-emerald-500' : 'text-red-500'}`}>
+            {message}
+          </p>
+        )}
       </div>
-
-      {message && (
-        <p className={`text-xs ${message.includes('Matched') ? 'text-emerald-400' : 'text-red-400'}`}>
-          {message}
-        </p>
-      )}
     </div>
   );
 }

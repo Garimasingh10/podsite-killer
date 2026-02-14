@@ -6,6 +6,7 @@ import { NewPodcastForm } from '../_components/NewPodcastForm';
 import { SearchForm } from '../_components/SearchForm';
 import { ActivePodcastSync } from '../_components/ActivePodcastSync';
 import { Headphones, Clock } from 'lucide-react';
+import { ThemeConfig } from '@/components/ThemeEngine';
 
 type PageProps = {
   searchParams: Promise<{ q?: string }>;
@@ -52,7 +53,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
       rss_url: string | null;
       owner_id: string | null;
       youtube_channel_id: string | null;
-      theme_config: any;
+      theme_config: ThemeConfig;
     }[]) ?? [];
 
   // Logic: First podcast in list is "Active", others are "Library"
@@ -195,24 +196,10 @@ export default async function DashboardPage({ searchParams }: PageProps) {
           </div>
 
           <div className="flex flex-col gap-8">
-            <div className="rounded-[2.5rem] bg-zinc-950 p-8 border-4 border-white/5 shadow-2xl transition-all hover:border-[var(--podcast-accent)]/50">
-              <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-[var(--podcast-accent)] mb-2 italic">
-                YouTube Sync
-              </h3>
-              <p className="text-xs text-zinc-500 leading-relaxed font-bold uppercase tracking-tighter">
-                Link your channel & automate Shorts.
-              </p>
-              <div className="mt-8 space-y-4">
-                <input
-                  type="text"
-                  placeholder="Channel ID (UC...)"
-                  className="w-full rounded-2xl border-2 border-white/5 bg-white/5 px-5 py-4 text-sm text-white placeholder:text-zinc-700 focus:border-[var(--podcast-accent)]/50 focus:outline-none focus:ring-4 focus:ring-[var(--podcast-accent)]/10 transition-all"
-                />
-                <button className="w-full rounded-2xl bg-zinc-900 py-4 text-xs font-black uppercase tracking-[0.2em] text-white border-2 border-white/10 transition-all hover:bg-[var(--podcast-accent)] hover:text-black hover:border-transparent active:scale-[0.98]">
-                  Connect Channel
-                </button>
-              </div>
-            </div>
+            <ActivePodcastSync
+              podcastId={active.id}
+              youtubeChannelId={active.youtube_channel_id}
+            />
 
             <div className="rounded-[2.5rem] bg-[var(--podcast-primary)]/10 p-8 border border-[var(--podcast-primary)]/20 transition-all group overflow-hidden relative">
               <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-[var(--podcast-primary)]/20 blur-2xl group-hover:scale-150 transition-transform duration-700" />

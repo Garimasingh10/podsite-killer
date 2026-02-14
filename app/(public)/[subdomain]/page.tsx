@@ -75,7 +75,11 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   }
 
   const themeConfig = (podcast.theme_config as unknown as ThemeConfig) || {};
-  const podcastWithImage = { ...podcast, image: themeConfig.imageUrl }; // Backwards compat for blocks
+  const podcastWithImage = {
+    ...podcast,
+    image: themeConfig.imageUrl,
+    latest_video_id: undefined as string | undefined
+  };
   const layout = themeConfig.layout || 'netflix';
 
   const LayoutComponent =

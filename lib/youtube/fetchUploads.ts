@@ -1,14 +1,14 @@
-// lib/youtube/fetchUploads.ts
 export type YouTubeVideo = {
   id: string;
   title: string;
+  description: string;
   publishedAt: string;
 };
 
 export async function fetchChannelUploads(
   apiKey: string,
   channelId: string,
-  maxResults = 50,
+  maxResults = 100,
 ): Promise<YouTubeVideo[]> {
   // 1) Get uploads playlist for channel
   const channelRes = await fetch(
@@ -38,6 +38,7 @@ export async function fetchChannelUploads(
     playlistJson.items?.map((item: any) => ({
       id: item.snippet.resourceId.videoId as string,
       title: item.snippet.title as string,
+      description: item.snippet.description as string,
       publishedAt: item.snippet.publishedAt as string,
     })) ?? [];
 
