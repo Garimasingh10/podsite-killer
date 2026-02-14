@@ -81,7 +81,7 @@ export async function POST(req: Request) {
     title: parsed.title || 'Untitled podcast',
     description: parsed.description || '',
     rss_url: rssUrl,
-    image_url: parsed.image,
+    image: parsed.image,
     primary_color: themeConfig.primaryColor,
     accent_color: themeConfig.accentColor,
     youtube_channel_id: detectedYtId,

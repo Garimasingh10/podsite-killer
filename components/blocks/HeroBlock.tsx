@@ -6,10 +6,10 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
     return (
         <section className="relative mb-12 overflow-hidden rounded-2xl border border-border bg-secondary/30 p-8 md:p-12">
             <div className="relative z-10 flex flex-col gap-8 md:flex-row md:items-center">
-                {podcast.image_url && (
+                {podcast.image && (
                     <div className="shrink-0">
                         <img
-                            src={podcast.image_url}
+                            src={podcast.image}
                             alt={podcast.title}
                             className="h-48 w-48 rounded-xl object-cover shadow-2xl md:h-64 md:w-64"
                         />
