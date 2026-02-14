@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { NewPodcastForm } from '../_components/NewPodcastForm';
 import { SearchForm } from '../_components/SearchForm';
 import { ActivePodcastSync } from '../_components/ActivePodcastSync';
+import { Headphones, Clock } from 'lucide-react';
 
 type PageProps = {
   searchParams: Promise<{ q?: string }>;

@@ -236,12 +236,12 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
                 )}
 
                 {!audioUrl && !youtubeVideoId && mode !== null && (
-                    <div className="animate-in fade-in zoom-in-95 duration-500 rounded-2xl border-2 border-dashed border-slate-800 bg-slate-900/10 p-12 text-center">
-                        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-900 text-slate-500">
-                            <Headphones size={32} className="opacity-20" />
+                    <div className="animate-in fade-in zoom-in-95 duration-700 rounded-[2rem] bg-indigo-50 dark:bg-zinc-900 border border-indigo-100 dark:border-zinc-800 p-12 text-center">
+                        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-100 dark:bg-zinc-800 text-indigo-600 dark:text-indigo-400">
+                            <Clock size={32} strokeWidth={1.5} />
                         </div>
-                        <h4 className="text-lg font-bold text-slate-200">No Media Available</h4>
-                        <p className="mt-2 text-sm text-slate-500">This episode might be text-only.</p>
+                        <h4 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 italic transition-all">Reading Mode</h4>
+                        <p className="mt-3 text-zinc-500 max-w-sm mx-auto">This episode is text-only. Enjoy the full story below.</p>
                     </div>
                 )}
             </div>
@@ -281,17 +281,20 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
                 </div>
             )}
 
-            {/* Show Notes */}
-            <section className="prose prose-invert max-w-none rounded-3xl border-4 border-foreground bg-background p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
-                <div className="flex items-center gap-3 mb-8 border-b-4 border-foreground pb-6">
-                    <div className="h-10 w-10 bg-primary flex items-center justify-center border-2 border-black rotate-3">
-                        <Clock size={20} className="text-primary-foreground" />
+            {/* Show Notes (Minimal & High Readability) */}
+            <section className="animate-fade-in-up [animation-delay:200ms] rounded-[2.5rem] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-10 shadow-sm">
+                <div className="flex items-center gap-4 mb-10 border-b border-zinc-100 dark:border-zinc-800 pb-8">
+                    <div className="h-12 w-12 bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 rounded-2xl border border-indigo-100 dark:border-indigo-500/20">
+                        <Clock size={24} strokeWidth={1.5} />
                     </div>
-                    <h3 className="text-3xl font-black uppercase italic tracking-tighter m-0">Show Notes</h3>
+                    <div className="space-y-1">
+                        <h3 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 m-0">The Full Story</h3>
+                        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">Detailed Show Notes</p>
+                    </div>
                 </div>
                 <div
                     onClick={handleDescClick}
-                    className="text-lg leading-relaxed text-muted-foreground space-y-6"
+                    className="prose prose-zinc dark:prose-invert max-w-none text-lg leading-relaxed text-zinc-600 dark:text-zinc-300 space-y-8"
                     dangerouslySetInnerHTML={{ __html: processedDescription }}
                 />
             </section>
