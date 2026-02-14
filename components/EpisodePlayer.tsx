@@ -186,6 +186,16 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
                         </audio>
                     </div>
                 )}
+
+                {!audioUrl && !youtubeVideoId && (
+                    <div className="animate-in fade-in zoom-in-95 duration-500 rounded-2xl border-2 border-dashed border-slate-800 bg-slate-900/10 p-12 text-center">
+                        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-900 text-slate-500">
+                            <Headphones size={32} className="opacity-20" />
+                        </div>
+                        <h4 className="text-lg font-bold text-slate-200">No Audio/Video Available</h4>
+                        <p className="mt-2 text-sm text-slate-500">This episode might be a text-only post or the media is temporarily unavailable.</p>
+                    </div>
+                )}
             </div>
 
             {/* Sticky Audio Player */}

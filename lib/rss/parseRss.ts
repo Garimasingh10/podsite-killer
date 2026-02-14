@@ -60,6 +60,7 @@ export async function parseRss(
         'content:encoded',
         ['itunes:image', 'itunes_image'],
         ['itunes:duration', 'itunes_duration'],
+        ['media:content', 'media_content'],
       ],
     },
   });
@@ -124,7 +125,19 @@ export async function parseRss(
       (item.content as string | undefined) ??
       null;
 
-    const enclosureUrl = item.enclosure?.url ?? null;
+    // AUDIO DETECTION (ENCLOSURE -> MEDIA:CONTENT -> LINK)
+    let enclosureUrl = item.enclosure?.url ?? null;
+
+    // Fallback to media:content
+    if (!enclosureUrl && (item as any).media_content?.$?.url) {
+      enclosureUrl = (item as any).media_content.$.url;
+    }
+
+    // Fallback to link if it ends in audio extension
+    if (!enclosureUrl && item.link && /\.(mp3|m4a|wav|aac|ogg)($|\?)/i.test(item.link)) {
+      enclosureUrl = item.link;
+    }
+
     const publishDate = (item.isoDate || item.pubDate) ?? null;
 
     // Sanity check for future dates
