@@ -32,7 +32,6 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
                         </div>
                         <span className="text-xs font-bold uppercase tracking-[0.3em] text-zinc-400">Premium Series</span>
                     </div>
-                    {/* ... rest of content ... */}
                     <h1 className="max-w-4xl text-6xl font-black tracking-tighter text-white uppercase italic md:text-8xl lg:text-9xl leading-[0.8] drop-shadow-2xl">
                         {latestEpisode?.title || podcast.title}
                     </h1>
