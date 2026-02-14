@@ -19,11 +19,15 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
                             allow="autoplay"
                         />
                     ) : (
-                        <div className="h-full w-full bg-zinc-900" />
+                        <img
+                            src={latestEpisode?.image_url || podcast.image}
+                            alt=""
+                            className="h-full w-full object-cover opacity-90 brightness-75"
+                        />
                     )}
                     {/* Netflix-style Overlays */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-black/60 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
                 </div>
 
                 {/* Structured Content Container */}
