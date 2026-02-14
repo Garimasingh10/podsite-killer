@@ -14,7 +14,7 @@ interface EpisodePlayerProps {
 }
 
 export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, description }: EpisodePlayerProps) {
-    const [mode, setMode] = useState<'video' | 'audio'>(youtubeVideoId ? 'video' : 'audio');
+    const [mode, setMode] = useState<'video' | 'audio' | null>(null);
     const audioRef = useRef<HTMLAudioElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [isSticky, setIsSticky] = useState(false);
@@ -24,14 +24,23 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
 
     const hasBoth = !!(youtubeVideoId && audioUrl);
 
+    // Default to a single mode if only one exists
+    useEffect(() => {
+        if (!mode) {
+            if (youtubeVideoId && !audioUrl) setMode('video');
+            else if (audioUrl && !youtubeVideoId) setMode('audio');
+        }
+    }, [youtubeVideoId, audioUrl, mode]);
+
     // Intersection Observer for Sticky Mode
     useEffect(() => {
-        if (mode !== 'audio') return;
+        if (mode !== 'audio') {
+            setIsSticky(false);
+            return;
+        }
 
         const observer = new IntersectionObserver(
             ([entry]) => {
-                // If the player container is NOT intersecting (scrolled out of view)
-                // AND we are in audio mode, show the sticky player
                 setIsSticky(!entry.isIntersecting && entry.boundingClientRect.top < 0);
             },
             { threshold: 0.1, rootMargin: '-100px 0px 0px 0px' }
@@ -83,7 +92,6 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
         }
     };
 
-    // Function to seek both players
     const seekTo = (seconds: number) => {
         if (mode === 'audio' && audioRef.current) {
             audioRef.current.currentTime = seconds;
@@ -134,31 +142,66 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
     };
 
     return (
-        <div className="space-y-8">
-            {/* Toggle Switch */}
-            {hasBoth && (
-                <div className="flex justify-center">
+        <div className="space-y-8 min-h-[400px]">
+            {/* Selection Overlay (Ask: Watch vs Listen) */}
+            {hasBoth && mode === null && (
+                <div className="animate-in fade-in zoom-in-95 duration-500 flex flex-col items-center justify-center rounded-3xl border-4 border-foreground bg-accent p-12 text-center shadow-[16px_16px_0px_0px_rgba(0,0,0,1)]">
+                    <h3 className="text-4xl font-black uppercase italic tracking-tighter mb-8 bg-white px-4 py-2 border-4 border-black -rotate-2">
+                        PICK YOUR VIBE
+                    </h3>
+                    <div className="flex flex-col sm:flex-row gap-6 w-full max-w-lg">
+                        <button
+                            onClick={() => setMode('video')}
+                            className="group flex-1 flex flex-col items-center gap-4 rounded-2xl border-4 border-black bg-white p-8 transition-all hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] active:scale-95"
+                        >
+                            <div className="h-20 w-20 rounded-full bg-red-100 flex items-center justify-center text-red-600 transition-transform group-hover:scale-110">
+                                <Video size={40} />
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-xl font-black uppercase italic tracking-tighter">Watch Video</p>
+                                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">YouTube Clips</p>
+                            </div>
+                        </button>
+                        <button
+                            onClick={() => setMode('audio')}
+                            className="group flex-1 flex flex-col items-center gap-4 rounded-2xl border-4 border-black bg-white p-8 transition-all hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] active:scale-95"
+                        >
+                            <div className="h-20 w-20 rounded-full bg-sky-100 flex items-center justify-center text-sky-600 transition-transform group-hover:scale-110">
+                                <Headphones size={40} />
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-xl font-black uppercase italic tracking-tighter">Listen Only</p>
+                                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Hi-Fi Audio</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Mode Switcher */}
+            {hasBoth && mode !== null && (
+                <div className="flex justify-center animate-in fade-in duration-500">
                     <div className="inline-flex rounded-full bg-slate-900 p-1 border border-slate-800 shadow-xl">
                         <button
                             onClick={() => setMode('video')}
                             className={`flex items-center gap-2 rounded-full px-6 py-2 text-sm font-bold transition-all ${mode === 'video' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-slate-400 hover:text-white'}`}
                         >
                             <Video size={16} />
-                            Watch Video
+                            Watch
                         </button>
                         <button
                             onClick={() => setMode('audio')}
                             className={`flex items-center gap-2 rounded-full px-6 py-2 text-sm font-bold transition-all ${mode === 'audio' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-slate-400 hover:text-white'}`}
                         >
                             <Headphones size={16} />
-                            Listen Audio
+                            Listen
                         </button>
                     </div>
                 </div>
             )}
 
-            {/* Main Player Area */}
-            <div ref={containerRef} className="relative min-h-[200px]">
+            {/* Content Area */}
+            <div ref={containerRef} className="relative">
                 {mode === 'video' && youtubeVideoId && (
                     <div className="animate-in fade-in zoom-in-95 duration-500">
                         <FloatingPlayer youtubeVideoId={youtubeVideoId} title={title} />
@@ -171,9 +214,9 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
                             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary animate-pulse">
                                 <Headphones size={24} />
                             </div>
-                            <div>
+                            <div className="flex-1">
                                 <h4 className="font-bold text-white">Audio Experience</h4>
-                                <p className="text-xs text-slate-500">Immersive stereo audio</p>
+                                <p className="text-xs text-slate-500">Hi-Fi Audio Player</p>
                             </div>
                         </div>
                         <audio
@@ -187,47 +230,45 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
                     </div>
                 )}
 
-                {!audioUrl && !youtubeVideoId && (
+                {!audioUrl && !youtubeVideoId && mode !== null && (
                     <div className="animate-in fade-in zoom-in-95 duration-500 rounded-2xl border-2 border-dashed border-slate-800 bg-slate-900/10 p-12 text-center">
                         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-900 text-slate-500">
                             <Headphones size={32} className="opacity-20" />
                         </div>
-                        <h4 className="text-lg font-bold text-slate-200">No Audio/Video Available</h4>
-                        <p className="mt-2 text-sm text-slate-500">This episode might be a text-only post or the media is temporarily unavailable.</p>
+                        <h4 className="text-lg font-bold text-slate-200">No Media Available</h4>
+                        <p className="mt-2 text-sm text-slate-500">This episode might be text-only.</p>
                     </div>
                 )}
             </div>
 
-            {/* Sticky Audio Player */}
+            {/* Sticky Player */}
             {isSticky && mode === 'audio' && (
-                <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-800 bg-slate-950/90 p-4 backdrop-blur-lg animate-in slide-in-from-bottom-full duration-300">
+                <div className="fixed bottom-0 left-0 right-0 z-50 border-t-4 border-black bg-white p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] animate-in slide-in-from-bottom-full duration-300">
                     <div className="mx-auto flex max-w-4xl items-center gap-4">
                         <button
                             onClick={togglePlay}
-                            className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+                            className="flex h-14 w-14 flex-shrink-0 items-center justify-center border-4 border-black bg-primary text-primary-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-1 active:translate-x-1 active:translate-y-1 active:shadow-none"
                         >
-                            {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-1" />}
+                            {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
                         </button>
-
-                        <div className="flex-1 space-y-1">
-                            <h4 className="line-clamp-1 text-sm font-bold text-white">{title}</h4>
-                            <div className="flex items-center gap-3 text-xs text-slate-400">
-                                <span>{formatTime(currentTime)}</span>
+                        <div className="flex-1 min-w-0">
+                            <h4 className="truncate text-sm font-black uppercase tracking-tighter italic">{title}</h4>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-bold font-mono">{formatTime(currentTime)}</span>
                                 <input
                                     type="range"
                                     min="0"
                                     max={duration || 100}
                                     value={currentTime}
                                     onChange={handleSeek}
-                                    className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-slate-800 accent-primary"
+                                    className="h-2 flex-1 cursor-pointer appearance-none rounded-full bg-slate-200 accent-black"
                                 />
-                                <span>{formatTime(duration)}</span>
+                                <span className="text-[10px] font-bold font-mono">{formatTime(duration)}</span>
                             </div>
                         </div>
-
                         <button
                             onClick={() => setIsSticky(false)}
-                            className="hidden sm:flex h-8 w-8 items-center justify-center rounded-full text-slate-500 hover:bg-slate-800 hover:text-white"
+                            className="h-10 w-10 flex items-center justify-center border-2 border-black hover:bg-slate-100"
                         >
                             <X size={16} />
                         </button>
@@ -235,15 +276,17 @@ export default function EpisodePlayer({ youtubeVideoId, audioUrl, title, descrip
                 </div>
             )}
 
-            {/* Description / Show Notes */}
-            <section className="prose prose-invert max-w-none rounded-2xl border border-slate-800/50 bg-slate-900/20 p-8 backdrop-blur-sm">
-                <div className="flex items-center gap-2 mb-6 border-b border-slate-800 pb-4">
-                    <Clock size={20} className="text-primary" />
-                    <h3 className="text-xl font-bold m-0">Show Notes & Timestamps</h3>
+            {/* Show Notes */}
+            <section className="prose prose-invert max-w-none rounded-3xl border-4 border-foreground bg-background p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+                <div className="flex items-center gap-3 mb-8 border-b-4 border-foreground pb-6">
+                    <div className="h-10 w-10 bg-primary flex items-center justify-center border-2 border-black rotate-3">
+                        <Clock size={20} className="text-primary-foreground" />
+                    </div>
+                    <h3 className="text-3xl font-black uppercase italic tracking-tighter m-0">Show Notes</h3>
                 </div>
                 <div
                     onClick={handleDescClick}
-                    className="text-lg leading-relaxed text-slate-400 space-y-4"
+                    className="text-lg leading-relaxed text-muted-foreground space-y-6"
                     dangerouslySetInnerHTML={{ __html: processedDescription }}
                 />
             </section>

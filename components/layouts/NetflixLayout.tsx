@@ -14,12 +14,12 @@ export default function NetflixLayout({ children, podcast }: { children: React.R
             <header className="fixed top-0 z-50 w-full bg-gradient-to-b from-black/80 to-transparent px-8 py-4 transition-colors hover:bg-black/90 md:px-16">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-8">
-                        <Link href={`/${podcast.id}`} className="text-2xl font-black tracking-tighter text-sky-500">
+                        <Link href={`/${podcast.id}`} className="text-2xl font-black tracking-tighter text-sky-500 py-2">
                             {(podcast.title || 'Podcast').split(' ').map((s: string) => s[0]).join('')}
                         </Link>
-                        <Link href={`/${podcast.id}`} className="hover:text-sky-400">Home</Link>
-                        <Link href={`/${podcast.id}/episodes`} className="hover:text-sky-400">Episodes</Link>
-                        <Link href={`/${podcast.id}#host`} className="hover:text-sky-400">About</Link>
+                        <Link href={`/${podcast.id}`} className="hover:text-sky-400 py-2 hidden sm:block">Home</Link>
+                        <Link href={`/${podcast.id}/episodes`} className="hover:text-sky-400 py-2 hidden sm:block">Episodes</Link>
+                        <Link href={`/${podcast.id}#host`} className="hover:text-sky-400 py-2 hidden sm:block">About</Link>
                     </div>
                     <div className="flex items-center gap-4">
                         <div className="hidden md:block">
@@ -27,7 +27,7 @@ export default function NetflixLayout({ children, podcast }: { children: React.R
                         </div>
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md md:hidden"
+                            className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md md:hidden shadow-lg"
                         >
                             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
@@ -37,25 +37,25 @@ export default function NetflixLayout({ children, podcast }: { children: React.R
                 {/* Mobile Menu Overlay */}
                 {isMenuOpen && (
                     <div className="fixed inset-0 top-16 z-40 flex flex-col items-center justify-center gap-8 bg-black/95 backdrop-blur-xl animate-in fade-in slide-in-from-top-4 duration-300 md:hidden">
-                        <nav className="flex flex-col items-center gap-8 text-2xl font-bold">
+                        <nav className="flex flex-col items-center gap-10 text-3xl font-black italic uppercase tracking-tighter">
                             <Link
                                 href={`/${podcast.id}`}
                                 onClick={() => setIsMenuOpen(false)}
-                                className="hover:text-sky-400"
+                                className="hover:text-sky-400 py-4 transition-all"
                             >
                                 Home
                             </Link>
                             <Link
                                 href={`/${podcast.id}/episodes`}
                                 onClick={() => setIsMenuOpen(false)}
-                                className="hover:text-sky-400"
+                                className="hover:text-sky-400 py-4 transition-all"
                             >
                                 Episodes
                             </Link>
                             <Link
-                                href="#"
+                                href={`/${podcast.id}#host`}
                                 onClick={() => setIsMenuOpen(false)}
-                                className="hover:text-sky-400"
+                                className="hover:text-sky-400 py-4 transition-all"
                             >
                                 About
                             </Link>

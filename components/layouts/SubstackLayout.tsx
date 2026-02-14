@@ -28,32 +28,39 @@ export default function SubstackLayout({ children, podcast }: { children: React.
                         </button>
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-slate-100 sm:hidden"
+                            className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-slate-100 sm:hidden transition-colors"
                         >
-                            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
                     </div>
                 </div>
 
                 {/* Mobile Menu */}
                 {isMenuOpen && (
-                    <div className="border-t border-border bg-white p-4 animate-in slide-in-from-top-2 sm:hidden">
-                        <nav className="flex flex-col gap-4 text-sm font-medium">
+                    <div className="border-t border-border bg-white px-4 py-8 animate-in slide-in-from-top-2 sm:hidden">
+                        <nav className="flex flex-col gap-6 text-base font-bold">
                             <Link
                                 href={`/${podcast.id}`}
                                 onClick={() => setIsMenuOpen(false)}
-                                className="text-slate-600 hover:text-black"
+                                className="text-slate-600 hover:text-black py-2"
                             >
                                 Home
                             </Link>
                             <Link
                                 href={`/${podcast.id}/episodes`}
                                 onClick={() => setIsMenuOpen(false)}
-                                className="text-slate-600 hover:text-black"
+                                className="text-slate-600 hover:text-black py-2"
                             >
                                 Episodes
                             </Link>
-                            <button className="w-full rounded-lg bg-primary py-2 font-bold text-white">
+                            <Link
+                                href={`/${podcast.id}#host`}
+                                onClick={() => setIsMenuOpen(false)}
+                                className="text-slate-600 hover:text-black py-2"
+                            >
+                                About
+                            </Link>
+                            <button className="w-full rounded-lg bg-primary py-4 font-black uppercase text-white shadow-lg shadow-primary/20">
                                 Subscribe Now
                             </button>
                         </nav>
