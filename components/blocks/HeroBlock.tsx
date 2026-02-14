@@ -9,45 +9,51 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
 
     if (isNetflix) {
         return (
-            <section className="relative h-screen w-full overflow-hidden bg-black -mt-[112px]">
+            <section className="relative h-[95vh] w-full overflow-hidden bg-black">
+                {/* Immersive Background */}
                 <div className="absolute inset-0 z-0">
                     {podcast.latest_video_id ? (
                         <iframe
-                            className="h-full w-full scale-150 object-cover opacity-80 brightness-[0.5]"
+                            className="h-full w-full scale-110 object-cover opacity-60 brightness-[0.4]"
                             src={`https://www.youtube.com/embed/${podcast.latest_video_id}?autoplay=1&mute=1&controls=0&loop=1&playlist=${podcast.latest_video_id}&showinfo=0&rel=0`}
                             allow="autoplay"
                         />
                     ) : (
-                        <div className="h-full w-full bg-gradient-to-tr from-black via-zinc-900 to-zinc-800" />
+                        <div className="h-full w-full bg-zinc-900" />
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black via-black/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
                 </div>
 
-                <div className="relative z-10 flex h-full flex-col justify-end px-8 pb-32 md:px-16 lg:pb-40">
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="flex items-center gap-1.5 rounded-sm bg-red-600 px-2 py-0.5 text-[10px] font-black uppercase tracking-tighter">
-                            <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
-                            Latest Drop
+                {/* Structured Content Container */}
+                <div className="relative z-10 flex h-full flex-col justify-end px-8 pb-24 md:px-16 lg:pb-32">
+                    <div className="space-y-6">
+                        {/* Podcast Branding (Secondary Title) */}
+                        <div className="flex items-center gap-3">
+                            <span className="text-xl font-black uppercase tracking-[0.3em] text-zinc-400 opacity-80">
+                                {podcast.title}
+                            </span>
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-[0.3em] text-zinc-400">Exclusive Content</span>
-                    </div>
-                    <h1 className="max-w-4xl text-6xl font-black tracking-tighter text-white uppercase italic md:text-8xl lg:text-[10rem] leading-[0.8] drop-shadow-2xl">
-                        {latestEpisode?.title || podcast.title}
-                    </h1>
-                    <p className="mt-8 max-w-2xl text-lg font-medium text-zinc-300 drop-shadow-md md:text-xl line-clamp-3">
-                        {latestEpisode?.description?.replace(/<[^>]*>?/gm, '') || podcast.description || ''}
-                    </p>
-                    <div className="mt-10 flex flex-wrap gap-4">
-                        <Link
-                            href={latestEpisode ? `/${podcast.id}/episodes/${latestEpisode.slug}` : `/${podcast.id}/episodes`}
-                            className="group flex items-center gap-3 rounded-md bg-white px-10 py-4 text-lg font-black uppercase tracking-tighter text-black transition-all hover:bg-white/90 active:scale-95 shadow-xl"
-                        >
-                            <span className="transition-transform group-hover:scale-125">▶</span> Watch Now
-                        </Link>
-                        <button className="flex items-center gap-3 rounded-md bg-zinc-600/40 px-10 py-4 text-lg font-black uppercase tracking-tighter text-white backdrop-blur-md transition-all hover:bg-zinc-600/60 active:scale-95">
-                            More Info
-                        </button>
+
+                        {/* Main Episode Title (Primary) */}
+                        <h1 className="max-w-5xl text-6xl font-black tracking-tighter text-white uppercase italic md:text-8xl lg:text-9xl leading-[0.85] drop-shadow-2xl">
+                            {latestEpisode?.title || 'Welcome'}
+                        </h1>
+
+                        <p className="max-w-2xl text-lg font-medium text-zinc-300 drop-shadow-md md:text-xl line-clamp-3">
+                            {latestEpisode?.description?.replace(/<[^>]*>?/gm, '') || podcast.description || ''}
+                        </p>
+
+                        <div className="mt-10 flex flex-wrap gap-4 pt-4">
+                            <Link
+                                href={latestEpisode ? `/${podcast.id}/episodes/${latestEpisode.slug}` : `/${podcast.id}/episodes`}
+                                className="group flex items-center gap-3 rounded-md bg-white px-10 py-4 text-lg font-black uppercase tracking-tighter text-black transition-all hover:bg-white/90 active:scale-95"
+                            >
+                                <span className="transition-transform group-hover:scale-125">▶</span> Watch Now
+                            </Link>
+                            <button className="flex items-center gap-3 rounded-md bg-zinc-600/40 px-10 py-4 text-lg font-black uppercase tracking-tighter text-white backdrop-blur-md transition-all hover:bg-zinc-600/60 active:scale-95">
+                                More Info
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>

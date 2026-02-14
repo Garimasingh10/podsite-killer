@@ -61,7 +61,7 @@ export default function NetflixLayout({ children, podcast }: NetflixLayoutProps)
                     )}
                 </header>
 
-                <main className="relative z-10 pb-24">
+                <main className="relative z-10 pt-20 pb-24">
                     {children}
                 </main>
             </div>
