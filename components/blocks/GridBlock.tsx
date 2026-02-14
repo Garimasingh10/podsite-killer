@@ -18,22 +18,22 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                         <Link
                             key={ep.id}
                             href={`/${podcast.id}/episodes/${ep.slug}`}
-                            className="group block"
+                            className="group block border-l-0 hover:border-l-4 border-orange-500 pl-0 hover:pl-6 transition-all duration-300 ease-out"
                         >
                             <div className="flex flex-col gap-2">
-                                <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
+                                <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest group-hover:text-orange-500 transition-colors">
                                     {new Date(ep.published_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric' })}
                                 </span>
-                                <h4 className="text-3xl font-black tracking-tight group-hover:underline underline-offset-4 leading-tight">
+                                <h4 className="text-3xl font-black tracking-tight group-hover:text-zinc-800 leading-tight">
                                     {ep.title}
                                 </h4>
-                                <p className="text-lg text-zinc-500 line-clamp-2 max-w-2xl font-medium">
+                                <p className="text-lg text-zinc-500 line-clamp-2 max-w-2xl font-medium opacity-80 group-hover:opacity-100 transition-opacity">
                                     Listen to the full episode on {podcast.title}. Available now.
                                 </p>
-                                <div className="mt-4 flex items-center gap-4 text-xs font-black uppercase tracking-widest text-zinc-400">
+                                <div className="mt-4 flex items-center gap-4 text-xs font-black uppercase tracking-widest text-zinc-400 group-hover:text-zinc-600 transition-colors">
                                     <span>{ep.youtube_video_id ? 'Video Available' : 'Audio Only'}</span>
                                     <span>•</span>
-                                    <span className="text-black group-hover:text-red-500 transition-colors">Listen Now →</span>
+                                    <span className="text-black group-hover:text-orange-500 transition-colors font-black">Listen Now →</span>
                                 </div>
                             </div>
                         </Link>
@@ -52,19 +52,20 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                         <Link
                             key={ep.id}
                             href={`/${podcast.id}/episodes/${ep.slug}`}
-                            className="group relative border-8 border-black bg-white p-6 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-2 hover:translate-y-2 hover:shadow-none transition-all"
+                            className="group relative border-8 border-black bg-white p-6 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:shadow-[20px_20px_0px_0px_rgba(var(--accent-rgb),1)] hover:-translate-x-2 hover:-translate-y-2 transition-all duration-200 active:translate-x-0 active:translate-y-0 active:shadow-none"
                         >
-                            <div className="aspect-video w-full border-4 border-black overflow-hidden mb-6">
+                            <div className="aspect-video w-full border-4 border-black overflow-hidden mb-6 relative">
+                                <div className="absolute inset-0 bg-accent mix-blend-multiply opacity-0 group-hover:opacity-30 transition-opacity z-10" />
                                 <img
                                     src={ep.image_url || podcast.image}
                                     alt={ep.title}
-                                    className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all scale-105 group-hover:scale-110"
+                                    className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all scale-100 group-hover:scale-110 duration-500"
                                 />
                             </div>
-                            <span className="text-xs font-black uppercase tracking-widest block mb-2 bg-black text-white px-2 py-1 inline-block">
+                            <span className="text-xs font-black uppercase tracking-widest block mb-2 bg-black text-white px-2 py-1 inline-block group-hover:bg-accent group-hover:text-black transition-colors">
                                 {new Date(ep.published_at).toLocaleDateString()}
                             </span>
-                            <h4 className="text-3xl font-black uppercase italic leading-[0.9] tracking-tighter group-hover:text-yellow-500">
+                            <h4 className="text-4xl font-black uppercase italic leading-[0.85] tracking-tighter group-hover:tracking-normal transition-all duration-300">
                                 {ep.title}
                             </h4>
                         </Link>
