@@ -92,6 +92,10 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100 p-4 flex flex-col justify-end">
                             <h4 className="text-xs font-black leading-tight uppercase italic">{ep.title}</h4>
+                            <div className="mt-2 flex items-center gap-1 text-[8px] font-black text-red-600">
+                                <div className="h-1.5 w-1.5 rounded-full bg-red-600 animate-pulse" />
+                                <span>WATCH NOW</span>
+                            </div>
                         </div>
                     </Link>
                 ))}

@@ -45,8 +45,8 @@ export default async function PodcastSettingsPage({ params }: PageProps) {
 
     return (
         <main className="min-h-screen bg-slate-950 px-4 py-12 text-slate-50">
-            <ThemeEngine config={themeConfig} />
-            <div className="mx-auto max-w-4xl space-y-12">
+            <ThemeEngine config={themeConfig} scope=".preview-scope" />
+            <div className="preview-scope mx-auto max-w-4xl space-y-12">
                 <header className="flex items-center justify-between border-b border-slate-800 pb-8">
                     <div>
                         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary mb-2">

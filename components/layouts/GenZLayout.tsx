@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Menu, X, Share2, Zap } from 'lucide-react';
 import { LayoutProvider } from '../LayoutContext';
+import PublicSearch from '../PublicSearch';
 
 interface GenZLayoutProps {
     children: React.ReactNode;
@@ -37,9 +38,9 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
                                 <Link href={`/${podcast.id}/episodes`} className="text-xl font-black uppercase italic hover:bg-black hover:text-white px-2 transition-all">Drops</Link>
                                 <Link href={`/${podcast.id}#host`} className="text-xl font-black uppercase italic hover:bg-black hover:text-white px-2 transition-all">About</Link>
                             </nav>
-                            <button className="hidden md:block border-4 border-black bg-black text-white px-6 py-2 text-xl font-black uppercase italic shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
-                                Subscribe
-                            </button>
+                            <div className="hidden md:block">
+                                <PublicSearch podcastId={podcast.id} />
+                            </div>
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                                 className="border-4 border-black bg-accent p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all md:hidden"

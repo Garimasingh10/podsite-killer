@@ -23,6 +23,11 @@ export default function ThemeCustomizer({
     const supabase = createSupabaseBrowserClient();
     const router = useRouter();
 
+    // Sync state when props change (server-side update)
+    React.useEffect(() => {
+        setConfig(initialConfig);
+    }, [initialConfig]);
+
     async function updateConfig(newConfig: Partial<ThemeConfig>) {
         const updated = { ...config, ...newConfig };
         setConfig(updated);

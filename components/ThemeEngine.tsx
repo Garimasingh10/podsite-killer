@@ -16,7 +16,7 @@ export interface ThemeConfig {
     imageUrl?: string;
 }
 
-export default function ThemeEngine({ config }: { config: ThemeConfig }) {
+export default function ThemeEngine({ config, scope }: { config: ThemeConfig, scope?: string }) {
     const cssVariables = useMemo(() => {
         const vars: Record<string, string> = {};
 
@@ -68,7 +68,7 @@ export default function ThemeEngine({ config }: { config: ThemeConfig }) {
                 __html: `
         ${fontImports}
         
-        :root {
+        ${scope || ':root'} {
           ${cssVariables}
         }
       `

@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Mail, Search, Menu, X } from 'lucide-react';
 import { LayoutProvider } from '../LayoutContext';
+import PublicSearch from '../PublicSearch';
 
 interface SubstackLayoutProps {
     children: React.ReactNode;
@@ -35,9 +36,9 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
                             </nav>
                         </div>
                         <div className="flex items-center gap-4">
-                            <button className="rounded-full bg-black px-6 py-2 text-xs font-black uppercase tracking-widest text-white transition-transform hover:scale-105 active:scale-95">
-                                Subscribe
-                            </button>
+                            <div className="hidden md:block">
+                                <PublicSearch podcastId={podcast.id} />
+                            </div>
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                                 className="md:hidden text-zinc-900"
