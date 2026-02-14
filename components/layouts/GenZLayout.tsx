@@ -24,21 +24,33 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
             <div className="min-h-screen bg-white text-black font-sans selection:bg-accent">
                 {/* Aggressive Brutalist Header */}
                 <header className="sticky top-0 z-50 border-b-8 border-black bg-white">
-                    <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-8">
-                        <Link href={`/${podcast.id}`} className="group relative">
-                            <div className="absolute -inset-2 bg-accent opacity-0 transition-opacity group-hover:opacity-100" />
-                            <span className="relative text-4xl font-black uppercase italic tracking-tighter leading-none">
-                                {podcast.title}
-                            </span>
-                        </Link>
+                    <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
+                        <div className="flex items-center gap-6">
+                            {podcast.image && (
+                                <div className="h-16 w-16 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden shrink-0">
+                                    <img src={podcast.image} alt={podcast.title} className="h-full w-full object-cover" />
+                                </div>
+                            )}
+                            <Link href={`/${podcast.id}`} className="group relative">
+                                <span className="relative text-4xl font-black uppercase italic tracking-tighter leading-none group-hover:text-accent transition-colors">
+                                    {podcast.title}
+                                </span>
+                            </Link>
+                        </div>
 
-                        <div className="flex items-center gap-4">
-                            <nav className="hidden items-center gap-10 md:flex">
-                                <Link href={`/${podcast.id}`} className="text-xl font-black uppercase italic hover:bg-black hover:text-white px-2 transition-all">Home</Link>
-                                <Link href={`/${podcast.id}/episodes`} className="text-xl font-black uppercase italic hover:bg-black hover:text-white px-2 transition-all">Drops</Link>
-                                <Link href={`/${podcast.id}#host`} className="text-xl font-black uppercase italic hover:bg-black hover:text-white px-2 transition-all">About</Link>
+                        <div className="flex items-center gap-6">
+                            <nav className="hidden items-center gap-8 md:flex">
+                                {['Home', 'Drops', 'About'].map((item) => (
+                                    <Link
+                                        key={item}
+                                        href={item === 'Home' ? `/${podcast.id}` : item === 'Drops' ? `/${podcast.id}/episodes` : `/${podcast.id}#host`}
+                                        className="text-xl font-black uppercase italic border-4 border-transparent hover:border-black hover:bg-accent px-4 py-1 shadow-none hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -translate-y-0 hover:-translate-y-1 hover:-translate-x-1 transition-all duration-200"
+                                    >
+                                        {item}
+                                    </Link>
+                                ))}
                             </nav>
-                            <div className="hidden md:block">
+                            <div className="hidden md:block transition-transform hover:-translate-y-1 hover:-translate-x-1 active:translate-x-0 active:translate-y-0">
                                 <PublicSearch podcastId={podcast.id} />
                             </div>
                             <button

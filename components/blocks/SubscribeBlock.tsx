@@ -36,7 +36,7 @@ export default function SubscribeBlock({ podcast }: { podcast: any }) {
                 <h3 className="text-6xl font-black uppercase italic tracking-tighter mb-12 leading-none">JOIN THE FAM</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     {platforms.map((p) => (
-                        <button key={p.name} className="border-4 border-white bg-white text-black p-6 font-black uppercase italic text-xl shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:bg-accent hover:shadow-none translate-x-1 translate-y-1 transition-all">
+                        <button key={p.name} className="border-4 border-white bg-white text-black p-6 font-black uppercase italic text-xl shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[16px_16px_0px_0px_rgba(255,255,255,1)] hover:bg-accent transition-all duration-200 active:translate-x-0 active:translate-y-0 active:shadow-none">
                             {p.name}
                         </button>
                     ))}
@@ -48,14 +48,14 @@ export default function SubscribeBlock({ podcast }: { podcast: any }) {
     return (
         <section className="mb-24">
             <h3 className="mb-8 text-xl font-bold uppercase tracking-widest text-zinc-400">Where to Watch & Listen</h3>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {platforms.map((p) => (
                     <button
                         key={p.name}
-                        className="flex items-center gap-4 rounded-sm bg-zinc-800/40 p-5 font-black uppercase transition-colors hover:bg-zinc-800"
+                        className="flex items-center gap-4 rounded-sm bg-zinc-800/40 p-5 font-black uppercase transition-all hover:bg-red-600 hover:scale-105 hover:shadow-[0_0_30px_rgba(220,38,38,0.2)] active:scale-95 group"
                     >
-                        <span className="text-2xl">{p.icon}</span>
-                        <span className="text-xs tracking-widest text-zinc-300">{p.name}</span>
+                        <span className="text-2xl group-hover:scale-125 transition-transform">{p.icon}</span>
+                        <span className="text-xs tracking-widest text-zinc-300 group-hover:text-white">{p.name}</span>
                     </button>
                 ))}
             </div>
