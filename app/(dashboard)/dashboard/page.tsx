@@ -56,232 +56,227 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 
   // Logic: First podcast in list is "Active", others are "Library"
   const active = rows.length > 0 ? rows[0] : null;
-  const others = rows.length > 0 ? rows : []; // Show all in library for better visibility
+  const others = rows.length > 0 ? rows : [];
 
   const hasPodcasts = rows.length > 0;
-  if (active) console.log('Dashboard Active ID:', active.id);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      {/* Hero / Welcome Section */}
-      <section className="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/60 p-8 shadow-2xl backdrop-blur-xl">
-        <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-sky-500/10 blur-3xl filter" />
-        <div className="absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-emerald-500/5 blur-3xl filter" />
-
-        <div className="relative z-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <div className="max-w-xl space-y-2">
-            <h1 className="bg-gradient-to-r from-slate-100 to-slate-400 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl">
-              Welcome back, Creator.
+    <div className="space-y-8 animate-in fade-in duration-700">
+      {/* Top Welcome / Search Hero */}
+      <section className="animate-fade-in-up rounded-3xl glass-card relative overflow-hidden p-8 mb-8">
+        <div className="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-sky-500/10 blur-3xl opacity-50" />
+        <div className="relative flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-black tracking-tighter text-white leading-none">
+              Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-cyan-400">Creator.</span>
             </h1>
-            <p className="text-slate-400">
+            <p className="max-w-md text-sm leading-relaxed text-slate-400">
               Manage your podcast sites, sync your content, and grow your audience.
               Paste an RSS feed to get started instantly.
             </p>
           </div>
-          <div className="flex w-full max-w-lg flex-col gap-3">
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <SearchForm initialQuery={q} placeholder="Search your library..." className="flex-1" />
-              <NewPodcastForm />
-            </div>
-            <p className="text-right text-[10px] text-slate-500">
-              Search existing or paste RSS to import.
+          <div className="flex w-full flex-col gap-3 sm:w-auto">
+            <NewPodcastForm />
+            <p className="text-[10px] text-slate-500 text-center md:text-left uppercase tracking-widest font-bold opacity-50">
+              Search library or paste RSS to import
             </p>
           </div>
         </div>
       </section>
 
       {!hasPodcasts && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-800 bg-slate-950/50 py-20 text-center">
+        <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-white/5 bg-white/[0.02] py-24 text-center">
           {q && (q.startsWith('http://') || q.startsWith('https://')) ? (
             <div className="max-w-md animate-in fade-in slide-in-from-bottom-4 duration-700">
-              <div className="mb-4 flex justify-center">
-                <div className="rounded-full bg-sky-500/10 p-4 ring-1 ring-sky-500/20">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-8 w-8 text-sky-400">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+              <div className="mb-6 flex justify-center">
+                <div className="rounded-full bg-sky-500/10 p-5 ring-1 ring-sky-500/20 animate-pulse">
+                  <span className="text-3xl">🎙️</span>
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-white">Import this Podcast?</h3>
-              <p className="mt-2 text-sm text-slate-400">
-                "{q}" isn't in your library yet. We can import it and sync all episodes instantly.
+              <h3 className="text-2xl font-black text-white tracking-tight">Import this Podcast?</h3>
+              <p className="mt-3 text-sm text-slate-400 leading-relaxed">
+                "{q}" isn't in your library yet. We can import it and build your premium site instantly.
               </p>
-              <div className="mt-6">
+              <div className="mt-8">
                 <NewPodcastForm initialRss={q} />
               </div>
             </div>
           ) : (
-            <>
-              <div className="rounded-full bg-slate-900 p-4">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-8 w-8 text-slate-700">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
-                </svg>
+            <div className="animate-in fade-in zoom-in-95 duration-500">
+              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-slate-900 shadow-inner">
+                <span className="text-4xl filter grayscale">📡</span>
               </div>
-              <h3 className="mt-4 text-lg font-medium text-slate-200">
-                {q ? `No matches for "${q}"` : 'No podcasts yet'}
+              <h3 className="text-xl font-black text-white tracking-tight">
+                {q ? `No matches for "${q}"` : 'Your Studio is Ready'}
               </h3>
-              <p className="mt-1 max-w-sm text-sm text-slate-500">
+              <p className="mt-2 max-w-sm text-sm text-slate-500 leading-relaxed">
                 {q
                   ? 'Try a different search term or paste an RSS URL to import a new show.'
-                  : 'Import your first RSS feed using the form above to generate your site.'}
+                  : 'Import your first RSS feed to generate a stunning, auto-updating podcast website.'}
               </p>
-            </>
+            </div>
           )}
         </div>
       )}
 
-      {/* Active Workspace */}
+      {/* Featured / Active Podcast Section */}
       {active && (
-        <section className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-          <div className="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900/80 to-slate-900/40 p-6 shadow-xl backdrop-blur-md">
-            <div className="mb-6 flex items-start justify-between">
-              <div className="flex gap-6">
-                <div className="shrink-0">
-                  {(active.theme_config as any)?.imageUrl ? (
+        <section className="animate-fade-in-up [animation-delay:100ms] grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <div className="group relative flex h-full flex-col justify-between overflow-hidden rounded-3xl glass-card p-6 transition-all hover:bg-slate-900/60 hover:shadow-2xl">
+              <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-sky-500/5 blur-3xl transition-all group-hover:bg-sky-500/10" />
+
+              <div className="relative flex flex-col gap-8 sm:flex-row">
+                {active.theme_config?.imageUrl && (
+                  <div className="shrink-0">
                     <img
-                      src={(active.theme_config as any).imageUrl}
-                      alt={active.title || ''}
-                      className="h-24 w-24 rounded-xl object-cover shadow-lg border border-slate-700/50"
+                      src={active.theme_config.imageUrl}
+                      alt={active.title || 'Podcast'}
+                      className="h-40 w-40 rounded-2xl object-cover shadow-2xl ring-1 ring-white/10 group-hover:scale-105 transition-transform duration-500"
                     />
-                  ) : (
-                    <div className="h-24 w-24 rounded-xl bg-slate-800 flex items-center justify-center text-4xl shadow-inner border border-slate-700/50">
-                      🎙️
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <span className="inline-block rounded-md bg-emerald-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 ring-1 ring-inset ring-emerald-500/20">
-                    Active Podcast
-                  </span>
-                  <h2 className="mt-3 text-2xl font-bold text-white">
-                    {active.title || 'Untitled Podcast'}
-                  </h2>
-                  {active.rss_url && (
-                    <a href={active.rss_url} target="_blank" className="mt-1 block text-xs text-slate-500 hover:text-sky-400 hover:underline">
+                  </div>
+                )}
+                <div className="flex-1 space-y-4">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-400 ring-1 ring-emerald-500/20">
+                      Active Workspace
+                    </span>
+                    <Link
+                      href={`/${active.id}`}
+                      target="_blank"
+                      className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1 text-xs font-black uppercase tracking-wider text-white transition-all hover:bg-white hover:text-black hover:shadow-lg"
+                    >
+                      Visit Local Site <span className="text-[10px]">↗</span>
+                    </Link>
+                  </div>
+                  <div>
+                    <h2 className="text-4xl font-black tracking-tighter text-white leading-tight">
+                      {active.title}
+                    </h2>
+                    <p className="mt-1 text-xs font-mono text-slate-500 truncate max-w-xs opacity-60">
                       {active.rss_url}
-                    </a>
-                  )}
+                    </p>
+                  </div>
+                  <p className="text-sm leading-relaxed text-slate-400 line-clamp-2">
+                    {active.description || 'No description available for this podcast.'}
+                  </p>
                 </div>
               </div>
 
-              <Link
-                href={`/${active.id}`}
-                target="_blank"
-                className="flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition-transform hover:scale-105 active:scale-95"
-              >
-                View Site
-                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </Link>
-            </div>
-
-            <p className="mb-8 text-sm leading-relaxed text-slate-400 line-clamp-3">
-              {active.description || 'No description available for this podcast.'}
-            </p>
-
-            <div className="flex gap-3 border-t border-slate-800/50 pt-6">
-              <Link
-                href={`/podcasts/${active.id}/episodes`}
-                className="group flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/50 py-3 text-sm font-medium text-slate-200 hover:bg-slate-800 hover:text-white transition-all"
-              >
-                <svg width={16} height={16} className="h-4 w-4 text-slate-400 group-hover:text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
-                Episodes
-              </Link>
-              <Link
-                href={`/podcasts/${active.id}/settings`}
-                className="group flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/50 py-3 text-sm font-medium text-slate-200 hover:bg-slate-800 hover:text-white transition-all"
-              >
-                <svg width={16} height={16} className="h-4 w-4 text-slate-400 group-hover:text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                Settings
-              </Link>
+              <div className="relative mt-8 grid grid-cols-2 gap-4">
+                <Link
+                  href={`/podcasts/${active.id}/episodes`}
+                  className="flex items-center justify-center gap-3 rounded-2xl border border-white/5 bg-white/[0.03] py-4 text-sm font-black uppercase tracking-widest transition-all hover:bg-white/[0.08] hover:scale-[1.02] hover:shadow-xl active:scale-95"
+                >
+                  <span className="text-lg">🎧</span>
+                  Episodes
+                </Link>
+                <Link
+                  href={`/podcasts/${active.id}/settings`}
+                  className="flex items-center justify-center gap-3 rounded-2xl border border-white/5 bg-white/[0.03] py-4 text-sm font-black uppercase tracking-widest transition-all hover:bg-white/[0.08] hover:scale-[1.02] hover:shadow-xl active:scale-95"
+                >
+                  <span className="text-lg">⚙️</span>
+                  Settings
+                </Link>
+              </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-4">
-            <ActivePodcastSync
-              podcastId={active.id}
-              rssUrl={active.rss_url}
-              youtubeChannelId={active.youtube_channel_id}
-            />
-            <div className="flex-1 rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">Analytics</h3>
-              <div className="mt-4 flex h-full items-center justify-center text-sm text-slate-600">
-                <p>Coming in Phase 3</p>
+          <div className="flex flex-col gap-6">
+            <div className="rounded-3xl glass-card p-6 shadow-xl relative overflow-hidden group">
+              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-red-500/5 blur-2xl group-hover:bg-red-500/10 transition-all" />
+              <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+                YouTube Connection
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Sync your YouTube videos with your podcast episodes automatically.
+              </p>
+              <div className="mt-6 flex flex-col gap-3">
+                <input
+                  type="text"
+                  placeholder="UC123abc..."
+                  className="w-full rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3 text-xs text-white placeholder:text-slate-700 focus:border-sky-500/50 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-all font-mono"
+                />
+                <button className="rounded-xl bg-sky-500 py-3 text-xs font-black uppercase tracking-widest text-slate-950 transition-all hover:bg-sky-400 hover:shadow-lg hover:shadow-sky-500/20 active:scale-95">
+                  Link Channel
+                </button>
+              </div>
+            </div>
+
+            <div className="rounded-3xl glass-card p-6 shadow-xl relative overflow-hidden group">
+              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-emerald-500/5 blur-2xl group-hover:bg-emerald-500/10 transition-all" />
+              <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+                Audience Data
+              </h3>
+              <div className="mt-12 flex items-center justify-center border-t border-white/5 pt-6">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 opacity-30">Coming Phase 3</p>
               </div>
             </div>
           </div>
         </section>
-      )
-      }
+      )}
 
-      {/* Other Podcasts / Library */}
-      {
-        others.length > 0 ? (
-          <section className="space-y-4 pt-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-slate-200">
-                {q ? `Search results for "${q}"` : 'Your Library'}
+      {/* Library Section */}
+      {others.length > 0 && (
+        <section className="animate-fade-in-up [animation-delay:200ms] space-y-8 pt-12 pb-24">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-white/5 pb-8">
+            <div className="space-y-1">
+              <h3 className="text-3xl font-black tracking-tighter text-white leading-none">
+                {q ? `Results for "${q}"` : 'Studio Library'}
               </h3>
-              {!q && (
-                <div className="w-64">
-                  <SearchForm initialQuery={q} />
-                </div>
-              )}
+              <p className="text-sm font-bold text-slate-500 uppercase tracking-widest opacity-60">Manage your entire collection</p>
             </div>
+            {!q && (
+              <div className="w-full sm:w-72">
+                <SearchForm initialQuery={q} placeholder="Filter library..." />
+              </div>
+            )}
+          </div>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {others.map((p) => (
-                <Link
-                  key={p.id}
-                  href={`/podcasts/${p.id}/episodes`} // Make the whole card clickable for convenience
-                  className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-slate-800 bg-slate-900/40 p-5 transition-all hover:border-sky-500/30 hover:bg-slate-900/60 hover:shadow-lg hover:shadow-sky-500/5"
-                >
-                  <div className="flex gap-4">
-                    {p.theme_config?.imageUrl && (
-                      <div className="shrink-0">
-                        <img
-                          src={p.theme_config.imageUrl}
-                          alt={p.title || ''}
-                          className="h-12 w-12 rounded-lg object-cover border border-slate-700/50"
-                        />
-                      </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {others.map((p) => (
+              <Link
+                key={p.id}
+                href={`/podcasts/${p.id}/episodes`}
+                className="group relative flex flex-col justify-between overflow-hidden rounded-3xl glass-card p-6 transition-all hover:-translate-y-2 hover:bg-white/[0.04] hover:shadow-2xl"
+              >
+                <div className="flex gap-4">
+                  {p.theme_config?.imageUrl && (
+                    <div className="shrink-0 relative">
+                      <img
+                        src={p.theme_config.imageUrl}
+                        alt={p.title || 'Show'}
+                        className="h-16 w-16 rounded-2xl object-cover shadow-lg ring-1 ring-white/10 group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/20 to-transparent" />
+                    </div>
+                  )}
+                  <div className="space-y-1 min-w-0">
+                    <h4 className="text-lg font-black tracking-tight text-slate-100 group-hover:text-sky-400 transition-colors truncate">
+                      {p.title || 'Untitled'}
+                    </h4>
+                    {p.description && (
+                      <p className="text-xs leading-relaxed text-slate-500 line-clamp-2 opacity-80">
+                        {p.description}
+                      </p>
                     )}
-                    <div className="space-y-1">
-                      <h4 className="font-semibold text-slate-200 group-hover:text-sky-400 transition-colors">
-                        {p.title || 'Untitled'}
-                      </h4>
-                      {p.description && (
-                        <p className="text-[11px] leading-relaxed text-slate-500 line-clamp-2">
-                          {p.description}
-                        </p>
-                      )}
-                    </div>
                   </div>
+                </div>
 
-                  <div className="mt-4 flex items-center justify-between border-t border-slate-800/50 pt-3 text-[10px] text-slate-500">
-                    <div className="flex items-center gap-2">
-                      {p.youtube_channel_id ? (
-                        <span className="flex items-center gap-1 text-emerald-400">
-                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                          YT Connected
-                        </span>
-                      ) : (
-                        <span>Audio Only</span>
-                      )}
-                    </div>
-                    <span className="group-hover:translate-x-1 transition-transform">Manage →</span>
+                <div className="mt-6 flex items-center justify-between border-t border-white/5 pt-4">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.5)]" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Live Workspace</span>
                   </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        ) : null
-      }
-    </div >
+                  <span className="rounded-lg bg-white/5 px-2 py-1 text-[9px] font-mono text-slate-600 tracking-tighter">
+                    {p.id.slice(0, 8)}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
   );
 }

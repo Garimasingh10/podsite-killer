@@ -32,9 +32,13 @@ export default async function DashboardLayout({
     'Studio Creator';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-950 to-slate-900 text-slate-50">
+    <div className="relative min-h-screen bg-slate-950 text-slate-50 overflow-x-hidden">
+      {/* Dynamic Background */}
+      <div className="fixed inset-0 z-0 mesh-gradient opacity-40" />
+      <div className="fixed inset-0 z-0 grid-pattern opacity-[0.03]" />
+
       {/* Top glass header */}
-      <header className="sticky top-0 z-20 border-b border-slate-800/70 bg-slate-950/70 backdrop-blur-md">
+      <header className="sticky top-0 z-20 border-b border-white/5 bg-slate-950/40 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500/70 to-cyan-400/70 text-xs font-bold text-slate-950 shadow-lg shadow-sky-500/30">
@@ -63,7 +67,7 @@ export default async function DashboardLayout({
       </header>
 
       {/* Page body */}
-      <main className="mx-auto max-w-6xl px-4 py-6">
+      <main className="relative z-10 mx-auto max-w-6xl px-4 py-6">
         {children}
       </main>
     </div>
