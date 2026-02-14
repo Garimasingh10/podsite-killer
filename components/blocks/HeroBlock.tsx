@@ -10,7 +10,7 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
             <section className="relative mb-24 py-12 border-b border-zinc-100">
                 <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 mb-6">Featured This Week</span>
-                    <h2 className="text-5xl font-black italic tracking-tighter leading-none mb-8">
+                    <h2 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-none mb-8">
                         {latestEpisode?.title || podcast.title}
                     </h2>
                     <p className="text-xl text-zinc-500 font-medium leading-relaxed italic mb-10">
@@ -74,7 +74,7 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
                     {latestEpisode?.title || podcast.title}
                 </h2>
                 <p className="max-w-2xl text-lg text-zinc-400 font-medium">
-                    {latestEpisode?.description?.slice(0, 200) || podcast.description || ''}...
+                    {latestEpisode?.description?.slice(0, 200) || podcast.description || ''}
                 </p>
                 <div className="flex gap-4">
                     <Link

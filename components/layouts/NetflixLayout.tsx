@@ -27,7 +27,7 @@ export default function NetflixLayout({ children, podcast }: NetflixLayoutProps)
                 <header className="fixed top-0 z-50 w-full bg-gradient-to-b from-black via-black/40 to-transparent px-8 py-4 transition-colors hover:bg-black md:px-16">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-8">
-                            <Link href={`/${podcast.id}`} className="text-3xl font-black tracking-tighter text-primary py-2">
+                            <Link href={`/${podcast.id}`} className="text-3xl font-black tracking-tighter text-white py-2">
                                 NETFLIX
                             </Link>
                             <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
@@ -49,16 +49,6 @@ export default function NetflixLayout({ children, podcast }: NetflixLayoutProps)
                         </div>
                     </div>
 
-                    {/* Mobile Menu Overlay */}
-                    {isMenuOpen && (
-                        <div className="fixed inset-0 top-16 z-40 flex flex-col items-center justify-center gap-8 bg-black/98 backdrop-blur-xl animate-in fade-in slide-in-from-top-4 duration-300 md:hidden">
-                            <nav className="flex flex-col items-center gap-10 text-3xl font-black">
-                                <Link href={`/${podcast.id}`} onClick={() => setIsMenuOpen(false)} className="hover:text-red-600 transition-all">Home</Link>
-                                <Link href={`/${podcast.id}/episodes`} onClick={() => setIsMenuOpen(false)} className="hover:text-red-600 transition-all">Episodes</Link>
-                                <Link href={`/${podcast.id}#host`} onClick={() => setIsMenuOpen(false)} className="hover:text-red-600 transition-all">About</Link>
-                            </nav>
-                        </div>
-                    )}
                 </header>
 
                 {/* Huge Netflix Hero */}

@@ -35,7 +35,7 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
                             </nav>
                         </div>
                         <div className="flex items-center gap-4">
-                            <button className="hidden rounded-full bg-black px-6 py-2 text-xs font-black uppercase tracking-widest text-white transition-transform hover:scale-105 active:scale-95 md:block">
+                            <button className="rounded-full bg-black px-6 py-2 text-xs font-black uppercase tracking-widest text-white transition-transform hover:scale-105 active:scale-95">
                                 Subscribe
                             </button>
                             <button
