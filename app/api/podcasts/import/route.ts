@@ -43,6 +43,9 @@ export async function POST(req: Request) {
     foregroundColor: '#f8fafc',
     accentColor: '#22c55e',
     borderColor: '#334155',
+    fontHeading: "'Inter', sans-serif",
+    fontBody: "'Inter', sans-serif",
+    cornerRadius: '8px',
     layout: 'netflix',
   };
 
