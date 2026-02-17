@@ -9,40 +9,18 @@ import { extractColorsFromImage } from '@/lib/utils/colorUtils';
 import { Wand2, Layout, Palette, Type, Square } from 'lucide-react';
 
 export default function ThemeCustomizer({
-    podcastId,
+    config,
+    onChange,
     imageUrl,
-    initialConfig
 }: {
-    podcastId: string,
+    config: ThemeConfig,
+    onChange: (config: ThemeConfig) => void,
     imageUrl?: string,
-    initialConfig: ThemeConfig
 }) {
-    const [config, setConfig] = useState<ThemeConfig>(initialConfig);
-    const [isSaving, setIsSaving] = useState(false);
     const [isExtracting, setIsExtracting] = useState(false);
-    const supabase = createSupabaseBrowserClient();
-    const router = useRouter();
 
-    // Sync state when props change (server-side update)
-    React.useEffect(() => {
-        setConfig(initialConfig);
-    }, [initialConfig]);
-
-    async function updateConfig(newConfig: Partial<ThemeConfig>) {
-        const updated = { ...config, ...newConfig };
-        setConfig(updated);
-        setIsSaving(true);
-
-        const { error } = await supabase
-            .from('podcasts')
-            .update({ theme_config: updated })
-            .eq('id', podcastId);
-
-        if (error) console.error('Error saving theme:', error);
-
-        router.refresh();
-        // Brief timeout to show saving state then clear
-        setTimeout(() => setIsSaving(false), 2000);
+    function updateConfig(newConfig: Partial<ThemeConfig>) {
+        onChange({ ...config, ...newConfig });
     }
 
     const presets = [
@@ -66,7 +44,7 @@ export default function ThemeCustomizer({
                 accentColor: extracted.accent,
                 borderColor: extracted.border,
             };
-            await updateConfig(newConfig);
+            onChange(newConfig);
         } catch (err) {
             console.error('Magic theme failed:', err);
         } finally {
@@ -97,7 +75,7 @@ export default function ThemeCustomizer({
                         disabled={!imageUrl || isExtracting}
                         className="flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-primary transition-all hover:bg-primary/20 disabled:opacity-50"
                     >
-                        <Wand2 size={14} className={isExtracting ? 'animate-spin' : ''} />
+                        < Wand2 size={14} className={isExtracting ? 'animate-spin' : ''} />
                         {isExtracting ? 'Analyzing...' : 'Magic Theme'}
                     </button>
                 </div>
@@ -239,15 +217,6 @@ export default function ThemeCustomizer({
                     </div>
                 </div>
             </div>
-
-            {isSaving && (
-                <div className="flex items-center justify-center pt-4">
-                    <div className="flex items-center gap-2 rounded-full bg-emerald-500/10 px-4 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-500 border border-emerald-500/20">
-                        <div className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
-                        Live Sync Active
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

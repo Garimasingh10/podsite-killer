@@ -68,16 +68,12 @@ function SortableItem({ id, label }: SortableItemProps) {
 }
 
 export default function BlockReorder({
-    podcastId,
-    initialLayout
+    items,
+    onChange
 }: {
-    podcastId: string,
-    initialLayout: string[]
+    items: string[],
+    onChange: (items: string[]) => void
 }) {
-    const [items, setItems] = useState(initialLayout);
-    const [isSaving, setIsSaving] = useState(false);
-    const supabase = createSupabaseBrowserClient();
-
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, {
@@ -89,34 +85,17 @@ export default function BlockReorder({
         const { active, over } = event;
 
         if (over && active.id !== over.id) {
-            setItems((items) => {
-                const oldIndex = items.indexOf(active.id as string);
-                const newIndex = items.indexOf(over.id as string);
-                const newLayout = arrayMove(items, oldIndex, newIndex);
-                saveLayout(newLayout);
-                return newLayout;
-            });
+            const oldIndex = items.indexOf(active.id as string);
+            const newIndex = items.indexOf(over.id as string);
+            const newLayout = arrayMove(items, oldIndex, newIndex);
+            onChange(newLayout);
         }
-    }
-
-    async function saveLayout(newLayout: string[]) {
-        setIsSaving(true);
-        const { error } = await supabase
-            .from('podcasts')
-            .update({ page_layout: newLayout })
-            .eq('id', podcastId);
-
-        if (error) {
-            console.error('Error saving layout:', error);
-        }
-        setIsSaving(false);
     }
 
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium text-slate-200">Page Structure</h3>
-                {isSaving && <span className="text-xs text-primary animate-pulse">Saving...</span>}
             </div>
             <p className="text-sm text-slate-400">Drag to reorder how sections appear on your homepage.</p>
 
