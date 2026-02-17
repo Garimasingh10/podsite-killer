@@ -20,6 +20,7 @@ export default function ThemeCustomizer({
     const [isExtracting, setIsExtracting] = useState(false);
 
     function updateConfig(newConfig: Partial<ThemeConfig>) {
+        console.log('🔧 ThemeCustomizer updateConfig called:', newConfig);
         onChange({ ...config, ...newConfig });
     }
 

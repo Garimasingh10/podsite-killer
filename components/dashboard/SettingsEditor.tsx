@@ -27,30 +27,34 @@ export default function SettingsEditor({
     const router = useRouter();
 
     const handleConfigChange = (newConfig: ThemeConfig) => {
+        console.log('🎨 Config changed:', newConfig);
         setConfig(newConfig);
         setHasUnsavedChanges(true);
         setIsSaved(false);
     };
 
     const handleLayoutChange = (newLayout: string[]) => {
+        console.log('📐 Layout changed:', newLayout);
         setLayout(newLayout);
         setHasUnsavedChanges(true);
         setIsSaved(false);
     };
 
     const handleSave = async () => {
+        console.log('💾 Save button clicked!');
         setIsSaving(true);
         try {
             await updateSettingsAction(podcastId, {
                 theme_config: config,
                 page_layout: layout,
             });
+            console.log('✅ Settings saved successfully');
             setHasUnsavedChanges(false);
             setIsSaved(true);
             setTimeout(() => setIsSaved(false), 3000);
             router.refresh();
         } catch (error) {
-            console.error('Failed to save settings:', error);
+            console.error('❌ Failed to save settings:', error);
             alert('Failed to save changes. Please try again.');
         } finally {
             setIsSaving(false);
