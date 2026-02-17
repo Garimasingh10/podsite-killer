@@ -75,7 +75,7 @@ export default function ThemeCustomizer({
                         disabled={!imageUrl || isExtracting}
                         className="flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-primary transition-all hover:bg-primary/20 disabled:opacity-50"
                     >
-                        < Wand2 size={14} className={isExtracting ? 'animate-spin' : ''} />
+                        <Wand2 size={14} className={isExtracting ? 'animate-spin' : ''} />
                         {isExtracting ? 'Analyzing...' : 'Magic Theme'}
                     </button>
                 </div>
@@ -84,7 +84,7 @@ export default function ThemeCustomizer({
                     {layouts.map((l) => (
                         <button
                             key={l.id}
-                            onClick={() => updateConfig({ layout: l.id as any })}
+                            onClick={() => updateConfig({ layout: l.id as ThemeConfig['layout'] })}
                             className={`flex flex-col items-start rounded-xl border-2 p-4 text-left transition-all ${config.layout === l.id
                                 ? 'border-primary bg-primary/5'
                                 : 'border-slate-800 bg-slate-950 hover:border-slate-700'

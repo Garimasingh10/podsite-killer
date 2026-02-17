@@ -111,5 +111,3 @@ export default async function PodcastSettingsPage({ params }: PageProps) {
         </main>
     );
 }
-    );
-}
