@@ -21,6 +21,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Eye, EyeOff } from 'lucide-react';
 import { createSupabaseBrowserClient } from '@/lib/supabaseBrowser';
+import { useRouter } from 'next/navigation';
 
 interface SortableItemProps {
     id: string;
@@ -68,12 +69,17 @@ function SortableItem({ id, label }: SortableItemProps) {
 }
 
 export default function BlockReorder({
+    podcastId,
     items,
     onChange
 }: {
+    podcastId: string,
     items: string[],
     onChange: (items: string[]) => void
 }) {
+    const [isSaving, setIsSaving] = useState(false);
+    const router = useRouter();
+
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, {
@@ -88,7 +94,29 @@ export default function BlockReorder({
             const oldIndex = items.indexOf(active.id as string);
             const newIndex = items.indexOf(over.id as string);
             const newLayout = arrayMove(items, oldIndex, newIndex);
+
+            // Update parent state immediately for UI
             onChange(newLayout);
+
+            // Auto-save to database
+            setIsSaving(true);
+            try {
+                const supabase = createSupabaseBrowserClient();
+                const { error } = await supabase
+                    .from('podcasts')
+                    .update({ page_layout: newLayout })
+                    .eq('id', podcastId);
+
+                if (error) {
+                    console.error('Failed to save layout:', error);
+                } else {
+                    router.refresh();
+                }
+            } catch (error) {
+                console.error('Error saving layout:', error);
+            } finally {
+                setIsSaving(false);
+            }
         }
     }
 

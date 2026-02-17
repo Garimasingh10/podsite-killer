@@ -97,6 +97,7 @@ export default function SettingsEditor({
                         {/* Block Reorder */}
                         <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-8 backdrop-blur-sm">
                             <BlockReorder
+                                podcastId={podcastId}
                                 items={layout}
                                 onChange={handleLayoutChange}
                             />
