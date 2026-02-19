@@ -15,11 +15,33 @@ export default async function DashboardLayout({
     error,
   } = await supabase.auth.getUser();
 
-  if (error) console.error('Dashboard Layout - Auth Error:', error.message);
+  if (error) {
+    console.error('Dashboard Layout - Auth Error:', {
+      message: error.message,
+      status: error.status,
+      name: error.name,
+    });
+    
+    // Handle specific auth errors
+    if (error.message.includes('JWT') || error.message.includes('token') || error.message.includes('expired')) {
+      // Session expired or invalid - redirect to login with clear message
+      redirect('/login?error=' + encodeURIComponent('Session expired. Please log in again.'));
+    }
+  }
 
   if (error || !user) {
-    console.log('Dashboard Layout - No user or error, redirecting to /login');
+    console.log('Dashboard Layout - No user or error, redirecting to /login', {
+      hasError: !!error,
+      hasUser: !!user,
+      errorMessage: error?.message,
+    });
     redirect('/login');
+  }
+  
+  // Verify user has valid email (required for account)
+  if (!user.email) {
+    console.error('Dashboard Layout - User has no email');
+    redirect('/login?error=' + encodeURIComponent('Account configuration error. Please contact support.'));
   }
 
 

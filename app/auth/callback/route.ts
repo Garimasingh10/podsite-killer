@@ -50,9 +50,34 @@ export async function GET(request: Request) {
   }
 
   if (error) {
-    console.error('Auth Callback - Exchange failed:', error.message);
-    return NextResponse.redirect(`${url.origin}/login?error=${encodeURIComponent(error.message)}`);
+    console.error('Auth Callback - Exchange failed:', {
+      message: error.message,
+      status: error.status,
+      name: error.name,
+    });
+    
+    // Handle specific error cases
+    let errorMsg = error.message;
+    if (error.message.includes('invalid_grant') || error.message.includes('code')) {
+      errorMsg = 'Authentication code expired or invalid. Please try logging in again.';
+    } else if (error.message.includes('provider')) {
+      errorMsg = 'Authentication provider error. Please try again or use email/password.';
+    }
+    
+    return NextResponse.redirect(`${url.origin}/login?error=${encodeURIComponent(errorMsg)}`);
   }
+
+  // Verify we got a user and session
+  if (!data?.user || !data?.session) {
+    console.error('Auth Callback - No user or session after exchange');
+    return NextResponse.redirect(`${url.origin}/login?error=${encodeURIComponent('Session not established. Please try again.')}`);
+  }
+
+  console.log('Auth Callback - Success:', {
+    userId: data.user.id,
+    email: data.user.email,
+    hasSession: !!data.session,
+  });
 
   // HTML Bridge: Sets cookies via JS and THEN redirects.
   // This is the "Nuclear" fix for race conditions in server-side redirects.
@@ -68,8 +93,12 @@ export async function GET(request: Request) {
             ${pendingCookies.map(c => `
               document.cookie = "${c.name}=${c.value}; Path=/; SameSite=Lax; Max-Age=${c.options?.maxAge ?? 3600}${process.env.NODE_ENV === 'production' ? '; Secure' : ''}";
             `).join('')}
-            console.log('HTML Bridge - Done. Redirecting to ${next}');
-            window.location.href = "${next}";
+            
+            // Verify cookies are set before redirect
+            setTimeout(() => {
+              console.log('HTML Bridge - Cookies set, redirecting to ${next}');
+              window.location.href = "${next}";
+            }, 100);
           </script>
         </div>
       </body>

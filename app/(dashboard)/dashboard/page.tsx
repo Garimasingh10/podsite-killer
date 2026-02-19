@@ -58,7 +58,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 
   // Logic: First podcast in list is "Active", others are "Library"
   const active = rows.length > 0 ? rows[0] : null;
-  const others = rows.length > 0 ? rows : [];
+  const others = rows.length > 1 ? rows.slice(1) : [];
 
   const hasPodcasts = rows.length > 0;
   const primaryColor = active?.theme_config?.primaryColor || '#6366f1';

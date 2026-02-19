@@ -36,14 +36,26 @@ function LoginContent() {
           emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(
             DASHBOARD,
           )}`,
+          // Prevent auto-confirm in production (requires email verification)
+          // In development, you might want to disable email confirmation in Supabase settings
         },
       });
-      console.log('signUp result', error);
+      
+      console.log('signUp result', { error, email });
+      
       if (error) {
-        setMessage(error.message);
+        // Handle specific signup errors
+        let errorMsg = error.message;
+        if (error.message.includes('already registered') || error.message.includes('already exists')) {
+          errorMsg = 'An account with this email already exists. Please log in instead.';
+        } else if (error.message.includes('password')) {
+          errorMsg = 'Password is too weak. Please use a stronger password.';
+        }
+        setMessage(errorMsg);
         setLoading(false);
         return;
       }
+      
       setMessage('Account created! Please check your email for a verification link to activate your studio.');
       setLoading(false);
       return;
@@ -53,17 +65,68 @@ function LoginContent() {
       email,
       password,
     });
-    console.log('signIn result', { data, error });
+    
+    console.log('signIn result', { 
+      email,
+      hasData: !!data,
+      hasUser: !!data?.user,
+      error: error ? {
+        message: error.message,
+        status: error.status,
+        name: error.name,
+      } : null,
+    });
 
     if (error) {
-      setMessage(error.message);
+      console.error('Login error details:', {
+        email,
+        message: error.message,
+        status: error.status,
+        name: error.name,
+      });
+      
+      // Provide user-friendly error messages
+      let errorMsg = error.message;
+      if (error.message.includes('Invalid login credentials') || error.message.includes('Invalid password')) {
+        errorMsg = 'Invalid email or password. Please check your credentials and try again.';
+      } else if (error.message.includes('Email not confirmed')) {
+        errorMsg = 'Please check your email and click the confirmation link before logging in.';
+      } else if (error.message.includes('too many requests')) {
+        errorMsg = 'Too many login attempts. Please wait a few minutes and try again.';
+      } else if (error.message.includes('User not found')) {
+        errorMsg = 'No account found with this email. Please sign up first.';
+      }
+      
+      setMessage(errorMsg || 'Login failed. Please try again.');
       setLoading(false);
       return;
     }
 
+    if (!data?.user) {
+      console.error('Login succeeded but no user data returned');
+      setMessage('Login succeeded but session not established. Please try again.');
+      setLoading(false);
+      return;
+    }
+
+    // Verify session is actually set before redirecting
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData?.session) {
+      console.error('No session after login, retrying...');
+      // Wait a bit and check again (cookie propagation delay)
+      await new Promise(resolve => setTimeout(resolve, 500));
+      const { data: retrySession } = await supabase.auth.getSession();
+      if (!retrySession?.session) {
+        setMessage('Session not established. Please try "Clear session and try again" below.');
+        setLoading(false);
+        return;
+      }
+    }
+
+    console.log('Login successful, session verified, redirecting to dashboard');
     setLoading(false);
-    router.push(DASHBOARD);
-    router.refresh(); // Ensure the layout refreshes the session state
+    // Use window.location for a full page reload to ensure cookies are set
+    window.location.href = DASHBOARD;
   };
 
   const onGoogleLogin = async () => {
@@ -86,11 +149,20 @@ function LoginContent() {
     });
 
     if (error) {
-      setMessage(error.message);
+      console.error('Google OAuth error:', {
+        message: error.message,
+        status: error.status,
+        name: error.name,
+      });
+      setMessage(error.message || 'Google login failed. Please try again.');
       setLoading(false);
     } else if (!data?.url) {
-      setMessage('Could not start Google login.');
+      console.error('Google OAuth: No redirect URL returned');
+      setMessage('Could not start Google login. Please check your Google OAuth configuration.');
       setLoading(false);
+    } else {
+      console.log('Google OAuth redirect URL:', data.url);
+      // OAuth redirect will happen automatically
     }
   };
 
@@ -276,6 +348,20 @@ function LoginContent() {
             <Link href="/" className="text-sky-400 hover:underline">
               ← Back to home
             </Link>
+          </p>
+
+          <p className="mt-3 text-center text-xs text-slate-500">
+            Having trouble signing in?{' '}
+            <button
+              type="button"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                window.location.href = '/login';
+              }}
+              className="text-sky-400 hover:underline"
+            >
+              Clear session and try again
+            </button>
           </p>
         </div>
       </div>
