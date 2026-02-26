@@ -34,7 +34,7 @@ export default async function EpisodesIndex({ params, searchParams }: EpisodesIn
 
   let query = supabase
     .from('episodes')
-    .select('id, slug, title, published_at, image_url')
+    .select('id, slug, title, published_at, image_url, description, audio_url')
     .eq('podcast_id', podcast.id)
     .order('published_at', { ascending: false });
 

@@ -35,9 +35,9 @@ export function NewPodcastForm({ initialRss = '' }: { initialRss?: string }) {
     setRssUrl('');
     router.refresh();
 
-    // Explicitly pushing to dashboard to trigger a full server-side refresh if needed
+    // Explicitly pushing to customizer to trigger a full server-side refresh if needed
     setTimeout(() => {
-      router.push('/dashboard');
+      router.push(`/dashboard/customize?siteId=${json.podcastId}`);
       router.refresh();
     }, 100);
 
