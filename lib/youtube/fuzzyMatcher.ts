@@ -10,7 +10,11 @@ export type YoutubeVideoInput = {
     id: string;
     title: string;
     publishedAt: string; // YouTube date format
-    thumbnails?: any;
+    thumbnails?: Record<string, {
+        url: string;
+        width: number;
+        height: number;
+    }>;
 };
 
 export type MatchResult = {

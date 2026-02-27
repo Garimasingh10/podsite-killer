@@ -1,10 +1,26 @@
+// proxy.ts
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export default async function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
+    const url = request.nextUrl;
+    const hostname = request.headers.get('host') || 'localhost:3000';
 
-    // Skip static assets and internal requests
+    // 1. Domain Routing Logic
+    const isMainApp =
+        hostname === 'localhost:3000' ||
+        hostname === process.env.NEXT_PUBLIC_APP_DOMAIN ||
+        hostname === 'app.podsitekiller.com' ||
+        hostname.includes('vercel.app');
+
+    // If it's a custom domain, we rewrite to the specific podcast route
+    if (!isMainApp && !pathname.startsWith('/api') && !pathname.startsWith('/_next') && !pathname.includes('.')) {
+        const cleanHostname = hostname.replace('www.', '');
+        return NextResponse.rewrite(new URL(`/${cleanHostname}${pathname === '/' ? '' : pathname}`, request.url));
+    }
+
+    // Skip static assets and internal requests for the rest of the logic
     if (
         pathname.startsWith('/_next') ||
         pathname.startsWith('/api') ||
@@ -13,18 +29,17 @@ export default async function proxy(request: NextRequest) {
         return NextResponse.next();
     }
 
-    const host = request.headers.get('host');
-    console.log(`--- Proxy Hit: ${pathname} [Host: ${host}] ---`);
+    console.log(`--- Proxy Hit: ${pathname} [Host: ${hostname}] ---`);
 
-    // 1. Initial Collector
-    const pendingCookies: any[] = [];
+    // 2. Initial Collector for Auth state sync
+    const pendingCookies: { name: string; value: string; options?: any }[] = [];
     let response = NextResponse.next({
         request: {
             headers: request.headers,
         },
     });
 
-    // 2. Setup Supabase
+    // 3. Setup Supabase
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -61,10 +76,10 @@ export default async function proxy(request: NextRequest) {
         },
     );
 
-    // 3. Trigger check
+    // 4. Trigger check
     const { data: { user } } = await supabase.auth.getUser();
 
-    // 4. Manually staple ANY cookies collected during getUser
+    // 5. Manually staple ANY cookies collected during getUser
     if (pendingCookies.length > 0) {
         console.log('Proxy - Stapling collected cookies to outbound response:', pendingCookies.length);
         pendingCookies.forEach(({ name, value, options }) => {

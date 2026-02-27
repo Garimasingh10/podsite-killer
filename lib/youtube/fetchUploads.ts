@@ -34,12 +34,23 @@ export async function fetchChannelUploads(
 
   const playlistJson = await playlistRes.json();
 
+  interface YouTubeItem {
+    snippet: {
+      resourceId: {
+        videoId: string;
+      };
+      title: string;
+      description: string;
+      publishedAt: string;
+    };
+  }
+
   const videos: YouTubeVideo[] =
-    playlistJson.items?.map((item: any) => ({
-      id: item.snippet.resourceId.videoId as string,
-      title: item.snippet.title as string,
-      description: item.snippet.description as string,
-      publishedAt: item.snippet.publishedAt as string,
+    (playlistJson.items as YouTubeItem[])?.map((item: YouTubeItem) => ({
+      id: item.snippet.resourceId.videoId,
+      title: item.snippet.title,
+      description: item.snippet.description,
+      publishedAt: item.snippet.publishedAt,
     })) ?? [];
 
   return videos;

@@ -59,11 +59,11 @@ export default function ThemeEngine({ config: initialConfig, scope }: { config: 
     const cssVariables = useMemo(() => {
         const vars: Record<string, string> = {};
 
-        if (config.primaryColor) vars['--primary'] = config.primaryColor;
-        if (config.backgroundColor) vars['--background'] = config.backgroundColor;
-        if (config.foregroundColor) vars['--foreground'] = config.foregroundColor;
-        if (config.accentColor) vars['--accent'] = config.accentColor;
-        if (config.borderColor) vars['--border'] = config.borderColor;
+        if (config.primaryColor) vars['--primary-color'] = config.primaryColor;
+        if (config.backgroundColor) vars['--bg-color'] = config.backgroundColor;
+        if (config.foregroundColor) vars['--fg-color'] = config.foregroundColor;
+        if (config.accentColor) vars['--accent-color'] = config.accentColor;
+        if (config.borderColor) vars['--border-color'] = config.borderColor;
 
         let overrideFont = null;
         if (config.customFontUrl) {
@@ -71,19 +71,18 @@ export default function ThemeEngine({ config: initialConfig, scope }: { config: 
         }
 
         if (overrideFont) {
-            vars['--font-heading'] = overrideFont;
-            // Optionally set body too or keep separate
-            vars['--font-body'] = overrideFont;
+            vars['--font-family-heading'] = overrideFont;
+            vars['--font-family-body'] = overrideFont;
         } else {
-            if (config.fontHeading) vars['--font-heading'] = config.fontHeading;
-            if (config.fontBody) vars['--font-body'] = config.fontBody;
+            if (config.fontHeading) vars['--font-family-heading'] = config.fontHeading;
+            if (config.fontBody) vars['--font-family-body'] = config.fontBody;
         }
 
         if (config.cornerRadius) {
-            vars['--radius-lg'] = config.cornerRadius;
+            vars['--radius-base-lg'] = config.cornerRadius;
             const radiusNum = parseInt(config.cornerRadius);
-            vars['--radius-md'] = `${Math.max(0, radiusNum - 4)}px`;
-            vars['--radius-sm'] = `${Math.max(0, radiusNum - 8)}px`;
+            vars['--radius-base-md'] = `${Math.max(0, radiusNum - 4)}px`;
+            vars['--radius-base-sm'] = `${Math.max(0, radiusNum - 8)}px`;
         }
 
         return Object.entries(vars)
