@@ -177,38 +177,23 @@ export default function ThemeCustomizer({
                             {fontPairings.map((p) => (
                                 <button
                                     key={p.id}
-                                    onClick={() => updateConfig({ fontHeading: p.heading, fontBody: p.body, customFontUrl: '' })}
-                                    className={`group flex items-center justify-between rounded-xl border p-4 transition-all ${config.fontHeading === p.heading && !config.customFontUrl
+                                    onClick={() => updateConfig({ fontHeading: p.heading, fontBody: p.body })}
+                                    className={`group flex items-center justify-between rounded-xl border p-4 transition-all ${config.fontHeading === p.heading
                                         ? 'border-primary bg-primary/5'
                                         : 'border-slate-800 bg-slate-950 hover:border-slate-700'
                                         }`}
                                 >
                                     <div className="flex flex-col items-start min-w-0">
-                                        <span className={`text-sm font-bold truncate ${config.fontHeading === p.heading && !config.customFontUrl ? 'text-primary' : 'text-slate-300'}`}>
+                                        <span className={`text-sm font-bold truncate ${config.fontHeading === p.heading ? 'text-primary' : 'text-slate-300'}`}>
                                             {p.name}
                                         </span>
                                         <span className="text-[10px] text-slate-600 font-bold">Standard</span>
                                     </div>
-                                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-all ${config.fontHeading === p.heading && !config.customFontUrl ? 'border-primary/50 text-primary' : 'border-slate-800 text-slate-600'}`}>
+                                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-all ${config.fontHeading === p.heading ? 'border-primary/50 text-primary' : 'border-slate-800 text-slate-600'}`}>
                                         <span className="text-sm font-serif">Aa</span>
                                     </div>
                                 </button>
                             ))}
-                        </div>
-
-                        {/* Phase 3.1 Custom Google Font */}
-                        <div className="mt-4 flex flex-col gap-2 rounded-xl border border-slate-800 bg-slate-950 p-4">
-                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Custom Google Font URL</label>
-                            <input
-                                type="url"
-                                placeholder="https://fonts.googleapis.com/css2?family=Space+Grotesk..."
-                                value={config.customFontUrl || ''}
-                                onChange={(e) => updateConfig({ customFontUrl: e.target.value })}
-                                className="w-full rounded bg-slate-900 px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-primary"
-                            />
-                            {config.customFontUrl && (
-                                <p className="text-[10px] text-emerald-500 font-bold mt-1">✓ Custom font active</p>
-                            )}
                         </div>
                     </div>
 

@@ -10,8 +10,6 @@ import GridBlock from '@/components/blocks/GridBlock';
 import SubscribeBlock from '@/components/blocks/SubscribeBlock';
 import HostBlock from '@/components/blocks/HostBlock';
 import ShortsBlock from '@/components/blocks/ShortsBlock';
-import ProductBlock from '@/components/blocks/ProductBlock';
-import LiveLayoutManager from '@/components/LiveLayoutManager';
 
 const PAGE_SIZE = 20;
 
@@ -78,7 +76,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
 
   let episodesQuery = supabase
     .from('episodes')
-    .select('id, title, slug, published_at, image_url, youtube_video_id, description, audio_url')
+    .select('id, title, slug, published_at, image_url, youtube_video_id')
     .eq('podcast_id', subdomain)
     .order('published_at', { ascending: false });
 
@@ -91,12 +89,6 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   if (episodesError) {
     console.error('episodesError', episodesError);
   }
-
-  const { data: products } = await supabase
-    .from('products')
-    .select('*')
-    .eq('podcast_id', subdomain)
-    .order('created_at', { ascending: false });
 
   const hasMore = episodes && episodes.length === PAGE_SIZE;
   const latest = page === 1 ? episodes?.[0] : undefined;
@@ -115,23 +107,31 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
       layout === 'genz' ? GenZLayout :
         NetflixLayout;
 
-  const defaultLayout = ['hero', 'shorts', 'subscribe', 'grid', 'host', 'product'];
+  const defaultLayout = ['hero', 'shorts', 'subscribe', 'grid', 'host'];
   const pageLayout = (podcast.page_layout as string[]) || defaultLayout;
-
-  const blocks = {
-    hero: <HeroBlock key="hero" podcast={podcastWithImage} latestEpisode={latest} />,
-    shorts: <ShortsBlock key="shorts" podcast={podcastWithImage} />,
-    grid: <GridBlock key="grid" podcast={podcastWithImage} episodes={episodes || []} />,
-    subscribe: <SubscribeBlock key="subscribe" podcast={podcastWithImage} />,
-    host: <HostBlock key="host" podcast={podcastWithImage} />,
-    product: <ProductBlock key="product" product={products?.[0]} />
-  };
 
   return (
     <>
       <ThemeEngine config={themeConfig} />
       <LayoutComponent podcast={{ ...podcastWithImage, latest_video_id: latest?.youtube_video_id }}>
-        <LiveLayoutManager initialLayout={pageLayout} blocks={blocks} />
+        <div className="flex flex-col">
+          {pageLayout.map((blockType) => {
+            switch (blockType) {
+              case 'hero':
+                return <HeroBlock key="hero" podcast={podcastWithImage} latestEpisode={latest} />;
+              case 'shorts':
+                return <ShortsBlock key="shorts" podcast={podcastWithImage} />;
+              case 'grid':
+                return <GridBlock key="grid" podcast={podcastWithImage} episodes={episodes || []} />;
+              case 'subscribe':
+                return <SubscribeBlock key="subscribe" podcast={podcastWithImage} />;
+              case 'host':
+                return <HostBlock key="host" podcast={podcastWithImage} />;
+              default:
+                return null;
+            }
+          })}
+        </div>
       </LayoutComponent>
     </>
   );
