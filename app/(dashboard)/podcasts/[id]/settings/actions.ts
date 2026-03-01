@@ -7,6 +7,8 @@ import { revalidatePath } from 'next/cache';
 export async function updateSettingsAction(
     podcastId: string,
     update: {
+        title?: string;
+        description?: string;
         theme_config?: ThemeConfig;
         page_layout?: string[];
     }

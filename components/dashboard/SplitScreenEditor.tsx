@@ -12,6 +12,8 @@ import Link from 'next/link';
 export default function SplitScreenEditor({ podcast }: { podcast: any }) {
     const initialConfig = (podcast.theme_config as ThemeConfig) || {};
     const [config, setConfig] = useState<ThemeConfig>(initialConfig);
+    const [title, setTitle] = useState(podcast.title || '');
+    const [description, setDescription] = useState(podcast.description || '');
     const [layout, setLayout] = useState<string[]>((podcast.page_layout as string[]) || ['hero', 'subscribe', 'grid', 'host', 'shorts', 'product']);
     const [isSaving, setIsSaving] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
@@ -42,6 +44,8 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
         setIsSaving(true);
         try {
             await updateSettingsAction(podcast.id, {
+                title,
+                description,
                 theme_config: config,
                 page_layout: layout,
             });
@@ -98,7 +102,8 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
                                         const data = await res.json();
                                         if (data.suggestion) {
                                             if (confirm(`AI suggested new description:\n\n"${data.suggestion}"\n\nApply this?`)) {
-                                                // We need a way to track local content changes
+                                                setDescription(data.suggestion);
+                                                setHasUnsavedChanges(true);
                                             }
                                         }
                                     } catch (err) {
@@ -115,16 +120,18 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
                             <div className="space-y-1">
                                 <label className="text-[10px] font-bold text-slate-500 uppercase">Podcast Title</label>
                                 <input
-                                    defaultValue={podcast.title}
-                                    disabled
-                                    className="w-full bg-slate-900 border border-white/5 rounded-xl px-4 py-2 text-sm text-slate-400 opacity-50 cursor-not-allowed"
+                                    value={title}
+                                    onChange={(e) => { setTitle(e.target.value); setHasUnsavedChanges(true); }}
+                                    className="w-full bg-slate-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50 transition-all"
                                 />
                             </div>
                             <div className="space-y-1">
-                                <label className="text-[10px] font-bold text-slate-500 uppercase">Site Name</label>
-                                <input
-                                    placeholder="My Cool Site"
-                                    className="w-full bg-slate-900 border border-white/5 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-primary/50"
+                                <label className="text-[10px] font-bold text-slate-500 uppercase">Description</label>
+                                <textarea
+                                    value={description}
+                                    onChange={(e) => { setDescription(e.target.value); setHasUnsavedChanges(true); }}
+                                    rows={3}
+                                    className="w-full bg-slate-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50 transition-all resize-none"
                                 />
                             </div>
                         </div>
@@ -143,6 +150,23 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
                             items={layout}
                             onChange={handleLayoutChange}
                         />
+                    </div>
+
+                    {/* Advanced & Danger Zone */}
+                    <div className="pt-12 border-t border-white/5 space-y-8 pb-10">
+                        <div className="space-y-3">
+                            <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-600">RSS Connection</h4>
+                            <div className="rounded-xl border border-white/5 bg-slate-900/50 p-4">
+                                <code className="text-[10px] text-slate-500 break-all">{podcast.rss_url}</code>
+                            </div>
+                        </div>
+
+                        <div className="space-y-3">
+                            <h4 className="text-[10px] font-black uppercase tracking-widest text-red-900/50">Danger Zone</h4>
+                            <button className="w-full rounded-xl border border-red-900/20 bg-red-950/10 py-3 text-xs font-bold text-red-500/60 transition-all hover:bg-red-500 hover:text-black">
+                                Delete Podcast
+                            </button>
+                        </div>
                     </div>
                 </div>
 
