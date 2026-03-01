@@ -1,14 +1,15 @@
 'use client';
 import React from 'react';
 import { useLayout } from '../LayoutContext';
+import { Apple, Music, Youtube, Rss } from 'lucide-react';
 
 export default function SubscribeBlock({ podcast }: { podcast: any }) {
     const layout = useLayout();
     const platforms = [
-        { name: 'Apple Podcasts', icon: '🍎' },
-        { name: 'Spotify', icon: '🎧' },
-        { name: 'YouTube', icon: '📺' },
-        { name: 'RSS Feed', icon: '📡' },
+        { name: 'Apple Podcasts', Icon: Apple },
+        { name: 'Spotify', Icon: Music },
+        { name: 'YouTube', Icon: Youtube },
+        { name: 'RSS Feed', Icon: Rss },
     ];
 
     if (layout === 'substack') {
@@ -18,10 +19,10 @@ export default function SubscribeBlock({ podcast }: { podcast: any }) {
                     <h3 className="text-3xl font-black italic tracking-tighter mb-4 text-[var(--foreground)]">Subscribe to the newsletter</h3>
                     <p className="text-[var(--foreground)] font-medium opacity-60">Join 50,000+ others and never miss an update.</p>
                 </div>
-                <div className="flex flex-wrap justify-center gap-8">
+                <div className="flex flex-wrap justify-center gap-12">
                     {platforms.map((p) => (
-                        <button key={p.name} className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-zinc-400 hover:text-[var(--primary)] transition-all duration-500 group">
-                            <span className="group-hover:scale-110 transition-transform duration-500">{p.icon}</span>
+                        <button key={p.name} className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-zinc-400 hover:text-[var(--primary)] hover:translate-x-1 transition-all duration-500 group">
+                            <p.Icon size={18} className="group-hover:scale-110 transition-transform duration-500" />
                             <span>{p.name}</span>
                         </button>
                     ))}
@@ -54,7 +55,9 @@ export default function SubscribeBlock({ podcast }: { podcast: any }) {
                         key={p.name}
                         className="flex items-center gap-4 rounded-sm bg-zinc-800/40 p-5 font-black uppercase transition-all hover:bg-[var(--primary)] hover:scale-105 hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.3)] active:scale-95 group"
                     >
-                        <span className="text-2xl group-hover:scale-125 transition-transform">{p.icon}</span>
+                        <span className="text-2xl group-hover:scale-125 transition-transform">
+                            <p.Icon size={24} />
+                        </span>
                         <span className="text-xs tracking-widest text-zinc-300 group-hover:text-white">{p.name}</span>
                     </button>
                 ))}

@@ -22,7 +22,7 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
 
     return (
         <LayoutProvider value="substack">
-            <div className="relative min-h-screen bg-[var(--background)] text-[var(--foreground)] selection:bg-[var(--primary)]/30 overflow-x-hidden">
+            <div className="relative min-h-screen bg-[var(--background)] text-[var(--foreground)] font-serif selection:bg-[var(--primary)]/30 overflow-x-hidden">
                 {/* Subtle Background */}
                 <div className="fixed inset-0 z-0 mesh-gradient opacity-10" />
                 <div className="fixed inset-0 z-0 grid-pattern opacity-[0.02]" />
@@ -32,11 +32,11 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
                         <div className="flex items-center gap-8">
                             <Link href={`/${podcast.id}`} className="group flex flex-col transition-none">
-                                <span className="text-2xl font-black italic tracking-tighter transition-colors duration-200 group-hover:text-[var(--primary)] will-change-[color]">
+                                <span className="text-2xl font-black italic tracking-tighter transition-colors duration-200 group-hover:text-[var(--primary)] will-change-[color] text-[var(--foreground)]">
                                     {podcast.title.split(' ').map(word => word[0]).join('')}
                                 </span>
                                 {podcast.tagline && (
-                                    <span className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
                                         {podcast.tagline}
                                     </span>
                                 )}
@@ -86,7 +86,7 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
                                 className="mx-auto mb-8 h-32 w-32 rounded-2xl border border-zinc-100 shadow-sm"
                             />
                         )}
-                        <h1 className="mb-2 text-5xl font-black italic tracking-tighter">{podcast.title}</h1>
+                        <h1 className="mb-2 text-5xl font-black italic tracking-tighter text-[var(--foreground)]">{podcast.title}</h1>
                         {podcast.tagline && (
                             <p className="mb-6 text-sm font-bold uppercase tracking-[0.3em] text-[var(--primary)]">{podcast.tagline}</p>
                         )}

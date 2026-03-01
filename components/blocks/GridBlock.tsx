@@ -30,10 +30,10 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                                 <p className="text-lg text-zinc-500 line-clamp-2 max-w-2xl font-medium opacity-80 group-hover:opacity-100 transition-opacity">
                                     Listen to the full episode on {podcast.title}. Available now.
                                 </p>
-                                <div className="mt-4 flex items-center gap-4 text-xs font-black uppercase tracking-widest text-zinc-400 group-hover:text-zinc-600 transition-colors">
+                                <div className="mt-4 flex items-center gap-4 text-xs font-black uppercase tracking-widest text-zinc-400 group-hover:text-zinc-600 transition-all duration-500">
                                     <span>{ep.youtube_video_id ? 'Video Available' : 'Audio Only'}</span>
                                     <span>•</span>
-                                    <span className="text-black group-hover:text-[var(--primary)] transition-colors font-black">Listen Now →</span>
+                                    <span className="text-black group-hover:text-[var(--primary)] group-hover:translate-x-3 transition-all duration-500 font-black inline-block">Listen Now →</span>
                                 </div>
                             </div>
                         </Link>
