@@ -31,8 +31,8 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
                 <header className="sticky top-0 z-50 border-b border-zinc-100 bg-white/80 backdrop-blur-md">
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
                         <div className="flex items-center gap-8">
-                            <Link href={`/${podcast.id}`} className="group flex flex-col">
-                                <span className="text-2xl font-black italic tracking-tighter transition-all group-hover:text-orange-600">
+                            <Link href={`/${podcast.id}`} className="group flex flex-col transition-none">
+                                <span className="text-2xl font-black italic tracking-tighter transition-colors duration-200 group-hover:text-[var(--primary)] will-change-[color]">
                                     {podcast.title.split(' ').map(word => word[0]).join('')}
                                 </span>
                                 {podcast.tagline && (
@@ -88,7 +88,7 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
                         )}
                         <h1 className="mb-2 text-5xl font-black italic tracking-tighter">{podcast.title}</h1>
                         {podcast.tagline && (
-                            <p className="mb-6 text-sm font-bold uppercase tracking-[0.3em] text-orange-600">{podcast.tagline}</p>
+                            <p className="mb-6 text-sm font-bold uppercase tracking-[0.3em] text-[var(--primary)]">{podcast.tagline}</p>
                         )}
                         <p className="text-xl text-zinc-500 font-medium leading-relaxed italic">{podcast.description}</p>
                     </div>

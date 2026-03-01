@@ -23,7 +23,7 @@ export default function NetflixLayout({ children, podcast }: NetflixLayoutProps)
 
     return (
         <LayoutProvider value="netflix">
-            <div className="relative min-h-screen bg-black text-white font-sans selection:bg-red-600/30 overflow-x-hidden">
+            <div className="relative min-h-screen bg-black text-white font-sans selection:bg-[var(--primary)]/30 overflow-x-hidden">
                 {/* Dynamic Background */}
                 <div className="fixed inset-0 z-0 mesh-gradient opacity-20" />
                 <div className="fixed inset-0 z-0 grid-pattern opacity-[0.03]" />
@@ -33,7 +33,7 @@ export default function NetflixLayout({ children, podcast }: NetflixLayoutProps)
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-8">
                             <Link href={`/${podcast.id}`} className="group flex flex-col py-2">
-                                <span className="text-3xl font-black tracking-tighter text-white transition-all group-hover:text-red-600">
+                                <span className="text-3xl font-black tracking-tighter text-white transition-all group-hover:text-[var(--primary)]">
                                     {podcast.title?.toUpperCase() || 'PODSITE'}
                                 </span>
                                 {podcast.tagline && (
@@ -65,9 +65,9 @@ export default function NetflixLayout({ children, podcast }: NetflixLayoutProps)
                     {isMenuOpen && (
                         <div className="fixed inset-0 top-16 z-40 flex flex-col items-center justify-center gap-8 bg-black/98 backdrop-blur-xl animate-in fade-in slide-in-from-top-4 duration-300 md:hidden">
                             <nav className="flex flex-col items-center gap-10 text-3xl font-black">
-                                <Link href={`/${podcast.id}`} onClick={() => setIsMenuOpen(false)} className="hover:text-red-600 transition-all">Home</Link>
-                                <Link href={`/${podcast.id}/episodes`} onClick={() => setIsMenuOpen(false)} className="hover:text-red-600 transition-all">Episodes</Link>
-                                <Link href={`/${podcast.id}#host`} onClick={() => setIsMenuOpen(false)} className="hover:text-red-600 transition-all">About</Link>
+                                <Link href={`/${podcast.id}`} onClick={() => setIsMenuOpen(false)} className="hover:text-[var(--primary)] transition-all">Home</Link>
+                                <Link href={`/${podcast.id}/episodes`} onClick={() => setIsMenuOpen(false)} className="hover:text-[var(--primary)] transition-all">Episodes</Link>
+                                <Link href={`/${podcast.id}#host`} onClick={() => setIsMenuOpen(false)} className="hover:text-[var(--primary)] transition-all">About</Link>
                             </nav>
                         </div>
                     )}

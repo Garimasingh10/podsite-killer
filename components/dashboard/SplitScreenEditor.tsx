@@ -206,7 +206,7 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
                 </div>
 
                 {/* Save Bar */}
-                <div className="fixed bottom-6 left-6 md:left-auto md:right-auto md:w-[35%] w-[calc(100%-3rem)] bg-transparent pointer-events-none z-50">
+                <div className="fixed bottom-6 left-0 md:w-[35%] w-full px-6 bg-transparent pointer-events-none z-50">
                     <div className="max-w-md mx-auto pointer-events-auto">
                         <button
                             onClick={handleSave}

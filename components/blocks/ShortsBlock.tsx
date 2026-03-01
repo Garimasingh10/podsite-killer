@@ -34,7 +34,7 @@ export default async function ShortsBlock({ podcast }: { podcast: any }) {
                     <h3 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
                         Shorts & Clips
                     </h3>
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-500 opacity-80">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)] opacity-80">
                         From our YouTube Channel
                     </p>
                 </div>
@@ -57,7 +57,7 @@ export default async function ShortsBlock({ podcast }: { podcast: any }) {
                         href={`https://www.youtube.com/watch?v=${video.id}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="group relative h-[420px] w-[240px] flex-shrink-0 cursor-pointer overflow-hidden rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-zinc-950 snap-start block shadow-xl transition-all hover:-translate-y-3 hover:shadow-2xl hover:border-indigo-500/50"
+                        className="group relative h-[420px] w-[240px] flex-shrink-0 cursor-pointer overflow-hidden rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-zinc-950 snap-start block shadow-xl transition-all hover:-translate-y-3 hover:shadow-2xl hover:border-[var(--primary)]/50"
                     >
                         <img
                             src={`https://i.ytimg.com/vi/${video.id}/maxresdefault.jpg`}
@@ -71,7 +71,7 @@ export default async function ShortsBlock({ podcast }: { podcast: any }) {
 
                         {/* Status Badge */}
                         <div className="absolute top-6 right-6 flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-md ring-1 ring-white/20">
-                            <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+                            <div className="h-1.5 w-1.5 rounded-full bg-[var(--primary)] animate-pulse" />
                             <span className="text-[10px] font-bold text-white uppercase tracking-widest">Clip</span>
                         </div>
 
@@ -80,7 +80,7 @@ export default async function ShortsBlock({ podcast }: { podcast: any }) {
                                 {video.title}
                             </p>
                             <div className="flex items-center gap-3">
-                                <span className="h-1 w-6 bg-indigo-500 rounded-full" />
+                                <span className="h-1 w-6 bg-[var(--primary)] rounded-full" />
                                 <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">
                                     {new Date(video.publishedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                                 </span>

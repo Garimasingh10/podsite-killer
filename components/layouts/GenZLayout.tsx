@@ -22,7 +22,7 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
 
     return (
         <LayoutProvider value="genz">
-            <div className="relative min-h-screen bg-white text-black font-sans selection:bg-accent overflow-x-hidden">
+            <div className="relative min-h-screen bg-white text-black font-sans selection:bg-[var(--primary)]/30 overflow-x-hidden">
                 {/* Dynamic Background */}
                 <div className="fixed inset-0 z-0 mesh-gradient opacity-15" />
                 <div className="fixed inset-0 z-0 grid-pattern opacity-[0.04]" />
@@ -33,7 +33,7 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
                         <div className="flex items-center gap-2">
                             <Link href={`/${podcast.id}`} className="group relative flex flex-col leading-none">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-3xl font-black uppercase italic tracking-tighter transition-colors group-hover:text-accent">
+                                    <span className="text-3xl font-black uppercase italic tracking-tighter transition-colors group-hover:text-[var(--primary)]">
                                         {podcast.title}
                                     </span>
                                     <span className="text-3xl font-black italic tracking-tighter text-zinc-400">
@@ -54,7 +54,7 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
                                     <Link
                                         key={item}
                                         href={item === 'Home' ? `/${podcast.id}` : item === 'Drops' ? `/${podcast.id}/episodes` : `/${podcast.id}#host`}
-                                        className="text-lg font-black uppercase italic transition-all hover:text-accent"
+                                        className="text-lg font-black uppercase italic transition-all hover:text-[var(--primary)]"
                                     >
                                         {item}
                                     </Link>
@@ -89,7 +89,7 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
                 </main>
 
                 {/* Loud Footer */}
-                <footer className="border-t-8 border-black bg-accent p-12 lg:p-24">
+                <footer className="border-t-8 border-black bg-[var(--primary)] p-12 lg:p-24 shadow-[0_0_50px_rgba(var(--primary-rgb),0.2)]">
                     <div className="mx-auto max-w-7xl">
                         <div className="flex flex-col gap-12 lg:flex-row lg:items-end lg:justify-between">
                             <div className="max-w-xl">

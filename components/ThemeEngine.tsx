@@ -44,10 +44,26 @@ export default function ThemeEngine({ config: initialConfig, scope }: { config: 
     const cssVariables = useMemo(() => {
         const vars: Record<string, string> = {};
 
-        if (config.primaryColor) vars['--primary'] = config.primaryColor;
-        if (config.backgroundColor) vars['--background'] = config.backgroundColor;
-        if (config.foregroundColor) vars['--foreground'] = config.foregroundColor;
-        if (config.accentColor) vars['--accent'] = config.accentColor;
+        const hexToRgb = (hex: string) => {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : null;
+        };
+
+        if (config.primaryColor) {
+            vars['--primary'] = config.primaryColor;
+            const rgb = hexToRgb(config.primaryColor);
+            if (rgb) vars['--primary-rgb'] = rgb;
+        }
+        if (config.backgroundColor) {
+            vars['--background'] = config.backgroundColor;
+            const rgb = hexToRgb(config.backgroundColor);
+            if (rgb) vars['--background-rgb'] = rgb;
+        }
+        if (config.accentColor) {
+            vars['--accent'] = config.accentColor;
+            const rgb = hexToRgb(config.accentColor);
+            if (rgb) vars['--accent-rgb'] = rgb;
+        }
         if (config.borderColor) vars['--border'] = config.borderColor;
 
         if (config.fontHeading) vars['--font-heading'] = config.fontHeading;

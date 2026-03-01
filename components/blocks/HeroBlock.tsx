@@ -35,7 +35,7 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
                     <div className="space-y-4">
                         {/* Podcast Branding (Secondary Title) */}
                         <div className="flex items-center gap-3">
-                            <span className="text-lg font-black uppercase tracking-[0.4em] text-red-600 drop-shadow-lg">
+                            <span className="text-lg font-black uppercase tracking-[0.4em] text-[var(--primary)] drop-shadow-lg">
                                 {podcast.title}
                             </span>
                         </div>
@@ -108,7 +108,7 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
                 {/* Main Skewed Container */}
                 <div className="relative border-x-8 border-b-8 border-black bg-white p-12 shadow-[24px_24px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
                     {/* Pink/Red Top Border Accent */}
-                    <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-pink-500 to-red-600" />
+                    <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-[var(--primary)] to-[var(--accent)]" />
 
                     <div className="flex flex-col md:flex-row gap-12 items-center relative z-10">
                         {/* Image Box on Left */}
@@ -141,7 +141,7 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
                             <div className="flex flex-wrap gap-6 pt-6">
                                 <Link
                                     href={`/${podcast.id}/episodes/${latestEpisode?.slug}`}
-                                    className="group/btn relative inline-block bg-black text-white px-12 py-5 text-2xl font-black uppercase italic tracking-tighter hover:bg-accent hover:text-black transition-colors"
+                                    className="group/btn relative inline-block bg-black text-white px-12 py-5 text-2xl font-black uppercase italic tracking-tighter hover:bg-[var(--primary)] hover:text-black transition-colors"
                                 >
                                     <span className="relative z-10 transition-transform group-hover/btn:scale-110">TAP IN</span>
                                 </Link>
