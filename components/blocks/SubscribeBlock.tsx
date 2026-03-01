@@ -21,8 +21,8 @@ export default function SubscribeBlock({ podcast }: { podcast: any }) {
                 </div>
                 <div className="flex flex-wrap justify-center gap-12">
                     {platforms.map((p) => (
-                        <button key={p.name} className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-zinc-400 hover:text-[var(--primary)] hover:translate-x-1 transition-all duration-500 group">
-                            <p.Icon size={18} className="group-hover:scale-110 transition-transform duration-500" />
+                        <button key={p.name} className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-zinc-500 hover:text-[var(--primary)] hover:translate-x-1 active:scale-95 transition-all duration-200 group">
+                            <p.Icon size={20} strokeWidth={2.5} className="group-hover:scale-110 transition-transform duration-200" />
                             <span>{p.name}</span>
                         </button>
                     ))}
@@ -53,10 +53,10 @@ export default function SubscribeBlock({ podcast }: { podcast: any }) {
                 {platforms.map((p) => (
                     <button
                         key={p.name}
-                        className="flex items-center gap-4 rounded-sm bg-zinc-800/40 p-5 font-black uppercase transition-all hover:bg-[var(--primary)] hover:scale-105 hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.3)] active:scale-95 group"
+                        className="flex items-center gap-4 rounded-sm bg-zinc-800/40 p-5 font-black uppercase transition-all duration-200 hover:bg-[var(--primary)] hover:scale-105 hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.3)] active:scale-95 group"
                     >
-                        <span className="text-2xl group-hover:scale-125 transition-transform">
-                            <p.Icon size={24} />
+                        <span className="text-2xl group-hover:scale-125 transition-transform duration-200">
+                            <p.Icon size={24} strokeWidth={2.5} />
                         </span>
                         <span className="text-xs tracking-widest text-zinc-300 group-hover:text-white">{p.name}</span>
                     </button>
