@@ -152,7 +152,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                       <Link
                         href={`/${active.id}`}
                         target="_blank"
-                        className="flex items-center gap-2 rounded-full border-2 border-white/10 bg-white/5 px-5 py-1.5 text-[11px] font-black uppercase tracking-wider text-white transition-all hover:bg-white/10 hover:border-[var(--podcast-primary)]/50"
+                        className="flex items-center gap-2 rounded-full border-2 border-[var(--podcast-primary)]/20 bg-[var(--podcast-primary)]/10 px-5 py-1.5 text-[11px] font-black uppercase tracking-wider text-[var(--podcast-primary)] transition-all hover:bg-[var(--podcast-primary)]/20 hover:border-[var(--podcast-primary)]/40 hover:scale-[1.02] active:scale-[0.98]"
                       >
                         Live Site <span className="text-[10px]">↗</span>
                       </Link>

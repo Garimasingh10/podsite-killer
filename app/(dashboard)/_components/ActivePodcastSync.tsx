@@ -49,8 +49,8 @@ export function ActivePodcastSync({
   };
 
   return (
-    <div className="rounded-[2.5rem] bg-zinc-950 p-8 border-4 border-white/5 shadow-2xl transition-all hover:border-[var(--podcast-accent)]/50">
-      <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-[var(--podcast-accent)] mb-2 italic">
+    <div className="rounded-[2.5rem] bg-zinc-950 p-8 border-4 border-white/5 shadow-2xl transition-all hover:border-[var(--podcast-primary)]/50">
+      <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-[var(--podcast-primary)] mb-2 italic">
         YouTube Sync
       </h3>
       <p className="text-xs text-zinc-500 leading-relaxed font-bold uppercase tracking-tighter">
@@ -62,12 +62,12 @@ export function ActivePodcastSync({
           placeholder="Channel ID (UC...)"
           value={channelId}
           onChange={(e) => setChannelId(e.target.value)}
-          className="w-full rounded-2xl border-2 border-white/5 bg-white/5 px-5 py-4 text-sm text-white placeholder:text-zinc-700 focus:border-[var(--podcast-accent)]/50 focus:outline-none focus:ring-4 focus:ring-[var(--podcast-accent)]/10 transition-all font-bold"
+          className="w-full rounded-2xl border-2 border-white/5 bg-white/5 px-5 py-4 text-sm text-white placeholder:text-zinc-700 focus:border-[var(--podcast-primary)]/50 focus:outline-none focus:ring-4 focus:ring-[var(--podcast-primary)]/10 transition-all font-bold"
         />
         <button
           onClick={onSync}
           disabled={loading || !channelId}
-          className="w-full rounded-2xl bg-zinc-900 py-4 text-xs font-black uppercase tracking-[0.2em] text-white border-2 border-white/10 transition-all hover:bg-[var(--podcast-accent)] hover:text-black hover:border-transparent active:scale-[0.98] disabled:opacity-50"
+          className="w-full rounded-2xl bg-zinc-900 py-4 text-xs font-black uppercase tracking-[0.2em] text-white border-2 border-white/10 transition-all hover:bg-[var(--podcast-primary)] hover:text-black hover:border-transparent active:scale-[0.98] disabled:opacity-50"
         >
           {loading ? 'Syncing...' : 'Connect Channel'}
         </button>
