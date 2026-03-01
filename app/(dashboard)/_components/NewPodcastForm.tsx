@@ -35,11 +35,9 @@ export function NewPodcastForm({ initialRss = '' }: { initialRss?: string }) {
     setRssUrl('');
     router.refresh();
 
-    // Explicitly pushing to customizer to trigger a full server-side refresh if needed
-    setTimeout(() => {
-      router.push(`/dashboard/customize?siteId=${json.podcastId}`);
-      router.refresh();
-    }, 100);
+    // Staying on dashboard after import to allow user to see the success and the new card
+    // We just refresh to update the list
+    router.refresh();
 
     // Clear success message after 3s
     setTimeout(() => setMessage(null), 3000);

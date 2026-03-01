@@ -137,8 +137,11 @@ export default async function DashboardPage({ searchParams }: PageProps) {
         {active && (
           <section className="animate-fade-in-up [animation-delay:100ms] grid grid-cols-1 gap-8 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <div className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[3rem] bg-zinc-950 border-4 border-white/5 p-10 transition-all hover:border-[var(--podcast-primary)]/50 hover:shadow-[0_0_50px_-12px_var(--podcast-primary)]">
-                <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-[var(--podcast-primary)]/10 blur-[120px]" />
+              <div className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[3rem] bg-zinc-950/80 border-4 border-white/5 p-10 transition-all hover:border-[var(--podcast-primary)]/50 hover:shadow-[0_0_50px_-12px_var(--podcast-primary)] backdrop-blur-xl">
+                {/* Permanent subtle ambient glow */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-[var(--podcast-primary)]/5 via-transparent to-transparent opacity-60" />
+                <div className="absolute -right-20 -bottom-20 h-80 w-80 rounded-full bg-[var(--podcast-primary)]/5 blur-[100px]" />
+                <div className="absolute -left-20 -top-20 h-96 w-96 rounded-full bg-[var(--podcast-primary)]/10 blur-[120px]" />
 
                 <div className="relative flex flex-col gap-10 sm:flex-row items-center sm:items-start">
                   <div className="flex-1 space-y-6 text-center sm:text-left">
