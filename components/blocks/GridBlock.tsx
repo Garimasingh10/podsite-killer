@@ -1,4 +1,4 @@
-// components/blocks/GridBlock.tsx
+﻿// components/blocks/GridBlock.tsx
 'use client';
 import React from 'react';
 import Link from 'next/link';
@@ -24,7 +24,7 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                                 <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest group-hover:text-[var(--primary)] transition-colors duration-500">
                                     {new Date(ep.published_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric' })}
                                 </span>
-                                <h4 className="text-3xl font-black tracking-tight group-hover:text-zinc-800 leading-tight">
+                                <h4 className="text-3xl font-black tracking-tight group-hover:text-[var(--primary)] transition-colors duration-500 leading-tight">
                                     {ep.title}
                                 </h4>
                                 <p className="text-lg text-zinc-500 line-clamp-2 max-w-2xl font-medium opacity-80 group-hover:opacity-100 transition-opacity">
@@ -59,7 +59,7 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                                 <img
                                     src={ep.image_url || podcast.image}
                                     alt={ep.title}
-                                    className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all scale-100 group-hover:scale-110 duration-500"
+                                    className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all scale-100 group-hover:scale-115 duration-500"
                                 />
                             </div>
                             <span className="text-xs font-black uppercase tracking-widest block mb-2 bg-black text-white px-2 py-1 inline-block group-hover:bg-[var(--primary)] group-hover:text-black transition-colors">

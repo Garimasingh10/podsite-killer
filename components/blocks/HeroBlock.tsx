@@ -117,7 +117,7 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
                                 <img
                                     src={latestEpisode?.image_url || podcast.image}
                                     alt={latestEpisode?.title}
-                                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-500"
                                 />
                             </div>
                         </div>
