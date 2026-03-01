@@ -11,10 +11,15 @@ export interface ThemeConfig {
     borderColor?: string;
     fontHeading?: string;
     fontBody?: string;
-    cornerRadius?: string; // '0px', '8px', '24px'
-    layout?: 'netflix' | 'substack' | 'genz';
+    cornerRadius?: string; // '0px', '8px', '16px'
+    layout?: 'netflix' | 'substack' | 'genz' | 'minimal';
     imageUrl?: string;
     customFontUrl?: string;
+    tagline?: string;
+    playerMode?: 'auto' | 'audio' | 'video';
+    stickyPlayer?: boolean;
+    showTimestamps?: boolean;
+    hiddenBlocks?: string[];
 }
 
 export default function ThemeEngine({ config: initialConfig, scope }: { config: ThemeConfig, scope?: string }) {

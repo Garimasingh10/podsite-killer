@@ -11,6 +11,7 @@ interface GenZLayoutProps {
     podcast: {
         id: string;
         title: string;
+        tagline?: string;
         image?: string;
         description?: string;
     };
@@ -30,13 +31,20 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
                 <header className="sticky top-0 z-50 border-b-8 border-black bg-white">
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3 lg:px-8">
                         <div className="flex items-center gap-2">
-                            <Link href={`/${podcast.id}`} className="group relative flex items-center gap-2">
-                                <span className="text-3xl font-black uppercase italic tracking-tighter leading-none transition-colors group-hover:text-accent">
-                                    {podcast.title}
-                                </span>
-                                <span className="text-3xl font-black italic tracking-tighter leading-none text-zinc-400">
-                                    {">"} TOP STORIES
-                                </span>
+                            <Link href={`/${podcast.id}`} className="group relative flex flex-col leading-none">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-3xl font-black uppercase italic tracking-tighter transition-colors group-hover:text-accent">
+                                        {podcast.title}
+                                    </span>
+                                    <span className="text-3xl font-black italic tracking-tighter text-zinc-400">
+                                        {">"} TOP STORIES
+                                    </span>
+                                </div>
+                                {podcast.tagline && (
+                                    <span className="text-[10px] font-black uppercase italic tracking-widest text-zinc-500 mt-1">
+                                        {podcast.tagline}
+                                    </span>
+                                )}
                             </Link>
                         </div>
 

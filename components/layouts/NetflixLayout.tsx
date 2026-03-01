@@ -11,6 +11,7 @@ interface NetflixLayoutProps {
     podcast: {
         id: string;
         title: string;
+        tagline?: string;
         image?: string;
         description?: string;
         latest_video_id?: string;
@@ -31,8 +32,15 @@ export default function NetflixLayout({ children, podcast }: NetflixLayoutProps)
                 <header className="fixed top-0 z-50 w-full bg-gradient-to-b from-black via-black/80 to-transparent px-8 py-4 transition-colors hover:bg-black md:px-16 border-b border-white/5 backdrop-blur-sm">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-8">
-                            <Link href={`/${podcast.id}`} className="text-3xl font-black tracking-tighter text-white py-2">
-                                {podcast.title?.toUpperCase() || 'PODSITE'}
+                            <Link href={`/${podcast.id}`} className="group flex flex-col py-2">
+                                <span className="text-3xl font-black tracking-tighter text-white transition-all group-hover:text-red-600">
+                                    {podcast.title?.toUpperCase() || 'PODSITE'}
+                                </span>
+                                {podcast.tagline && (
+                                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">
+                                        {podcast.tagline}
+                                    </span>
+                                )}
                             </Link>
                             <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
                                 <Link href={`/${podcast.id}`} className="text-white hover:text-white/70 transition-colors">Home</Link>

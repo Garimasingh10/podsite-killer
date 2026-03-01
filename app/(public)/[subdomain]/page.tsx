@@ -108,12 +108,20 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
         NetflixLayout;
 
   const defaultLayout = ['hero', 'shorts', 'subscribe', 'grid', 'host'];
-  const pageLayout = (podcast.page_layout as string[]) || defaultLayout;
+  const rawLayout = (podcast.page_layout as string[]) || defaultLayout;
+  const hiddenBlocks = themeConfig.hiddenBlocks || [];
+
+  // Filter out hidden blocks
+  const pageLayout = rawLayout.filter(block => !hiddenBlocks.includes(block));
 
   return (
     <>
       <ThemeEngine config={themeConfig} />
-      <LayoutComponent podcast={{ ...podcastWithImage, latest_video_id: latest?.youtube_video_id }}>
+      <LayoutComponent podcast={{
+        ...podcastWithImage,
+        tagline: themeConfig.tagline,
+        latest_video_id: latest?.youtube_video_id
+      }}>
         <div className="flex flex-col">
           {pageLayout.map((blockType) => {
             switch (blockType) {
@@ -122,6 +130,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
               case 'shorts':
                 return <ShortsBlock key="shorts" podcast={podcastWithImage} />;
               case 'grid':
+              case 'episodes':
                 return <GridBlock key="grid" podcast={podcastWithImage} episodes={episodes || []} />;
               case 'subscribe':
                 return <SubscribeBlock key="subscribe" podcast={podcastWithImage} />;

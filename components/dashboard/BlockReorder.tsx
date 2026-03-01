@@ -26,9 +26,11 @@ import { useRouter } from 'next/navigation';
 interface SortableItemProps {
     id: string;
     label: string;
+    isHidden: boolean;
+    onToggleVisibility: (id: string) => void;
 }
 
-function SortableItem({ id, label }: SortableItemProps) {
+function SortableItem({ id, label, isHidden, onToggleVisibility }: SortableItemProps) {
     const {
         attributes,
         listeners,
@@ -59,11 +61,15 @@ function SortableItem({ id, label }: SortableItemProps) {
                 <GripVertical size={20} />
             </button>
             <div className="flex-1">
-                <p className="text-sm font-semibold capitalize text-slate-200">{label}</p>
+                <p className={`text-sm font-semibold capitalize transition-all ${isHidden ? 'text-slate-600' : 'text-slate-200'}`}>{label}</p>
             </div>
-            <div className="text-xs font-mono text-slate-500 uppercase tracking-widest">
-                Block
-            </div>
+            <button
+                onClick={() => onToggleVisibility(id)}
+                className={`flex items-center gap-2 rounded-md px-2 py-1 text-[10px] font-black uppercase tracking-widest transition-all ${isHidden ? 'bg-red-500/10 text-red-500 hover:bg-red-500/20' : 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'}`}
+            >
+                {isHidden ? <EyeOff size={12} /> : <Eye size={12} />}
+                {isHidden ? 'Hidden' : 'Visible'}
+            </button>
         </div>
     );
 }
@@ -71,11 +77,15 @@ function SortableItem({ id, label }: SortableItemProps) {
 export default function BlockReorder({
     podcastId,
     items,
-    onChange
+    hiddenItems = [],
+    onChange,
+    onToggleHidden
 }: {
     podcastId: string,
     items: string[],
-    onChange: (items: string[]) => void
+    hiddenItems?: string[],
+    onChange: (items: string[]) => void,
+    onToggleHidden?: (id: string) => void
 }) {
     const [isSaving, setIsSaving] = useState(false);
     const router = useRouter();
@@ -142,7 +152,13 @@ export default function BlockReorder({
                 >
                     <div className="flex flex-col gap-2">
                         {items.map((id) => (
-                            <SortableItem key={id} id={id} label={id} />
+                            <SortableItem
+                                key={id}
+                                id={id}
+                                label={id}
+                                isHidden={hiddenItems.includes(id)}
+                                onToggleVisibility={() => onToggleHidden?.(id)}
+                            />
                         ))}
                     </div>
                 </SortableContext>

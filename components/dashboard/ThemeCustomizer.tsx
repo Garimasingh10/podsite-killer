@@ -18,6 +18,7 @@ export default function ThemeCustomizer({
     imageUrl?: string,
 }) {
     const [isExtracting, setIsExtracting] = useState(false);
+    const [localFontUrl, setLocalFontUrl] = useState(config.customFontUrl || '');
 
     function updateConfig(newConfig: Partial<ThemeConfig>) {
         console.log('🔧 ThemeCustomizer updateConfig called:', newConfig);
@@ -136,12 +137,29 @@ export default function ThemeCustomizer({
                                         type="text"
                                         value={config.primaryColor || '#0ea5e9'}
                                         onChange={(e) => updateConfig({ primaryColor: e.target.value })}
-                                        className="w-20 bg-transparent text-right font-mono text-xs text-white focus:outline-none"
+                                        className="w-20 bg-transparent text-right font-mono text-[10px] text-white focus:outline-none"
                                     />
                                     <input
                                         type="color"
                                         value={config.primaryColor || '#0ea5e9'}
                                         onChange={(e) => updateConfig({ primaryColor: e.target.value })}
+                                        className="h-6 w-6 cursor-pointer overflow-hidden rounded bg-transparent"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 p-2 pl-4">
+                                <span className="text-xs font-bold text-slate-400">Background</span>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="text"
+                                        value={config.backgroundColor || '#020617'}
+                                        onChange={(e) => updateConfig({ backgroundColor: e.target.value })}
+                                        className="w-20 bg-transparent text-right font-mono text-[10px] text-white focus:outline-none"
+                                    />
+                                    <input
+                                        type="color"
+                                        value={config.backgroundColor || '#020617'}
+                                        onChange={(e) => updateConfig({ backgroundColor: e.target.value })}
                                         className="h-6 w-6 cursor-pointer overflow-hidden rounded bg-transparent"
                                     />
                                 </div>
@@ -153,7 +171,7 @@ export default function ThemeCustomizer({
                                         type="text"
                                         value={config.accentColor || '#f59e0b'}
                                         onChange={(e) => updateConfig({ accentColor: e.target.value })}
-                                        className="w-20 bg-transparent text-right font-mono text-xs text-white focus:outline-none"
+                                        className="w-20 bg-transparent text-right font-mono text-[10px] text-white focus:outline-none"
                                     />
                                     <input
                                         type="color"
@@ -177,7 +195,10 @@ export default function ThemeCustomizer({
                             {fontPairings.map((p) => (
                                 <button
                                     key={p.id}
-                                    onClick={() => updateConfig({ fontHeading: p.heading, fontBody: p.body, customFontUrl: '' })}
+                                    onClick={() => {
+                                        setLocalFontUrl('');
+                                        updateConfig({ fontHeading: p.heading, fontBody: p.body, customFontUrl: '' });
+                                    }}
                                     className={`group flex items-center justify-between rounded-xl border p-4 transition-all ${config.fontHeading === p.heading && !config.customFontUrl
                                         ? 'border-primary bg-primary/5'
                                         : 'border-slate-800 bg-slate-950 hover:border-slate-700'
@@ -197,14 +218,22 @@ export default function ThemeCustomizer({
 
                             <div className={`space-y-2 rounded-xl border p-4 transition-all ${config.customFontUrl ? 'border-primary bg-primary/5' : 'border-slate-800 bg-slate-950'}`}>
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500">Custom Google Font URL</label>
-                                <input
-                                    type="text"
-                                    placeholder="https://fonts.googleapis.com/css2?family=..."
-                                    value={config.customFontUrl || ''}
-                                    onChange={(e) => updateConfig({ customFontUrl: e.target.value })}
-                                    className="w-full bg-transparent text-xs text-white focus:outline-none placeholder:text-slate-700 font-mono"
-                                />
-                                <p className="text-[9px] text-slate-600 italic">Paste a @import or <code>&lt;link&gt;</code> URL from Google Fonts.</p>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        placeholder="https://fonts.googleapis.com/css2?family=..."
+                                        value={localFontUrl}
+                                        onChange={(e) => setLocalFontUrl(e.target.value)}
+                                        className="flex-1 bg-transparent text-[10px] text-white focus:outline-none placeholder:text-slate-700 font-mono"
+                                    />
+                                    <button
+                                        onClick={() => updateConfig({ customFontUrl: localFontUrl })}
+                                        className="rounded-lg bg-primary px-3 py-1 text-[8px] font-black uppercase tracking-widest text-black hover:scale-105 transition-all"
+                                    >
+                                        Apply
+                                    </button>
+                                </div>
+                                <p className="text-[9px] text-slate-600 italic">Paste a Google Fonts URL.</p>
                             </div>
                         </div>
                     </div>
@@ -214,7 +243,7 @@ export default function ThemeCustomizer({
                             <Square size={14} /> Corner Radius
                         </h4>
                         <div className="grid grid-cols-3 gap-2">
-                            {['0px', '8px', '24px'].map((r) => (
+                            {['0px', '8px', '16px'].map((r) => (
                                 <button
                                     key={r}
                                     onClick={() => updateConfig({ cornerRadius: r })}
@@ -223,9 +252,56 @@ export default function ThemeCustomizer({
                                         : 'border-slate-800 bg-slate-950 text-slate-500 hover:border-slate-700'
                                         }`}
                                 >
-                                    {r === '0px' ? 'Sharp' : r === '8px' ? 'Round' : 'Bubble'}
+                                    {r === '0px' ? 'Sharp' : r === '8px' ? 'Soft' : 'Rounded'}
                                 </button>
                             ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Episode Behavior Section */}
+            <div className="pt-10 border-t border-white/5 space-y-6">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">Episode Behavior</h3>
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div className="space-y-4">
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-slate-600">Default Player Mode</label>
+                        <div className="grid grid-cols-3 gap-2">
+                            {['auto', 'audio', 'video'].map((m) => (
+                                <button
+                                    key={m}
+                                    onClick={() => updateConfig({ playerMode: m as any })}
+                                    className={`rounded-xl border py-3 text-[10px] font-black uppercase tracking-widest transition-all ${config.playerMode === m
+                                        ? 'border-primary bg-primary/20 text-primary'
+                                        : 'border-slate-800 bg-slate-950 text-slate-500 hover:border-slate-700'
+                                        }`}
+                                >
+                                    {m}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="space-y-4">
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-slate-600">Preferences</label>
+                        <div className="flex flex-col gap-3">
+                            <label className="flex items-center justify-between cursor-pointer rounded-xl border border-slate-800 bg-slate-950 p-3 hover:border-slate-700 transition-all">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase">Sticky Player</span>
+                                <input
+                                    type="checkbox"
+                                    checked={!!config.stickyPlayer}
+                                    onChange={(e) => updateConfig({ stickyPlayer: e.target.checked })}
+                                    className="h-4 w-4 rounded border-slate-800 bg-slate-900 text-primary focus:ring-primary/20"
+                                />
+                            </label>
+                            <label className="flex items-center justify-between cursor-pointer rounded-xl border border-slate-800 bg-slate-950 p-3 hover:border-slate-700 transition-all">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase">Clickable Timestamps</span>
+                                <input
+                                    type="checkbox"
+                                    checked={!!config.showTimestamps}
+                                    onChange={(e) => updateConfig({ showTimestamps: e.target.checked })}
+                                    className="h-4 w-4 rounded border-slate-800 bg-slate-900 text-primary focus:ring-primary/20"
+                                />
+                            </label>
                         </div>
                     </div>
                 </div>

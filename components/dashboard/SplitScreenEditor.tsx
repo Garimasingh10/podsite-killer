@@ -13,6 +13,7 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
     const initialConfig = (podcast.theme_config as ThemeConfig) || {};
     const [config, setConfig] = useState<ThemeConfig>(initialConfig);
     const [title, setTitle] = useState(podcast.title || '');
+    const [tagline, setTagline] = useState(initialConfig.tagline || '');
     const [description, setDescription] = useState(podcast.description || '');
     const [layout, setLayout] = useState<string[]>((podcast.page_layout as string[]) || ['hero', 'subscribe', 'grid', 'host', 'shorts', 'product']);
     const [isSaving, setIsSaving] = useState(false);
@@ -43,10 +44,11 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
     const handleSave = async () => {
         setIsSaving(true);
         try {
+            const updatedConfig = { ...config, tagline };
             await updateSettingsAction(podcast.id, {
                 title,
                 description,
-                theme_config: config,
+                theme_config: updatedConfig,
                 page_layout: layout,
             });
             setHasUnsavedChanges(false);
@@ -58,6 +60,14 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
         } finally {
             setIsSaving(false);
         }
+    };
+
+    const handleToggleHidden = (id: string) => {
+        const currentHidden = config.hiddenBlocks || [];
+        const newHidden = currentHidden.includes(id)
+            ? currentHidden.filter(x => x !== id)
+            : [...currentHidden, id];
+        handleConfigChange({ ...config, hiddenBlocks: newHidden });
     };
 
     const iframeUrl = typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}/${podcast.id}` : '';
@@ -122,6 +132,15 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
                                 <input
                                     value={title}
                                     onChange={(e) => { setTitle(e.target.value); setHasUnsavedChanges(true); }}
+                                    className="w-full bg-slate-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-bold"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase">Tagline / Subtitle</label>
+                                <input
+                                    value={tagline}
+                                    placeholder="Your podcast's catchy hook..."
+                                    onChange={(e) => { setTagline(e.target.value); setHasUnsavedChanges(true); }}
                                     className="w-full bg-slate-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50 transition-all"
                                 />
                             </div>
@@ -137,6 +156,20 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
                         </div>
                     </div>
 
+                    {/* Branding Section */}
+                    <div className="pt-2 space-y-4">
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">Branding</h3>
+                        <div className="rounded-2xl border border-white/5 bg-slate-900 p-6 flex items-center justify-between">
+                            <div className="space-y-1">
+                                <p className="text-xs font-bold text-white">Site Logo</p>
+                                <p className="text-[10px] text-slate-500">Used in header & favicon</p>
+                            </div>
+                            <button className="rounded-full bg-white/5 border border-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all">
+                                Upload Logo
+                            </button>
+                        </div>
+                    </div>
+
                     <ThemeCustomizer
                         config={config}
                         onChange={handleConfigChange}
@@ -148,7 +181,9 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
                         <BlockReorder
                             podcastId={podcast.id}
                             items={layout}
+                            hiddenItems={config.hiddenBlocks}
                             onChange={handleLayoutChange}
+                            onToggleHidden={handleToggleHidden}
                         />
                     </div>
 
@@ -171,21 +206,23 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
                 </div>
 
                 {/* Save Bar */}
-                <div className="p-4 border-t border-white/5 bg-slate-950/80 backdrop-blur-xl">
-                    <button
-                        onClick={handleSave}
-                        disabled={isSaving || (!hasUnsavedChanges && !isSaved)}
-                        className={`w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-black uppercase tracking-widest transition-all ${isSaved ? 'bg-emerald-500 text-black' : hasUnsavedChanges ? 'bg-primary text-black hover:scale-[1.02]' : 'bg-slate-800 text-slate-500'}`}
-                    >
-                        {isSaving ? (
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                        ) : isSaved ? (
-                            <Check size={18} strokeWidth={3} />
-                        ) : (
-                            <Save size={18} strokeWidth={3} />
-                        )}
-                        {isSaving ? 'Saving...' : isSaved ? 'Saved' : 'Save Changes'}
-                    </button>
+                <div className="fixed bottom-6 left-6 md:left-auto md:right-auto md:w-[35%] w-[calc(100%-3rem)] bg-transparent pointer-events-none z-50">
+                    <div className="max-w-md mx-auto pointer-events-auto">
+                        <button
+                            onClick={handleSave}
+                            disabled={isSaving || (!hasUnsavedChanges && !isSaved)}
+                            className={`w-full flex items-center justify-center gap-2 rounded-full px-8 py-5 text-sm font-black uppercase tracking-[0.2em] shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all ${isSaved ? 'bg-emerald-500 text-black' : hasUnsavedChanges ? 'bg-primary text-black hover:scale-[1.05] hover:shadow-[0_0_30px_var(--podcast-primary)]' : 'bg-slate-800 text-slate-500 border border-white/5'}`}
+                        >
+                            {isSaving ? (
+                                <div className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                            ) : isSaved ? (
+                                <Check size={20} strokeWidth={4} />
+                            ) : (
+                                <Save size={20} strokeWidth={4} />
+                            )}
+                            {isSaving ? 'Syncing...' : isSaved ? 'Site Published' : 'Save Changes'}
+                        </button>
+                    </div>
                 </div>
             </div>
 
