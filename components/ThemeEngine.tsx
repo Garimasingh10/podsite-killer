@@ -20,6 +20,11 @@ export interface ThemeConfig {
     stickyPlayer?: boolean;
     showTimestamps?: boolean;
     hiddenBlocks?: string[];
+    // Platform Links
+    applePodcastsUrl?: string;
+    spotifyUrl?: string;
+    youtubeUrl?: string;
+    rssUrlOverride?: string;
 }
 
 export default function ThemeEngine({ config: initialConfig, scope }: { config: ThemeConfig, scope?: string }) {

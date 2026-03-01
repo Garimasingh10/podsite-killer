@@ -101,7 +101,7 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
                                 </p>
                             </div>
                             <div className="flex gap-4">
-                                <button className="border-4 border-black bg-black text-white px-8 py-4 text-xl font-black uppercase italic shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
+                                <button className="border-4 border-black bg-black text-white px-8 py-4 text-xl font-black uppercase italic shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:bg-[var(--primary)] hover:text-black hover:scale-105 active:scale-90 transition-all duration-200">
                                     Subscribe Now
                                 </button>
                             </div>

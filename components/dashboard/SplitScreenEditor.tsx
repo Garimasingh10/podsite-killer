@@ -187,6 +187,49 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
                         />
                     </div>
 
+                    {/* Platform Links Section */}
+                    <div className="space-y-6">
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">Platform Links</h3>
+                        <div className="space-y-4">
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase">Apple Podcasts URL</label>
+                                <input
+                                    value={config.applePodcastsUrl || ''}
+                                    placeholder="https://podcasts.apple.com/..."
+                                    onChange={(e) => handleConfigChange({ ...config, applePodcastsUrl: e.target.value })}
+                                    className="w-full bg-slate-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-mono"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase">Spotify URL</label>
+                                <input
+                                    value={config.spotifyUrl || ''}
+                                    placeholder="https://open.spotify.com/show/..."
+                                    onChange={(e) => handleConfigChange({ ...config, spotifyUrl: e.target.value })}
+                                    className="w-full bg-slate-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-mono"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase">YouTube URL</label>
+                                <input
+                                    value={config.youtubeUrl || ''}
+                                    placeholder="https://youtube.com/@..."
+                                    onChange={(e) => handleConfigChange({ ...config, youtubeUrl: e.target.value })}
+                                    className="w-full bg-slate-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-mono"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase">RSS URL Override</label>
+                                <input
+                                    value={config.rssUrlOverride || ''}
+                                    placeholder={podcast.rss_url || 'https://...'}
+                                    onChange={(e) => handleConfigChange({ ...config, rssUrlOverride: e.target.value })}
+                                    className="w-full bg-slate-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-mono"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Advanced & Danger Zone */}
                     <div className="pt-12 border-t border-white/5 space-y-8 pb-10">
                         <div className="space-y-3">
