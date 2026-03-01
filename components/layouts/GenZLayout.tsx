@@ -22,7 +22,7 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
 
     return (
         <LayoutProvider value="genz">
-            <div className="relative min-h-screen bg-white text-black font-sans selection:bg-[var(--primary)]/30 overflow-x-hidden">
+            <div className="relative min-h-screen bg-[var(--background)] text-[var(--foreground)] selection:bg-[var(--primary)]/30 overflow-x-hidden">
                 {/* Dynamic Background */}
                 <div className="fixed inset-0 z-0 mesh-gradient opacity-15" />
                 <div className="fixed inset-0 z-0 grid-pattern opacity-[0.04]" />

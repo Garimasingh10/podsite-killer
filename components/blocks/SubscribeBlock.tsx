@@ -13,10 +13,10 @@ export default function SubscribeBlock({ podcast }: { podcast: any }) {
 
     if (layout === 'substack') {
         return (
-            <section className="mb-24 py-16 border-y border-zinc-100 italic">
+            <section className="mb-24 py-16 border-y border-[var(--border)] italic">
                 <div className="text-center mb-12">
-                    <h3 className="text-3xl font-black italic tracking-tighter mb-4">Subscribe to the newsletter</h3>
-                    <p className="text-zinc-500 font-medium">Join 50,000+ others and never miss an update.</p>
+                    <h3 className="text-3xl font-black italic tracking-tighter mb-4 text-[var(--foreground)]">Subscribe to the newsletter</h3>
+                    <p className="text-[var(--foreground)] font-medium opacity-60">Join 50,000+ others and never miss an update.</p>
                 </div>
                 <div className="flex flex-wrap justify-center gap-8">
                     {platforms.map((p) => (

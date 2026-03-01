@@ -23,7 +23,7 @@ export default function NetflixLayout({ children, podcast }: NetflixLayoutProps)
 
     return (
         <LayoutProvider value="netflix">
-            <div className="relative min-h-screen bg-black text-white font-sans selection:bg-[var(--primary)]/30 overflow-x-hidden">
+            <div className="relative min-h-screen bg-black text-white selection:bg-[var(--primary)]/30 overflow-x-hidden">
                 {/* Dynamic Background */}
                 <div className="fixed inset-0 z-0 mesh-gradient opacity-20" />
                 <div className="fixed inset-0 z-0 grid-pattern opacity-[0.03]" />

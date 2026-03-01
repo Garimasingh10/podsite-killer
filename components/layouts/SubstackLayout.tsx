@@ -22,13 +22,13 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
 
     return (
         <LayoutProvider value="substack">
-            <div className="relative min-h-screen bg-white text-[#171717] font-serif selection:bg-orange-100 overflow-x-hidden">
+            <div className="relative min-h-screen bg-[var(--background)] text-[var(--foreground)] selection:bg-[var(--primary)]/30 overflow-x-hidden">
                 {/* Subtle Background */}
                 <div className="fixed inset-0 z-0 mesh-gradient opacity-10" />
                 <div className="fixed inset-0 z-0 grid-pattern opacity-[0.02]" />
 
                 {/* Minimal Header */}
-                <header className="sticky top-0 z-50 border-b border-zinc-100 bg-white/80 backdrop-blur-md">
+                <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/80 backdrop-blur-md">
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
                         <div className="flex items-center gap-8">
                             <Link href={`/${podcast.id}`} className="group flex flex-col transition-none">
@@ -42,9 +42,9 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
                                 )}
                             </Link>
                             <nav className="hidden items-center gap-6 text-[13px] font-bold uppercase tracking-widest text-zinc-500 md:flex">
-                                <Link href={`/${podcast.id}`} className="hover:text-black transition-colors">Home</Link>
-                                <Link href={`/${podcast.id}/episodes`} className="hover:text-black transition-colors">Archive</Link>
-                                <Link href={`/${podcast.id}#host`} className="hover:text-black transition-colors">About</Link>
+                                <Link href={`/${podcast.id}`} className="hover:text-[var(--primary)] transition-colors">Home</Link>
+                                <Link href={`/${podcast.id}/episodes`} className="hover:text-[var(--primary)] transition-colors">Archive</Link>
+                                <Link href={`/${podcast.id}#host`} className="hover:text-[var(--primary)] transition-colors">About</Link>
                             </nav>
                         </div>
                         <div className="flex items-center gap-4">
@@ -90,7 +90,7 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
                         {podcast.tagline && (
                             <p className="mb-6 text-sm font-bold uppercase tracking-[0.3em] text-[var(--primary)]">{podcast.tagline}</p>
                         )}
-                        <p className="text-xl text-zinc-500 font-medium leading-relaxed italic">{podcast.description}</p>
+                        <p className="text-xl text-zinc-500 font-medium leading-relaxed italic opacity-80">{podcast.description}</p>
                     </div>
 
                     <div className="space-y-16">
