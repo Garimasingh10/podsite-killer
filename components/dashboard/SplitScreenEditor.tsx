@@ -211,16 +211,18 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
                         <button
                             onClick={handleSave}
                             disabled={isSaving || (!hasUnsavedChanges && !isSaved)}
-                            className={`w-full flex items-center justify-center gap-2 rounded-full px-8 py-5 text-sm font-black uppercase tracking-[0.2em] shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all ${isSaved ? 'bg-emerald-500 text-black' : hasUnsavedChanges ? 'bg-primary text-black hover:scale-[1.05] hover:shadow-[0_0_30px_var(--podcast-primary)]' : 'bg-slate-800 text-slate-500 border border-white/5'}`}
+                            className={`w-full flex items-center justify-center gap-3 rounded-full px-8 py-5 text-xs font-black uppercase tracking-[0.3em] shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-500 backdrop-blur-md border ${isSaved ? 'bg-emerald-500 text-black border-emerald-400' : hasUnsavedChanges ? 'bg-primary text-black border-white/20 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(var(--primary-rgb),0.3)]' : 'bg-slate-900/80 text-white/40 border-white/10 hover:border-white/20'}`}
                         >
                             {isSaving ? (
                                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
                             ) : isSaved ? (
-                                <Check size={20} strokeWidth={4} />
+                                <Check size={18} strokeWidth={4} />
                             ) : (
-                                <Save size={20} strokeWidth={4} />
+                                <Save size={18} strokeWidth={3} className={hasUnsavedChanges ? 'animate-pulse' : ''} />
                             )}
-                            {isSaving ? 'Syncing...' : isSaved ? 'Site Published' : 'Save Changes'}
+                            <span className="relative">
+                                {isSaving ? 'Syncing...' : isSaved ? 'Site Published' : hasUnsavedChanges ? 'Publish Changes' : 'All Changes Saved'}
+                            </span>
                         </button>
                     </div>
                 </div>

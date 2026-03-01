@@ -141,7 +141,7 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
                             <div className="flex flex-wrap gap-6 pt-6">
                                 <Link
                                     href={`/${podcast.id}/episodes/${latestEpisode?.slug}`}
-                                    className="group/btn relative inline-block bg-black text-white px-12 py-5 text-2xl font-black uppercase italic tracking-tighter hover:bg-[var(--primary)] hover:text-black transition-colors"
+                                    className="group/btn relative inline-block bg-black text-white px-12 py-5 text-2xl font-black uppercase italic tracking-tighter hover:bg-[var(--primary)] hover:text-black transition-all duration-500"
                                 >
                                     <span className="relative z-10 transition-transform group-hover/btn:scale-110">TAP IN</span>
                                 </Link>

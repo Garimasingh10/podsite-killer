@@ -20,8 +20,8 @@ export default function SubscribeBlock({ podcast }: { podcast: any }) {
                 </div>
                 <div className="flex flex-wrap justify-center gap-8">
                     {platforms.map((p) => (
-                        <button key={p.name} className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-zinc-400 hover:text-[var(--primary)] hover:scale-110 transition-all duration-300 group">
-                            <span className="group-hover:scale-125 transition-transform">{p.icon}</span>
+                        <button key={p.name} className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-zinc-400 hover:text-[var(--primary)] transition-all duration-500 group">
+                            <span className="group-hover:scale-110 transition-transform duration-500">{p.icon}</span>
                             <span>{p.name}</span>
                         </button>
                     ))}

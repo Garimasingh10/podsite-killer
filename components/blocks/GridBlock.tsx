@@ -18,10 +18,10 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                         <Link
                             key={ep.id}
                             href={`/${podcast.id}/episodes/${ep.slug}`}
-                            className="group block border-l-0 hover:border-l-4 border-[var(--primary)] pl-0 hover:pl-6 transition-all duration-300 ease-out"
+                            className="group block border-l-4 border-transparent hover:border-[var(--primary)] pl-6 transition-all duration-500 ease-in-out"
                         >
                             <div className="flex flex-col gap-2">
-                                <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest group-hover:text-[var(--primary)] transition-colors">
+                                <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest group-hover:text-[var(--primary)] transition-colors duration-500">
                                     {new Date(ep.published_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric' })}
                                 </span>
                                 <h4 className="text-3xl font-black tracking-tight group-hover:text-zinc-800 leading-tight">
