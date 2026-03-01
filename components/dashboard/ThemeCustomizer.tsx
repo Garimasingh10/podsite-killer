@@ -177,23 +177,35 @@ export default function ThemeCustomizer({
                             {fontPairings.map((p) => (
                                 <button
                                     key={p.id}
-                                    onClick={() => updateConfig({ fontHeading: p.heading, fontBody: p.body })}
-                                    className={`group flex items-center justify-between rounded-xl border p-4 transition-all ${config.fontHeading === p.heading
+                                    onClick={() => updateConfig({ fontHeading: p.heading, fontBody: p.body, customFontUrl: '' })}
+                                    className={`group flex items-center justify-between rounded-xl border p-4 transition-all ${config.fontHeading === p.heading && !config.customFontUrl
                                         ? 'border-primary bg-primary/5'
                                         : 'border-slate-800 bg-slate-950 hover:border-slate-700'
                                         }`}
                                 >
                                     <div className="flex flex-col items-start min-w-0">
-                                        <span className={`text-sm font-bold truncate ${config.fontHeading === p.heading ? 'text-primary' : 'text-slate-300'}`}>
+                                        <span className={`text-sm font-bold truncate ${config.fontHeading === p.heading && !config.customFontUrl ? 'text-primary' : 'text-slate-300'}`}>
                                             {p.name}
                                         </span>
                                         <span className="text-[10px] text-slate-600 font-bold">Standard</span>
                                     </div>
-                                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-all ${config.fontHeading === p.heading ? 'border-primary/50 text-primary' : 'border-slate-800 text-slate-600'}`}>
+                                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-all ${config.fontHeading === p.heading && !config.customFontUrl ? 'border-primary/50 text-primary' : 'border-slate-800 text-slate-600'}`}>
                                         <span className="text-sm font-serif">Aa</span>
                                     </div>
                                 </button>
                             ))}
+
+                            <div className={`space-y-2 rounded-xl border p-4 transition-all ${config.customFontUrl ? 'border-primary bg-primary/5' : 'border-slate-800 bg-slate-950'}`}>
+                                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500">Custom Google Font URL</label>
+                                <input
+                                    type="text"
+                                    placeholder="https://fonts.googleapis.com/css2?family=..."
+                                    value={config.customFontUrl || ''}
+                                    onChange={(e) => updateConfig({ customFontUrl: e.target.value })}
+                                    className="w-full bg-transparent text-xs text-white focus:outline-none placeholder:text-slate-700 font-mono"
+                                />
+                                <p className="text-[9px] text-slate-600 italic">Paste a @import or <code>&lt;link&gt;</code> URL from Google Fonts.</p>
+                            </div>
                         </div>
                     </div>
 

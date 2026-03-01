@@ -21,7 +21,11 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
 
     return (
         <LayoutProvider value="genz">
-            <div className="min-h-screen bg-white text-black font-sans selection:bg-accent">
+            <div className="relative min-h-screen bg-white text-black font-sans selection:bg-accent overflow-x-hidden">
+                {/* Dynamic Background */}
+                <div className="fixed inset-0 z-0 mesh-gradient opacity-15" />
+                <div className="fixed inset-0 z-0 grid-pattern opacity-[0.04]" />
+
                 {/* Aggressive Brutalist Header */}
                 <header className="sticky top-0 z-50 border-b-8 border-black bg-white">
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3 lg:px-8">

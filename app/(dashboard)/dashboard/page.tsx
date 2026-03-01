@@ -5,7 +5,7 @@ import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { NewPodcastForm } from '../_components/NewPodcastForm';
 import { SearchForm } from '../_components/SearchForm';
 import { ActivePodcastSync } from '../_components/ActivePodcastSync';
-import { Headphones, Clock } from 'lucide-react';
+import { Headphones, Clock, Layout } from 'lucide-react';
 import ThemeEngine, { ThemeConfig } from '@/components/ThemeEngine';
 
 type PageProps = {
@@ -141,16 +141,6 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                 <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-[var(--podcast-primary)]/10 blur-[120px]" />
 
                 <div className="relative flex flex-col gap-10 sm:flex-row items-center sm:items-start">
-                  {active.theme_config?.imageUrl && (
-                    <div className="shrink-0 relative">
-                      <img
-                        src={active.theme_config.imageUrl}
-                        alt={active.title || 'Podcast'}
-                        className="h-56 w-56 rounded-[2.5rem] object-cover shadow-[0_20px_50px_rgba(0,0,0,0.5)] ring-4 ring-white/10 group-hover:scale-[1.05] transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 rounded-[2.5rem] ring-inset ring-1 ring-white/20" />
-                    </div>
-                  )}
                   <div className="flex-1 space-y-6 text-center sm:text-left">
                     <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
                       <span className="rounded-full bg-[var(--podcast-primary)]/20 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--podcast-primary)] border border-[var(--podcast-primary)]/30">
@@ -164,14 +154,28 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                         Live Site <span className="text-[10px]">↗</span>
                       </Link>
                     </div>
-                    <div className="space-y-2">
-                      <h2 className="text-5xl font-black tracking-tighter text-white italic leading-tight">
-                        {active.title}
-                      </h2>
-                      <p className="text-[10px] font-bold text-[var(--podcast-primary)] font-mono uppercase tracking-widest bg-[var(--podcast-primary)]/10 w-fit px-3 py-1 rounded mx-auto sm:mx-0">
-                        {active.rss_url}
-                      </p>
+
+                    <div className="flex items-center gap-6 justify-center sm:justify-start">
+                      {active.theme_config?.imageUrl && (
+                        <div className="shrink-0 relative">
+                          <img
+                            src={active.theme_config.imageUrl}
+                            alt={active.title || 'Podcast'}
+                            className="h-24 w-24 rounded-2xl object-cover shadow-2xl ring-4 ring-white/10 group-hover:scale-[1.05] transition-transform duration-700"
+                          />
+                          <div className="absolute inset-0 rounded-2xl ring-inset ring-1 ring-white/20" />
+                        </div>
+                      )}
+                      <div className="space-y-2 text-left">
+                        <h2 className="text-5xl font-black tracking-tighter text-white italic leading-tight">
+                          {active.title}
+                        </h2>
+                        <p className="text-[10px] font-bold text-[var(--podcast-primary)] font-mono uppercase tracking-widest bg-[var(--podcast-primary)]/10 w-fit px-3 py-1 rounded">
+                          {active.rss_url}
+                        </p>
+                      </div>
                     </div>
+
                     <p className="text-lg leading-relaxed text-zinc-400 line-clamp-2 font-medium">
                       {active.description || 'Launch your podcast world. No description set.'}
                     </p>
@@ -187,11 +191,11 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                     Manage Show
                   </Link>
                   <Link
-                    href={`/podcasts/${active.id}/settings`}
-                    className="flex items-center justify-center gap-3 rounded-[1.5rem] bg-white/5 py-5 text-sm font-black uppercase tracking-widest text-white border-2 border-white/10 transition-all hover:bg-white/10 hover:scale-[1.02] active:scale-[0.98]"
+                    href={`/dashboard/customize?siteId=${active.id}`}
+                    className="flex items-center justify-center gap-3 rounded-[1.5rem] bg-white/5 py-5 text-sm font-black uppercase tracking-widest text-white border-2 border-white/10 transition-all hover:bg-white/10 hover:border-[var(--podcast-primary)]/50 hover:scale-[1.02] active:scale-[0.98]"
                   >
-                    <Clock size={20} strokeWidth={3} />
-                    Settings
+                    <Layout size={20} strokeWidth={3} />
+                    Customize Site
                   </Link>
                 </div>
               </div>

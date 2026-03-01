@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 // components/layouts/NetflixLayout.tsx
 import React from 'react';
 import Link from 'next/link';
@@ -22,9 +22,13 @@ export default function NetflixLayout({ children, podcast }: NetflixLayoutProps)
 
     return (
         <LayoutProvider value="netflix">
-            <div className="min-h-screen bg-[#000000] text-white font-sans selection:bg-red-600/30">
+            <div className="relative min-h-screen bg-black text-white font-sans selection:bg-red-600/30 overflow-x-hidden">
+                {/* Dynamic Background */}
+                <div className="fixed inset-0 z-0 mesh-gradient opacity-20" />
+                <div className="fixed inset-0 z-0 grid-pattern opacity-[0.03]" />
+
                 {/* Nav Bar */}
-                <header className="fixed top-0 z-50 w-full bg-gradient-to-b from-black via-black/40 to-transparent px-8 py-4 transition-colors hover:bg-black md:px-16">
+                <header className="fixed top-0 z-50 w-full bg-gradient-to-b from-black via-black/80 to-transparent px-8 py-4 transition-colors hover:bg-black md:px-16 border-b border-white/5 backdrop-blur-sm">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-8">
                             <Link href={`/${podcast.id}`} className="text-3xl font-black tracking-tighter text-white py-2">

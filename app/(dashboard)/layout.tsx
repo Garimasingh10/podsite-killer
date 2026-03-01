@@ -21,7 +21,7 @@ export default async function DashboardLayout({
       status: error.status,
       name: error.name,
     });
-    
+
     // Handle specific auth errors
     if (error.message.includes('JWT') || error.message.includes('token') || error.message.includes('expired')) {
       // Session expired or invalid - redirect to login with clear message
@@ -37,7 +37,7 @@ export default async function DashboardLayout({
     });
     redirect('/login');
   }
-  
+
   // Verify user has valid email (required for account)
   if (!user.email) {
     console.error('Dashboard Layout - User has no email');
@@ -56,8 +56,8 @@ export default async function DashboardLayout({
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-50 overflow-x-hidden">
       {/* Dynamic Background */}
-      <div className="fixed inset-0 z-0 mesh-gradient opacity-40" />
-      <div className="fixed inset-0 z-0 grid-pattern opacity-[0.03]" />
+      <div className="fixed inset-0 z-0 mesh-gradient opacity-60" />
+      <div className="fixed inset-0 z-0 grid-pattern opacity-[0.05]" />
 
       {/* Top glass header */}
       <header className="sticky top-0 z-20 border-b border-white/5 bg-slate-950/40 backdrop-blur-xl">

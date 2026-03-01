@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 // components/layouts/SubstackLayout.tsx
 import React from 'react';
 import Link from 'next/link';
@@ -21,7 +21,11 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
 
     return (
         <LayoutProvider value="substack">
-            <div className="min-h-screen bg-[#FFFFFF] text-[#171717] font-serif selection:bg-orange-100">
+            <div className="relative min-h-screen bg-white text-[#171717] font-serif selection:bg-orange-100 overflow-x-hidden">
+                {/* Subtle Background */}
+                <div className="fixed inset-0 z-0 mesh-gradient opacity-10" />
+                <div className="fixed inset-0 z-0 grid-pattern opacity-[0.02]" />
+
                 {/* Minimal Header */}
                 <header className="sticky top-0 z-50 border-b border-zinc-100 bg-white/80 backdrop-blur-md">
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">

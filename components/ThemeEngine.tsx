@@ -1,7 +1,7 @@
 // components/ThemeEngine.tsx
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 
 export interface ThemeConfig {
     primaryColor?: string;
@@ -14,9 +14,28 @@ export interface ThemeConfig {
     cornerRadius?: string; // '0px', '8px', '24px'
     layout?: 'netflix' | 'substack' | 'genz';
     imageUrl?: string;
+    customFontUrl?: string;
 }
 
-export default function ThemeEngine({ config, scope }: { config: ThemeConfig, scope?: string }) {
+export default function ThemeEngine({ config: initialConfig, scope }: { config: ThemeConfig, scope?: string }) {
+    const [config, setConfig] = useState(initialConfig);
+
+    useEffect(() => {
+        setConfig(initialConfig);
+    }, [initialConfig]);
+
+    useEffect(() => {
+        // Listen for real-time updates from parent (SplitScreenEditor)
+        const handleMessage = (event: MessageEvent) => {
+            if (event.data?.type === 'UPDATE_THEME') {
+                setConfig(prev => ({ ...prev, ...event.data.payload }));
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, []);
+
     const cssVariables = useMemo(() => {
         const vars: Record<string, string> = {};
 
@@ -32,8 +51,10 @@ export default function ThemeEngine({ config, scope }: { config: ThemeConfig, sc
         if (config.cornerRadius) {
             vars['--radius-lg'] = config.cornerRadius;
             const radiusNum = parseInt(config.cornerRadius);
-            vars['--radius-md'] = `${Math.max(0, radiusNum - 4)}px`;
-            vars['--radius-sm'] = `${Math.max(0, radiusNum - 8)}px`;
+            if (!isNaN(radiusNum)) {
+                vars['--radius-md'] = `${Math.max(0, radiusNum - 4)}px`;
+                vars['--radius-sm'] = `${Math.max(0, radiusNum - 8)}px`;
+            }
         }
 
         return Object.entries(vars)
@@ -43,6 +64,12 @@ export default function ThemeEngine({ config, scope }: { config: ThemeConfig, sc
 
     const fontImports = useMemo(() => {
         const fontsToImport = new Set<string>();
+
+        // Handle custom Google Font URL (Phase 3 3.1)
+        if (config.customFontUrl) {
+            return `@import url('${config.customFontUrl}');`;
+        }
+
         if (config.fontHeading) {
             fontsToImport.add(config.fontHeading);
         }
@@ -60,7 +87,7 @@ export default function ThemeEngine({ config, scope }: { config: ThemeConfig, sc
             .join('&');
 
         return `@import url('${googleFontBaseUrl}${fontParams}&display=swap');`;
-    }, [config.fontHeading, config.fontBody]);
+    }, [config.fontHeading, config.fontBody, config.customFontUrl]);
 
     return (
         <>

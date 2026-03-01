@@ -5,7 +5,7 @@ import ThemeCustomizer from './ThemeCustomizer';
 import BlockReorder from './BlockReorder';
 import { ThemeConfig } from '@/components/ThemeEngine';
 import { updateSettingsAction } from '@/app/(dashboard)/podcasts/[id]/settings/actions';
-import { Save, Check, ChevronLeft, Smartphone, Monitor } from 'lucide-react';
+import { Save, Check, ChevronLeft, Smartphone, Monitor, Sparkles, Type, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -84,6 +84,52 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
                         <p className="text-xs text-slate-400">Design your brand and page layout.</p>
                     </div>
 
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">Metadata & AI</h3>
+                            <button
+                                onClick={async () => {
+                                    try {
+                                        const res = await fetch('/api/ai/suggest-description', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ title: podcast.title, description: podcast.description })
+                                        });
+                                        const data = await res.json();
+                                        if (data.suggestion) {
+                                            if (confirm(`AI suggested new description:\n\n"${data.suggestion}"\n\nApply this?`)) {
+                                                // We need a way to track local content changes
+                                            }
+                                        }
+                                    } catch (err) {
+                                        console.error(err);
+                                    }
+                                }}
+                                className="flex items-center gap-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-indigo-400 Transition-all hover:bg-indigo-500/20"
+                            >
+                                <Sparkles size={12} />
+                                Magic SEO
+                            </button>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase">Podcast Title</label>
+                                <input
+                                    defaultValue={podcast.title}
+                                    disabled
+                                    className="w-full bg-slate-900 border border-white/5 rounded-xl px-4 py-2 text-sm text-slate-400 opacity-50 cursor-not-allowed"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase">Site Name</label>
+                                <input
+                                    placeholder="My Cool Site"
+                                    className="w-full bg-slate-900 border border-white/5 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-primary/50"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
                     <ThemeCustomizer
                         config={config}
                         onChange={handleConfigChange}
@@ -120,18 +166,36 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
             </div>
 
             {/* Right Panel: Live Preview (70%) */}
-            <div className={`hidden md:flex flex-1 items-center justify-center bg-zinc-950 p-6 relative`}>
+            <div className={`hidden md:flex flex-1 items-center justify-center bg-zinc-950 p-6 lg:p-12 relative`}>
                 <div className="absolute inset-0 opacity-20 pointer-events-none" />
 
-                <div className={`relative overflow-hidden rounded-[2rem] border-4 border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)] transition-all duration-500 ${device === 'mobile' ? 'w-[375px] h-[812px]' : 'w-full h-full'}`}>
-                    {iframeUrl && (
-                        <iframe
-                            ref={iframeRef}
-                            src={iframeUrl}
-                            className="w-full h-full bg-white"
-                            title="Live Preview"
-                        />
-                    )}
+                <div className={`flex flex-col relative overflow-hidden rounded-[2rem] border-4 border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)] transition-all duration-500 bg-[#1e1e1e] ${device === 'mobile' ? 'w-[375px] h-[812px]' : 'w-full h-full'}`}>
+                    {/* Browser Shell Header */}
+                    <div className="flex h-12 w-full items-center justify-between border-b border-white/5 bg-[#2d2d2d] px-6">
+                        <div className="flex items-center gap-2">
+                            <div className="h-3 w-3 rounded-full bg-[#ff5f57]" />
+                            <div className="h-3 w-3 rounded-full bg-[#febc2e]" />
+                            <div className="h-3 w-3 rounded-full bg-[#28c840]" />
+                        </div>
+                        <div className="flex-1 max-w-md mx-6">
+                            <div className="flex h-7 w-full items-center justify-center rounded-md bg-[#1e1e1e] px-4 text-[10px] text-slate-400 font-mono border border-white/5">
+                                {typeof window !== 'undefined' ? window.location.host : 'localhost'}/{podcast.id}
+                            </div>
+                        </div>
+                        <div className="w-16" />
+                    </div>
+
+                    <div className="flex-1 w-full bg-white relative">
+                        {iframeUrl && (
+                            <iframe
+                                ref={iframeRef}
+                                src={iframeUrl}
+                                className="w-full h-full"
+                                title="Live Preview"
+                            />
+                        )}
+                        <div className="absolute inset-0 pointer-events-none border-t border-black/5" />
+                    </div>
                 </div>
             </div>
         </div>
