@@ -18,7 +18,7 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                         <Link
                             key={ep.id}
                             href={`/${podcast.id}/episodes/${ep.slug}`}
-                            className="group block border-l-4 border-transparent hover:border-[var(--primary)] pl-6 py-4 -ml-6 hover:bg-zinc-50/50 transition-all duration-300 ease-in-out rounded-r-xl"
+                            className="group block border-l-4 border-transparent hover:border-[var(--primary)] pl-6 py-4 -ml-6 hover:bg-zinc-50/50 hover:translate-x-2 transition-all duration-300 ease-in-out rounded-r-xl"
                         >
                             <div className="flex flex-col gap-2">
                                 <span className="text-[10px] md:text-xs font-bold text-zinc-400 uppercase tracking-[0.2em] group-hover:text-[var(--primary)] transition-colors duration-200">

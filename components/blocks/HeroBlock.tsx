@@ -94,7 +94,7 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
                             <div className="mt-10 flex flex-wrap gap-4 justify-center md:justify-start">
                                 <Link
                                     href={`/${podcast.id}/episodes/${latestEpisode?.slug}`}
-                                    className="px-10 py-4 bg-[var(--foreground)] text-[var(--background)] font-serif font-bold rounded shadow-lg hover:bg-[var(--primary)] hover:text-[var(--background)] hover:scale-105 active:scale-95 transition-all duration-200"
+                                    className="px-10 py-4 bg-zinc-900 text-white font-serif font-bold rounded shadow-lg hover:bg-[var(--primary)] hover:text-white hover:scale-105 active:scale-95 transition-all duration-200"
                                 >
                                     Read and Listen
                                 </Link>
