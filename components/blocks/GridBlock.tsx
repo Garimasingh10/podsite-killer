@@ -13,27 +13,27 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                     <h3 className="text-sm font-black uppercase tracking-[0.4em] text-zinc-400">Recent Writing & Audio</h3>
                     <div className="h-px flex-1 bg-zinc-100" />
                 </div>
-                <div className="space-y-12">
+                <div className="space-y-4 md:space-y-8">
                     {episodes.map((ep) => (
                         <Link
                             key={ep.id}
                             href={`/${podcast.id}/episodes/${ep.slug}`}
-                            className="group block border-l-4 border-transparent hover:border-[var(--primary)] pl-6 transition-all duration-200 ease-in-out"
+                            className="group block border-l-4 border-transparent hover:border-[var(--primary)] pl-6 py-4 -ml-6 hover:bg-zinc-50/50 transition-all duration-300 ease-in-out rounded-r-xl"
                         >
                             <div className="flex flex-col gap-2">
-                                <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest group-hover:text-[var(--primary)] transition-colors duration-200">
+                                <span className="text-[10px] md:text-xs font-bold text-zinc-400 uppercase tracking-[0.2em] group-hover:text-[var(--primary)] transition-colors duration-200">
                                     {new Date(ep.published_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric' })}
                                 </span>
-                                <h4 className="text-3xl font-black tracking-tight group-hover:text-[var(--primary)] transition-colors duration-200 leading-tight">
+                                <h4 className="text-2xl md:text-3xl font-black tracking-tight text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors duration-200 leading-tight">
                                     {ep.title}
                                 </h4>
-                                <p className="text-lg text-zinc-500 line-clamp-2 max-w-2xl font-medium opacity-80 group-hover:opacity-100 transition-opacity">
+                                <p className="text-base md:text-lg text-zinc-500 line-clamp-2 max-w-2xl font-serif font-medium opacity-80 group-hover:opacity-100 transition-opacity">
                                     Listen to the full episode on {podcast.title}. Available now.
                                 </p>
-                                <div className="mt-4 flex items-center gap-4 text-xs font-black uppercase tracking-widest text-zinc-400 group-hover:text-zinc-600 transition-all duration-200">
-                                    <span>{ep.youtube_video_id ? 'Video Available' : 'Audio Only'}</span>
-                                    <span>•</span>
-                                    <span className="text-black group-hover:text-[var(--primary)] group-hover:translate-x-3 transition-all duration-200 font-black inline-block">Listen Now →</span>
+                                <div className="mt-4 flex items-center gap-4 text-[10px] md:text-xs font-black uppercase tracking-widest text-zinc-400 group-hover:text-[var(--foreground)] transition-all duration-200">
+                                    <span className="opacity-60">{ep.youtube_video_id ? 'Video Available' : 'Audio Only'}</span>
+                                    <span className="opacity-20">•</span>
+                                    <span className="text-[var(--foreground)] group-hover:text-[var(--primary)] group-hover:translate-x-3 transition-all duration-300 font-black inline-block">Listen Now →</span>
                                 </div>
                             </div>
                         </Link>

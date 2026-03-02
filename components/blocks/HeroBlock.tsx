@@ -68,29 +68,33 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
 
     if (layout === 'substack') {
         return (
-            <section className="relative mb-24 py-12 border-b border-zinc-100">
+            <section className="relative mb-24 py-12 border-b border-[var(--border)] group/hero">
                 <div className="max-w-4xl mx-auto px-4">
                     <div className="flex flex-col md:flex-row gap-12 items-center">
                         {latestEpisode?.image_url && (
-                            <div className="w-full md:w-1/3">
-                                <img
-                                    src={latestEpisode.image_url}
-                                    alt={latestEpisode.title || ''}
-                                    className="w-full aspect-square object-cover rounded shadow-xl"
-                                />
+                            <div className="w-full md:w-1/3 shrink-0">
+                                <Link href={`/${podcast.id}/episodes/${latestEpisode?.slug}`} className="block">
+                                    <img
+                                        src={latestEpisode.image_url}
+                                        alt={latestEpisode.title || ''}
+                                        className="w-full aspect-square object-cover rounded shadow-lg transition-all duration-500 group-hover/hero:scale-102 group-hover/hero:shadow-2xl brightness-95 group-hover/hero:brightness-100"
+                                    />
+                                </Link>
                             </div>
                         )}
                         <div className="flex-1 text-center md:text-left">
-                            <h2 className="text-4xl font-serif font-black tracking-tight text-[#171717] md:text-5xl leading-tight">
-                                {latestEpisode?.title}
-                            </h2>
-                            <p className="mt-6 text-xl text-zinc-600 leading-relaxed font-serif">
+                            <Link href={`/${podcast.id}/episodes/${latestEpisode?.slug}`} className="block group">
+                                <h2 className="text-4xl font-serif font-black tracking-tight text-[var(--foreground)] md:text-5xl leading-tight transition-colors duration-200 group-hover:text-[var(--primary)]">
+                                    {latestEpisode?.title}
+                                </h2>
+                            </Link>
+                            <p className="mt-6 text-xl text-zinc-600 leading-relaxed font-serif opacity-80 group-hover/hero:opacity-100 transition-opacity duration-300">
                                 {latestEpisode?.description?.replace(/<[^>]*>?/gm, '').slice(0, 200)}...
                             </p>
                             <div className="mt-10 flex flex-wrap gap-4 justify-center md:justify-start">
                                 <Link
                                     href={`/${podcast.id}/episodes/${latestEpisode?.slug}`}
-                                    className="px-8 py-3 bg-[#171717] text-white font-serif font-bold rounded hover:bg-black transition-all"
+                                    className="px-10 py-4 bg-[var(--foreground)] text-[var(--background)] font-serif font-bold rounded shadow-lg hover:bg-[var(--primary)] hover:text-[var(--background)] hover:scale-105 active:scale-95 transition-all duration-200"
                                 >
                                     Read and Listen
                                 </Link>

@@ -76,7 +76,7 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
                 </header>
 
                 {/* Content Area */}
-                <main className="mx-auto max-w-3xl px-6 py-20">
+                <main className="mx-auto max-w-3xl px-6 py-20 animate-fade-in-up">
                     {/* Simplified Podcast Info for Substack */}
                     <div className="mb-24 text-center">
                         {podcast.image && (

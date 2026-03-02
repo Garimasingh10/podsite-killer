@@ -21,14 +21,14 @@ export default function SubscribeBlock({ podcast }: { podcast: any }) {
                     <h3 className="text-3xl font-black italic tracking-tighter mb-4 text-[var(--foreground)]">Subscribe to the newsletter</h3>
                     <p className="text-[var(--foreground)] font-medium opacity-60">Join 50,000+ others and never miss an update.</p>
                 </div>
-                <div className="flex flex-wrap justify-center gap-12">
+                <div className="flex flex-wrap justify-center gap-8 md:gap-12">
                     {platforms.map((p) => (
                         <a
                             key={p.name}
                             href={p.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-zinc-500 hover:translate-x-1 active:scale-95 transition-all duration-200 group"
+                            className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-[#171717] opacity-40 hover:opacity-100 hover:translate-x-1 active:scale-95 transition-all duration-200 group"
                         >
                             <p.Icon size={20} strokeWidth={2.5} className="group-hover:text-[var(--primary)] group-hover:scale-110 transition-all duration-200" />
                             <span className="group-hover:text-[var(--primary)] transition-colors duration-200">{p.name}</span>
