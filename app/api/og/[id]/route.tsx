@@ -14,10 +14,11 @@ export async function GET(
 
     const supabase = await createSupabaseServerClient();
 
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
     const { data: podcast } = await supabase
         .from('podcasts')
         .select('title, theme_config')
-        .or(`id.eq.${id},custom_domain.eq.${id}`)
+        .or(isUuid ? `id.eq.${id},custom_domain.eq.${id}` : `custom_domain.eq.${id}`)
         .maybeSingle();
 
     if (!podcast) {

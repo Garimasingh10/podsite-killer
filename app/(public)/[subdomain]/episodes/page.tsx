@@ -18,10 +18,11 @@ export default async function EpisodesIndex({ params, searchParams }: EpisodesIn
 
   const supabase = await createSupabaseServerClient();
 
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subdomain);
   const { data: podcast, error: podcastError } = await supabase
     .from('podcasts')
     .select('*')
-    .or(`id.eq.${subdomain},custom_domain.eq.${subdomain}`)
+    .or(isUuid ? `id.eq.${subdomain},custom_domain.eq.${subdomain}` : `custom_domain.eq.${subdomain}`)
     .maybeSingle();
 
   if (podcastError || !podcast) {

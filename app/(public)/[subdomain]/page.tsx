@@ -22,10 +22,11 @@ type PageProps = {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { subdomain } = await params;
   const supabase = await createSupabaseServerClient();
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subdomain);
   const { data: podcast } = await supabase
     .from('podcasts')
     .select('title, description')
-    .or(`id.eq.${subdomain},custom_domain.eq.${subdomain}`)
+    .or(isUuid ? `id.eq.${subdomain},custom_domain.eq.${subdomain}` : `custom_domain.eq.${subdomain}`)
     .maybeSingle();
 
   if (!podcast) return { title: 'Podcast Not Found' };
@@ -61,10 +62,11 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
 
   const supabase = await createSupabaseServerClient();
 
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subdomain);
   const { data: podcast, error: podcastError } = await supabase
     .from('podcasts')
     .select('*')
-    .or(`id.eq.${subdomain},custom_domain.eq.${subdomain}`)
+    .or(isUuid ? `id.eq.${subdomain},custom_domain.eq.${subdomain}` : `custom_domain.eq.${subdomain}`)
     .maybeSingle();
 
   if (podcastError || !podcast) {

@@ -1,10 +1,9 @@
-// proxy.ts
+// middleware.ts
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-export default async function proxy(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
-    const url = request.nextUrl;
     const hostname = request.headers.get('host') || 'localhost:3000';
 
     // 1. Domain Routing Logic
@@ -17,6 +16,7 @@ export default async function proxy(request: NextRequest) {
     // If it's a custom domain, we rewrite to the specific podcast route
     if (!isMainApp && !pathname.startsWith('/api') && !pathname.startsWith('/_next') && !pathname.includes('.')) {
         const cleanHostname = hostname.replace('www.', '');
+        console.log(`Middleware - Rewriting domain ${cleanHostname} to /[subdomain]${pathname}`);
         return NextResponse.rewrite(new URL(`/${cleanHostname}${pathname === '/' ? '' : pathname}`, request.url));
     }
 
@@ -28,8 +28,6 @@ export default async function proxy(request: NextRequest) {
     ) {
         return NextResponse.next();
     }
-
-    console.log(`--- Proxy Hit: ${pathname} [Host: ${hostname}] ---`);
 
     // 2. Initial Collector for Auth state sync
     const pendingCookies: { name: string; value: string; options?: any }[] = [];
@@ -49,15 +47,10 @@ export default async function proxy(request: NextRequest) {
                     return request.cookies.getAll();
                 },
                 setAll(cookiesToSet) {
-                    console.log('Proxy - Collecting state sync:', cookiesToSet.map(c => c.name));
                     pendingCookies.push(...cookiesToSet);
-
-                    // a) Update request object
                     cookiesToSet.forEach(({ name, value }) => {
                         request.cookies.set(name, value);
                     });
-
-                    // b) Sync headers for downstream
                     const cookieString = request.cookies.getAll()
                         .map(c => `${c.name}=${c.value}`)
                         .join('; ');
@@ -65,7 +58,6 @@ export default async function proxy(request: NextRequest) {
                     const newRequestHeaders = new Headers(request.headers);
                     newRequestHeaders.set('Cookie', cookieString);
 
-                    // c) Refresh response to carry new headers
                     response = NextResponse.next({
                         request: {
                             headers: newRequestHeaders,
@@ -81,7 +73,6 @@ export default async function proxy(request: NextRequest) {
 
     // 5. Manually staple ANY cookies collected during getUser
     if (pendingCookies.length > 0) {
-        console.log('Proxy - Stapling collected cookies to outbound response:', pendingCookies.length);
         pendingCookies.forEach(({ name, value, options }) => {
             const cookieStr = [
                 `${name}=${value}`,
@@ -97,12 +88,10 @@ export default async function proxy(request: NextRequest) {
     const isDashboard = pathname.startsWith('/dashboard') || pathname.startsWith('/podcasts');
 
     if (user) {
-        console.log('Proxy - Active session:', user.id);
         if (pathname === '/login' || pathname === '/') {
             return NextResponse.redirect(new URL('/dashboard', request.url));
         }
     } else {
-        console.log('Proxy - No active session');
         if (isDashboard) {
             return NextResponse.redirect(new URL('/login', request.url));
         }
