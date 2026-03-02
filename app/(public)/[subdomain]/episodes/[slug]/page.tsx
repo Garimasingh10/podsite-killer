@@ -146,7 +146,7 @@ export default async function EpisodePage({ params }: PageProps) {
                 ""
           }>
             <EpisodePlayer
-              podcastId={subdomain}
+              podcastId={podcast.id}
               youtubeVideoId={episode.youtube_video_id}
               audioUrl={episode.audio_url}
               title={episode.title || 'Untitled'}
