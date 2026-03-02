@@ -22,7 +22,11 @@ type PageProps = {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { subdomain } = await params;
   const supabase = await createSupabaseServerClient();
-  const { data: podcast } = await supabase.from('podcasts').select('title, description').eq('id', subdomain).maybeSingle();
+  const { data: podcast } = await supabase
+    .from('podcasts')
+    .select('title, description')
+    .or(`id.eq.${subdomain},custom_domain.eq.${subdomain}`)
+    .maybeSingle();
 
   if (!podcast) return { title: 'Podcast Not Found' };
 
@@ -60,7 +64,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   const { data: podcast, error: podcastError } = await supabase
     .from('podcasts')
     .select('*')
-    .eq('id', subdomain)
+    .or(`id.eq.${subdomain},custom_domain.eq.${subdomain}`)
     .maybeSingle();
 
   if (podcastError || !podcast) {

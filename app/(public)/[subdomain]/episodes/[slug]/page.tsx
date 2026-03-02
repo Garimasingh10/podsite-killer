@@ -15,10 +15,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { subdomain, slug } = await params;
   const supabase = await createSupabaseServerClient();
 
+  // First, resolve the podcast to get the correct UUID
+  const { data: podcast } = await supabase
+    .from('podcasts')
+    .select('id')
+    .or(`id.eq.${subdomain},custom_domain.eq.${subdomain}`)
+    .maybeSingle();
+
+  if (!podcast) return { title: 'Podcast Not Found' };
+
   const { data: episode } = await supabase
     .from('episodes')
     .select('title, description')
-    .eq('podcast_id', subdomain)
+    .eq('podcast_id', podcast.id)
     .eq('slug', slug)
     .maybeSingle();
 
@@ -53,7 +62,7 @@ export default async function EpisodePage({ params }: PageProps) {
   const { data: podcast } = await supabase
     .from('podcasts')
     .select('*')
-    .eq('id', subdomain)
+    .or(`id.eq.${subdomain},custom_domain.eq.${subdomain}`)
     .maybeSingle();
 
   if (!podcast) {

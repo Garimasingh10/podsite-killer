@@ -17,7 +17,7 @@ export async function GET(
     const { data: podcast } = await supabase
         .from('podcasts')
         .select('title, theme_config')
-        .eq('id', id)
+        .or(`id.eq.${id},custom_domain.eq.${id}`)
         .maybeSingle();
 
     if (!podcast) {

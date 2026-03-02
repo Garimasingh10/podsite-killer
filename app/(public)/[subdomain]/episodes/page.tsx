@@ -21,7 +21,7 @@ export default async function EpisodesIndex({ params, searchParams }: EpisodesIn
   const { data: podcast, error: podcastError } = await supabase
     .from('podcasts')
     .select('*')
-    .eq('id', subdomain)
+    .or(`id.eq.${subdomain},custom_domain.eq.${subdomain}`)
     .maybeSingle();
 
   if (podcastError || !podcast) {

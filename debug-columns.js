@@ -13,7 +13,10 @@ const candidates = [
     'rss_url',
     'title',
     'description',
-    'id'
+    'id',
+    'subdomain',
+    'slug',
+    'custom_domain'
 ];
 
 async function checkColumns() {
