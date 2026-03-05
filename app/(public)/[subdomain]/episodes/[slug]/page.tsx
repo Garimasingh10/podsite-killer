@@ -1,11 +1,25 @@
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import { headers } from 'next/headers';
 import ThemeEngine, { ThemeConfig } from '@/components/ThemeEngine';
 import EpisodePlayer from '@/components/EpisodePlayer';
 import NetflixLayout from '@/components/layouts/NetflixLayout';
 import SubstackLayout from '@/components/layouts/SubstackLayout';
 import GenZLayout from '@/components/layouts/GenZLayout';
+
+// Helper to detect if we should show fallback
+function isMainAppHost(host: string | null) {
+  if (!host) return false;
+  const rootDomain = host.split(':')[0].toLowerCase();
+  return (
+    rootDomain === 'localhost' ||
+    rootDomain === '127.0.0.1' ||
+    rootDomain === 'podsite-killer.vercel.app' ||
+    rootDomain === 'makemypodcastsite.com' ||
+    host.includes('vercel.app')
+  );
+}
 
 type PageProps = {
   params: Promise<{ subdomain: string; slug: string }>;
@@ -13,24 +27,53 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { subdomain, slug } = await params;
+  const headerList = await headers();
+  const host = headerList.get('host');
+
   const supabase = await createSupabaseServerClient();
 
   // First, resolve the podcast to get the correct UUID
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subdomain);
-  const { data: podcast } = await supabase
+  const { data: dbPodcast } = await supabase
     .from('podcasts')
-    .select('id')
+    .select('id, title, description')
     .or(isUuid ? `id.eq.${subdomain},custom_domain.eq.${subdomain}` : `custom_domain.eq.${subdomain}`)
     .maybeSingle();
 
+  let podcast = dbPodcast;
+
+  // Fallback Metadata for Ready Set Do
+  const isExplicitRoot =
+    subdomain.toLowerCase() === 'makemypodcastsite.com' ||
+    subdomain.toLowerCase() === 'localhost' ||
+    subdomain.toLowerCase() === '127.0.0.1';
+
+  if (!podcast && isExplicitRoot && isMainAppHost(host)) {
+    podcast = {
+      id: 'default-podcast-id',
+      title: 'Ready Set Do',
+      description: 'The ultimate podcast show for creators.'
+    } as any;
+  }
+
   if (!podcast) return { title: 'Podcast Not Found' };
 
-  const { data: episode } = await supabase
+  const { data: dbEpisode } = await supabase
     .from('episodes')
     .select('title, description')
     .eq('podcast_id', podcast.id)
     .eq('slug', slug)
     .maybeSingle();
+
+  let episode = dbEpisode;
+
+  if (!episode && podcast.id === 'default-podcast-id') {
+    if (slug === 'future-of-ai-agents') {
+      episode = { title: 'The Future of AI Agents', description: 'AI agents deep dive.' };
+    } else if (slug === 'building-premium-web-apps') {
+      episode = { title: 'Building Premium Web Apps', description: 'Modern engineering principles.' };
+    }
+  }
 
   if (!episode) return { title: 'Episode Not Found' };
 
@@ -39,7 +82,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   ogUrl.searchParams.set('title', episode.title || '');
 
   return {
-    title: episode.title || 'Episode',
+    title: `${episode.title} | ${podcast.title}`,
     description: episode.description?.replace(/<[^>]*>/g, '').slice(0, 160),
     openGraph: {
       title: episode.title || 'Episode',
@@ -57,31 +100,66 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function EpisodePage({ params }: PageProps) {
   const { subdomain, slug } = await params;
+  const headerList = await headers();
+  const host = headerList.get('host');
 
   const supabase = await createSupabaseServerClient();
 
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subdomain);
-  const { data: podcast } = await supabase
+  const { data: podcast, error: dbError } = await supabase
     .from('podcasts')
     .select('*')
     .or(isUuid ? `id.eq.${subdomain},custom_domain.eq.${subdomain}` : `custom_domain.eq.${subdomain}`)
     .maybeSingle();
 
-  if (!podcast) {
+  let resolvedPodcast = podcast;
+  let podcastError = dbError;
+
+  // Selective Fallback for Episode Page
+  const isExplicitRoot =
+    subdomain.toLowerCase() === 'makemypodcastsite.com' ||
+    subdomain.toLowerCase() === 'localhost' ||
+    subdomain.toLowerCase() === '127.0.0.1';
+
+  if ((!resolvedPodcast || podcastError) && isExplicitRoot && isMainAppHost(host)) {
+    console.log('>>> PodSite Killer: Activating PREMIUM FALLBACK for Episode root host:', host);
+    resolvedPodcast = {
+      id: 'default-podcast-id',
+      title: 'Ready Set Do',
+      theme_config: {
+        primaryColor: '#6366f1',
+        accentColor: '#8b5cf6',
+        imageUrl: 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=1600&auto=format&fit=crop&q=80',
+        layout: 'netflix'
+      }
+    } as any;
+    podcastError = null;
+  }
+
+  if (podcastError || !resolvedPodcast) {
     return (
-      <main className="mx-auto max-w-3xl px-4 py-8">
-        <p className="text-sm text-slate-300">Podcast not found.</p>
-        <p className="mt-2 text-xs">
-          <Link href="/" className="text-primary hover:underline">
-            ← Back to home
-          </Link>
-        </p>
+      <main className="min-h-screen flex items-center justify-center bg-[#0a0a0a] px-4 font-sans selection:bg-primary/30">
+        <div className="max-w-md w-full text-center space-y-8 animate-in fade-in zoom-in duration-500">
+          <div className="relative inline-block">
+            <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-purple-500/20 blur-2xl rounded-full opacity-50 animate-pulse" />
+            <h1 className="relative text-7xl font-black text-white tracking-tighter uppercase italic">404</h1>
+          </div>
+          <div className="space-y-3">
+            <h2 className="text-2xl font-bold text-white tracking-tight">Podcast not found</h2>
+            <p className="text-slate-400 leading-relaxed">
+              The show <code className="bg-white/5 px-1.5 py-0.5 rounded text-primary border border-white/10">{String(subdomain)}</code> could not be found.
+            </p>
+          </div>
+          <p className="mt-8 text-[10px] font-black uppercase tracking-[0.3em] text-slate-600">
+            Powered by PodSite Killer
+          </p>
+        </div>
       </main>
     );
   }
 
-  const themeConfig = (podcast.theme_config as unknown as ThemeConfig) || {};
-  const podcastWithImage = { ...podcast, image: themeConfig.imageUrl };
+  const themeConfig = (resolvedPodcast.theme_config as unknown as ThemeConfig) || {};
+  const podcastWithImage = { ...resolvedPodcast, image: themeConfig.imageUrl };
   const layout = themeConfig.layout || 'netflix';
 
   const LayoutComponent =
@@ -89,24 +167,50 @@ export default async function EpisodePage({ params }: PageProps) {
       layout === 'genz' ? GenZLayout :
         NetflixLayout;
 
-  const { data: episode } = await supabase
+  const { data: dbEpisode } = await supabase
     .from('episodes')
     .select(
       'id, title, published_at, audio_url, youtube_video_id, description',
     )
-    .eq('podcast_id', podcast.id)
+    .eq('podcast_id', resolvedPodcast.id)
     .eq('slug', slug)
     .maybeSingle();
 
+  let episode = dbEpisode;
+
+  // Fallback Episodes for Ready Set Do
+  if (!episode && resolvedPodcast.id === 'default-podcast-id') {
+    if (slug === 'future-of-ai-agents') {
+      episode = {
+        id: 'ep1',
+        title: 'The Future of AI Agents',
+        published_at: new Date().toISOString(),
+        audio_url: 'https://cdn.simplecast.com/audio/2be2a2/2be2a246-34a9-44d4-8395-6b5cf166f287/9a3c9b7e-953b-4f9e-9d2a-89a6c9cf1c2c/the-sunday-read-the-most-famous-people-on-earth_tc.mp3',
+        description: 'Exploring how AI agents will reshape the workplace and creative landscape.'
+      };
+    } else if (slug === 'building-premium-web-apps') {
+      episode = {
+        id: 'ep2',
+        title: 'Building Premium Web Apps',
+        published_at: new Date().toISOString(),
+        audio_url: 'https://cdn.simplecast.com/audio/2be2a2/2be2a246-34a9-44d4-8395-6b5cf166f287/9a3c9b7e-953b-4f9e-9d2a-89a6c9cf1c2c/the-sunday-read-the-most-famous-people-on-earth_tc.mp3',
+        description: 'A deep dive into the engineering principles of modern, high-end web applications.'
+      };
+    }
+  }
+
   if (!episode) {
     return (
-      <main className="mx-auto max-w-3xl px-4 py-8">
-        <p className="text-sm text-slate-300">Episode not found.</p>
-        <p className="mt-2 text-xs">
-          <Link href={`/${subdomain}`} className="text-sky-400 hover:underline">
-            ← Back to show
+      <main className="min-h-screen flex items-center justify-center bg-[#0a0a0a] px-4 font-sans selection:bg-primary/30">
+        <div className="max-w-md w-full text-center space-y-8 animate-in fade-in zoom-in duration-500">
+          <h2 className="text-2xl font-bold text-white tracking-tight italic uppercase">Episode not found</h2>
+          <p className="text-slate-400 leading-relaxed">
+            The requested episode <code className="bg-white/5 px-1.5 py-0.5 rounded text-primary border border-white/10">{slug}</code> doesn't exist.
+          </p>
+          <Link href={`/${subdomain}`} className="inline-block px-8 py-3 bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-primary transition-all">
+            Back to Show
           </Link>
-        </p>
+        </div>
       </main>
     );
   }

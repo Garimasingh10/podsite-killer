@@ -102,9 +102,16 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   let podcast = dbPodcast;
   let podcastError = dbError;
 
-  // GUARANTEED FALLBACK: If DB is empty or lookup fails, force load 'Ready Set Do' for main app hosts.
-  if ((!podcast || podcastError) && isMainAppHost(host)) {
-    console.log('>>> PodSite Killer: Activating PREMIUM FALLBACK for host:', host);
+  // GUARANTEED FALLBACK: ONLY for the main "Ready Set Do" home experience. 
+  // If the subdomain provided is strictly a root domain (localhost or main domain), we force the fallback.
+  // If it's a UUID or custom domain and NOT found, we show the real 404.
+  const isExplicitRoot =
+    subdomain.toLowerCase() === 'makemypodcastsite.com' ||
+    subdomain.toLowerCase() === 'localhost' ||
+    subdomain.toLowerCase() === '127.0.0.1';
+
+  if ((!podcast || podcastError) && isExplicitRoot && isMainAppHost(host)) {
+    console.log('>>> PodSite Killer: Activating PREMIUM FALLBACK for root host:', host);
     podcast = {
       id: 'default-podcast-id',
       title: 'Ready Set Do',
