@@ -95,22 +95,22 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
 
   // GUARANTEED FALLBACK: If DB is empty or lookup fails, force load 'Ready Set Do' for this specific domain.
   if ((!podcast || podcastError) && (isTargetDomain || process.env.NODE_ENV !== 'production')) {
-    console.log('>>> PodSite Killer: Activating GUARANTEED FALLBACK for:', subdomain);
+    console.log('>>> PodSite Killer: Activating PREMIUM FALLBACK for:', subdomain);
     podcast = {
-      id: 'default-podcast-id',
-      title: 'Ready Set Do',
-      description: 'The ultimate podcast show for creators and innovators. This is a local fallback to ensure your site is always working.',
+      id: 'the-daily-id',
+      title: 'The Daily',
+      description: 'This is how the news should sound. Twenty minutes a day, five days a week, hosted by Michael Barbaro and Sabrina Tavernise and powered by New York Times journalism.',
       custom_domain: 'makemypodcastsite.com',
       owner_id: '00000000-0000-0000-0000-000000000000',
-      rss_url: 'https://feeds.simplecast.com/Sl5CSM3S',
+      rss_url: 'https://feeds.simplecast.com/54nAGp9P', // The Daily RSS
       theme_config: {
-        primaryColor: '#6366f1',
-        accentColor: '#8b5cf6',
-        imageUrl: 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=800&auto=format&fit=crop&q=60',
+        primaryColor: '#1a1a1b',
+        accentColor: '#ffffff',
+        imageUrl: 'https://static01.nyt.com/images/2017/01/29/podcasts/the-daily/the-daily-square320.png',
         layout: 'netflix',
-        tagline: 'The Future of Content Creation'
+        tagline: 'Twenty minutes a day, five days a week.'
       },
-      page_layout: ['hero', 'shorts', 'subscribe', 'grid', 'host'],
+      page_layout: ['hero', 'grid', 'subscribe', 'host'],
       products: []
     } as any;
     podcastError = null;
@@ -189,23 +189,23 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     normalizedEpSubdomain === '127.0.0.1';
 
   if ((!episodes || episodes.length === 0) && (isEpTargetDomain || process.env.NODE_ENV !== 'production')) {
-    console.log('>>> PodSite Killer: Providing GUARANTEED FALLBACK episodes for:', normalizedEpSubdomain);
+    console.log('>>> PodSite Killer: Providing PREMIUM FALLBACK episodes for:', normalizedEpSubdomain);
     episodes = [
       {
-        id: 'ep1',
-        title: 'The Future of AI Agents',
-        slug: 'future-of-ai-agents',
+        id: 'the-daily-ep1',
+        title: 'The Sunday Read: ‘The Most Famous People on Earth’',
+        slug: 'the-most-famous-people-on-earth',
         published_at: new Date().toISOString(),
-        image_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=60',
-        youtube_video_id: 'dQw4w9WgXcQ'
+        image_url: 'https://static01.nyt.com/images/2017/01/29/podcasts/the-daily/the-daily-square320.png',
+        youtube_video_id: null // High accuracy: no video if not perfectly matched
       },
       {
-        id: 'ep2',
-        title: 'Building Premium Web Apps',
-        slug: 'building-premium-web-apps',
+        id: 'the-daily-ep2',
+        title: 'The State of the Union',
+        slug: 'the-state-of-the-union',
         published_at: new Date(Date.now() - 86400000).toISOString(),
-        image_url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60',
-        youtube_video_id: 'dQw4w9WgXcQ'
+        image_url: 'https://static01.nyt.com/images/2017/01/29/podcasts/the-daily/the-daily-square320.png',
+        youtube_video_id: null
       }
     ] as any;
     episodesError = null;

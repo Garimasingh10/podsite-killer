@@ -52,6 +52,10 @@ export function fuzzyMatchEpisodesToVideos(
         const epDate = new Date(ep.published_at).getTime();
         const epWords = getSignificantWords(ep.title);
 
+        // Extract episode number if present (e.g., "Ep 42", "Episode 105", "#12")
+        const epNumberMatch = ep.title.match(/(?:ep|episode|#)\s*(\d+)/i);
+        const epNumber = epNumberMatch ? epNumberMatch[1] : null;
+
         let bestMatch: { videoId: string; videoTitle: string; score: number; reasons: string[] } | null = null;
 
         for (const vid of videos) {
@@ -60,31 +64,38 @@ export function fuzzyMatchEpisodesToVideos(
             const vidDate = new Date(vid.publishedAt).getTime();
             const dateDiffHours = Math.abs(epDate - vidDate) / (1000 * 60 * 60);
 
-            // Logic 1: Date Check (Within 48 hours)
-            if (dateDiffHours <= 48) {
-                // Logic 2: Title Similarity (> 60% words shared)
+            // Logic 1: Date Check (Within 72 hours - slightly wider window for flexibility)
+            if (dateDiffHours <= 72) {
                 const vidWords = getSignificantWords(vid.title);
-
                 if (epWords.length === 0 || vidWords.length === 0) continue;
 
+                // Logic 2: Episode Number Match (High Priority)
+                if (epNumber) {
+                    const vidNumberMatch = vid.title.match(/(?:ep|episode|#)\s*(\d+)/i);
+                    const vidNumber = vidNumberMatch ? vidNumberMatch[1] : null;
+
+                    // If both have numbers and they DON'T match, skip this video entirely
+                    if (vidNumber && vidNumber !== epNumber) continue;
+                }
+
+                // Logic 3: Title Similarity
                 let matchCount = 0;
                 for (const word of epWords) {
-                    if (vidWords.includes(word)) {
-                        matchCount++;
-                    }
+                    if (vidWords.includes(word)) matchCount++;
                 }
 
                 const score = matchCount / Math.max(1, epWords.length);
 
-                if (score >= 0.6) {
+                // ACCURACY UPGRADE: Increased threshold from 0.6 to 0.85
+                if (score >= 0.85) {
                     if (!bestMatch || score > bestMatch.score) {
                         bestMatch = {
                             videoId: vid.id,
                             videoTitle: vid.title,
                             score,
                             reasons: [
-                                `Published within ${Math.round(dateDiffHours)}h`,
-                                `${Math.round(score * 100)}% title match`
+                                `High-Confidence (${Math.round(score * 100)}%)`,
+                                epNumber ? `Episode #${epNumber} verification` : 'Title similarity'
                             ]
                         };
                     }

@@ -9,12 +9,21 @@ export default async function middleware(request: NextRequest) {
     // 1. Domain Routing Logic
     const isMainApp =
         hostname === 'localhost:3000' ||
+        hostname === '127.0.0.1:3000' ||
         hostname === process.env.NEXT_PUBLIC_APP_DOMAIN ||
         hostname === 'app.podsitekiller.com' ||
         hostname.includes('vercel.app');
 
-    // If it's a custom domain, we rewrite to the specific podcast route
-    if (!isMainApp && !pathname.startsWith('/api') && !pathname.startsWith('/_next') && !pathname.includes('.')) {
+    const isReservedRoute =
+        pathname === '/login' ||
+        pathname.startsWith('/auth') ||
+        pathname.startsWith('/dashboard') ||
+        pathname.startsWith('/api') ||
+        pathname.startsWith('/_next') ||
+        pathname.includes('.');
+
+    // If it's a custom domain and NOT a reserved route, we rewrite to the specific podcast route
+    if (!isMainApp && !isReservedRoute) {
         const cleanHostname = hostname.replace('www.', '');
         console.log(`Middleware - Rewriting domain ${cleanHostname} to /[subdomain]${pathname}`);
         return NextResponse.rewrite(new URL(`/${cleanHostname}${pathname === '/' ? '' : pathname}`, request.url));
