@@ -55,11 +55,13 @@ export async function POST(req: Request) {
                             to: customerEmail,
                             subject: `Your Download: ${product.title}`,
                             html: `
-                                <div style="font-family: sans-serif; max-w-xl; margin: 0 auto; text-align: center;">
-                                    <h1>Thanks for your purchase!</h1>
-                                    <p>You can download ${product.title} using the link below. This link expires in 24 hours.</p>
-                                    <a href="${signedUrl.signedUrl}" style="display:inline-block;padding:12px 24px;background:#6366f1;color:white;text-decoration:none;border-radius:8px;font-weight:bold;margin-top:20px;">Download File</a>
-                                </div>
+                                <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-w-xl; margin: 0 auto; background-color: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); text-align: center; border: 1px solid #e5e7eb;">
+                                            <h1 style="color: #111827; font-size: 28px; margin-bottom: 16px; font-weight: 700;">Thanks for your purchase!</h1>
+                                            <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin-bottom: 32px;">We're thrilled you chose PodSite. You can securely download <strong>${product.title}</strong> using the link below. Please note that for security reasons, this temporary link will expire in 24 hours.</p>
+                                            <a href="${signedUrl.signedUrl}" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);color:white;text-decoration:none;border-radius:8px;font-weight:600;font-size: 16px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);">Download Your File</a>
+                                            <hr style="border-top: 1px solid #e5e7eb; margin: 32px 0;" />
+                                            <p style="color: #9ca3af; font-size: 14px;">If you have any issues with your download, please reply to this email. We're here to help.</p>
+                                        </div>
                             `
                         };
 
