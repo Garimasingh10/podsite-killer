@@ -1,6 +1,7 @@
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import { headers } from 'next/headers';
 import ThemeEngine, { ThemeConfig } from '@/components/ThemeEngine';
 import NetflixLayout from '@/components/layouts/NetflixLayout';
 import SubstackLayout from '@/components/layouts/SubstackLayout';
@@ -14,6 +15,19 @@ import ProductBlock from '@/components/blocks/ProductBlock';
 
 const PAGE_SIZE = 20;
 
+// Helper to detect if we should show fallback
+function isMainAppHost(host: string | null) {
+  if (!host) return false;
+  const rootDomain = host.split(':')[0].toLowerCase();
+  return (
+    rootDomain === 'localhost' ||
+    rootDomain === '127.0.0.1' ||
+    rootDomain === 'podsite-killer.vercel.app' ||
+    rootDomain === 'makemypodcastsite.com' ||
+    host.includes('vercel.app')
+  );
+}
+
 // NOTE: params & searchParams are Promises here
 type PageProps = {
   params: Promise<{ subdomain: string }>;
@@ -22,6 +36,9 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { subdomain } = await params;
+  const headerList = await headers();
+  const host = headerList.get('host');
+
   const supabase = await createSupabaseServerClient();
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subdomain);
   const { data: dbPodcast } = await supabase
@@ -32,12 +49,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   let podcast = dbPodcast;
 
-  const normalizedMetadataSubdomain = subdomain.toLowerCase().trim().split(':')[0];
-  const isMetadataTargetDomain = normalizedMetadataSubdomain === 'makemypodcastsite.com' ||
-    normalizedMetadataSubdomain === 'localhost' ||
-    normalizedMetadataSubdomain === '127.0.0.1';
-
-  if (!podcast && (isMetadataTargetDomain || process.env.NODE_ENV !== 'production')) {
+  if (!podcast && isMainAppHost(host)) {
     podcast = {
       title: 'Ready Set Do',
       description: 'The ultimate podcast show for creators and innovators.'
@@ -68,6 +80,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PodcastHome({ params, searchParams }: PageProps) {
   const { subdomain } = await params;
+  const headerList = await headers();
+  const host = headerList.get('host');
+
   const { page: pageParam, q: qParam } = await searchParams;
   const q = qParam?.trim();
 
@@ -87,15 +102,9 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   let podcast = dbPodcast;
   let podcastError = dbError;
 
-  // Normalize subdomain for check (handle ports and whitespace)
-  const normalizedSubdomain = subdomain.toLowerCase().trim().split(':')[0];
-  const isTargetDomain = normalizedSubdomain === 'makemypodcastsite.com' ||
-    normalizedSubdomain === 'localhost' ||
-    normalizedSubdomain === '127.0.0.1';
-
-  // GUARANTEED FALLBACK: If DB is empty or lookup fails, force load 'Ready Set Do' for this specific domain.
-  if ((!podcast || podcastError) && (isTargetDomain || process.env.NODE_ENV !== 'production')) {
-    console.log('>>> PodSite Killer: Activating PREMIUM FALLBACK for:', subdomain);
+  // GUARANTEED FALLBACK: If DB is empty or lookup fails, force load 'Ready Set Do' for main app hosts.
+  if ((!podcast || podcastError) && isMainAppHost(host)) {
+    console.log('>>> PodSite Killer: Activating PREMIUM FALLBACK for host:', host);
     podcast = {
       id: 'default-podcast-id',
       title: 'Ready Set Do',
@@ -183,13 +192,8 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   let episodesError = dbEpError;
 
   // GUARANTEED FALLBACK: If episodes are missing, provide samples
-  const normalizedEpSubdomain = subdomain.toLowerCase().trim().split(':')[0];
-  const isEpTargetDomain = normalizedEpSubdomain === 'makemypodcastsite.com' ||
-    normalizedEpSubdomain === 'localhost' ||
-    normalizedEpSubdomain === '127.0.0.1';
-
-  if ((!episodes || episodes.length === 0) && (isEpTargetDomain || process.env.NODE_ENV !== 'production')) {
-    console.log('>>> PodSite Killer: Providing PREMIUM FALLBACK episodes for:', normalizedEpSubdomain);
+  if ((!episodes || episodes.length === 0) && isMainAppHost(host)) {
+    console.log('>>> PodSite Killer: Providing PREMIUM FALLBACK episodes for host:', host);
     episodes = [
       {
         id: 'ep1',
