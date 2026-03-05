@@ -86,13 +86,32 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
             </p>
           </div>
 
-          <div className="pt-4">
+          <div className="pt-4 flex flex-col items-center gap-4">
             <Link
               href="https://podsitekiller.com"
               className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white text-black font-bold text-sm uppercase tracking-widest hover:bg-primary transition-all active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
             >
               Create Your Own
             </Link>
+
+            <div className="mt-8 p-6 bg-amber-500/5 border border-amber-500/20 rounded-2xl text-left max-w-sm">
+              <h3 className="text-amber-500 text-[10px] font-black uppercase tracking-[0.2em] mb-2 font-sans">Debug Mode</h3>
+              <p className="text-xs text-slate-400 leading-relaxed mb-4">
+                If you are developing locally, ensure your database has a podcast matching this domain.
+              </p>
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">1. Seed Database</p>
+                  <code className="block bg-black/40 p-2 rounded text-[10px] font-mono text-amber-200 border border-amber-500/10">
+                    node seed-podcasts.js
+                  </code>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">2. Update Hosts File</p>
+                  <p className="text-[9px] text-slate-500 italic">Add <code className="text-amber-500">127.0.0.1 {String(subdomain)}</code></p>
+                </div>
+              </div>
+            </div>
           </div>
 
           <p className="text-[10px] text-slate-600 uppercase tracking-[0.2em] font-medium pt-8">
