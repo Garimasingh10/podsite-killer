@@ -64,11 +64,36 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   const supabase = await createSupabaseServerClient();
 
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subdomain);
-  const { data: podcast, error: podcastError } = await supabase
+  const { data: dbPodcast, error: dbError } = await supabase
     .from('podcasts')
     .select('*, products(*)')
     .or(isUuid ? `id.eq.${subdomain},custom_domain.eq.${subdomain}` : `custom_domain.eq.${subdomain}`)
     .maybeSingle();
+
+  let podcast = dbPodcast;
+  let podcastError = dbError;
+
+  // Development Fallback: If DB is empty, provide a seed podcast so it "just works"
+  if ((!podcast || podcastError) && process.env.NODE_ENV === 'development') {
+    console.log('Dev Mode: Providing fallback podcast for:', subdomain);
+    podcast = {
+      id: 'default-podcast',
+      title: 'Ready Set Do',
+      description: 'The ultimate podcast show for creators and innovators.',
+      custom_domain: 'makemypodcastsite.com',
+      owner_id: '00000000-0000-0000-0000-000000000000',
+      rss_url: 'https://feeds.simplecast.com/Sl5CSM3S',
+      theme_config: {
+        primaryColor: '#6366f1',
+        accentColor: '#8b5cf6',
+        imageUrl: 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=800&auto=format&fit=crop&q=60',
+        layout: 'netflix'
+      },
+      page_layout: ['hero', 'shorts', 'subscribe', 'grid', 'host'],
+      products: []
+    } as any;
+    podcastError = null;
+  }
 
   if (podcastError || !podcast) {
     return (
@@ -132,7 +157,33 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     episodesQuery = episodesQuery.ilike('title', `%${q}%`);
   }
 
-  const { data: episodes, error: episodesError } = await episodesQuery.range(from, to);
+  const { data: dbEpisodes, error: dbEpError } = await episodesQuery.range(from, to);
+  let episodes = dbEpisodes;
+  let episodesError = dbEpError;
+
+  // Development Fallback: If episodes are missing, provide samples
+  if ((!episodes || episodes.length === 0) && process.env.NODE_ENV === 'development') {
+    console.log('Dev Mode: Providing fallback episodes.');
+    episodes = [
+      {
+        id: 'ep1',
+        title: 'The Future of AI Agents',
+        slug: 'future-of-ai-agents',
+        published_at: new Date().toISOString(),
+        image_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=60',
+        youtube_video_id: 'dQw4w9WgXcQ'
+      },
+      {
+        id: 'ep2',
+        title: 'Building Premium Web Apps',
+        slug: 'building-premium-web-apps',
+        published_at: new Date(Date.now() - 86400000).toISOString(),
+        image_url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60',
+        youtube_video_id: 'dQw4w9WgXcQ'
+      }
+    ] as any;
+    episodesError = null;
+  }
 
   if (episodesError) {
     console.error('episodesError', episodesError);
