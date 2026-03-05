@@ -97,20 +97,20 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   if ((!podcast || podcastError) && (isTargetDomain || process.env.NODE_ENV !== 'production')) {
     console.log('>>> PodSite Killer: Activating PREMIUM FALLBACK for:', subdomain);
     podcast = {
-      id: 'the-daily-id',
-      title: 'The Daily',
-      description: 'This is how the news should sound. Twenty minutes a day, five days a week, hosted by Michael Barbaro and Sabrina Tavernise and powered by New York Times journalism.',
+      id: 'default-podcast-id',
+      title: 'Ready Set Do',
+      description: 'The ultimate podcast show for creators and innovators. This is a premium local fallback to ensure your site is always working.',
       custom_domain: 'makemypodcastsite.com',
       owner_id: '00000000-0000-0000-0000-000000000000',
-      rss_url: 'https://feeds.simplecast.com/54nAGp9P', // The Daily RSS
+      rss_url: 'https://feeds.simplecast.com/Sl5CSM3S',
       theme_config: {
-        primaryColor: '#1a1a1b',
-        accentColor: '#ffffff',
-        imageUrl: 'https://static01.nyt.com/images/2017/01/29/podcasts/the-daily/the-daily-square320.png',
+        primaryColor: '#6366f1',
+        accentColor: '#8b5cf6',
+        imageUrl: 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=1600&auto=format&fit=crop&q=80',
         layout: 'netflix',
-        tagline: 'Twenty minutes a day, five days a week.'
+        tagline: 'The Future of Content Creation'
       },
-      page_layout: ['hero', 'grid', 'subscribe', 'host'],
+      page_layout: ['hero', 'shorts', 'subscribe', 'grid', 'host'],
       products: []
     } as any;
     podcastError = null;
@@ -192,19 +192,19 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     console.log('>>> PodSite Killer: Providing PREMIUM FALLBACK episodes for:', normalizedEpSubdomain);
     episodes = [
       {
-        id: 'the-daily-ep1',
-        title: 'The Sunday Read: ‘The Most Famous People on Earth’',
-        slug: 'the-most-famous-people-on-earth',
+        id: 'ep1',
+        title: 'The Future of AI Agents',
+        slug: 'future-of-ai-agents',
         published_at: new Date().toISOString(),
-        image_url: 'https://static01.nyt.com/images/2017/01/29/podcasts/the-daily/the-daily-square320.png',
-        youtube_video_id: null // High accuracy: no video if not perfectly matched
+        image_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=60',
+        youtube_video_id: null
       },
       {
-        id: 'the-daily-ep2',
-        title: 'The State of the Union',
-        slug: 'the-state-of-the-union',
+        id: 'ep2',
+        title: 'Building Premium Web Apps',
+        slug: 'building-premium-web-apps',
         published_at: new Date(Date.now() - 86400000).toISOString(),
-        image_url: 'https://static01.nyt.com/images/2017/01/29/podcasts/the-daily/the-daily-square320.png',
+        image_url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60',
         youtube_video_id: null
       }
     ] as any;

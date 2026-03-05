@@ -7,14 +7,17 @@ export default async function middleware(request: NextRequest) {
     const hostname = request.headers.get('host') || 'localhost:3000';
 
     // 1. Domain Routing Logic
+    const rootDomain = hostname.split(':')[0];
     const isMainApp =
-        hostname === 'localhost:3000' ||
-        hostname === '127.0.0.1:3000' ||
+        rootDomain === 'localhost' ||
+        rootDomain === '127.0.0.1' ||
+        rootDomain === '[::1]' ||
         hostname === process.env.NEXT_PUBLIC_APP_DOMAIN ||
         hostname === 'app.podsitekiller.com' ||
         hostname.includes('vercel.app');
 
     const isReservedRoute =
+        pathname === '/' || // Protect home page from rewrite on main app
         pathname === '/login' ||
         pathname.startsWith('/auth') ||
         pathname.startsWith('/dashboard') ||
