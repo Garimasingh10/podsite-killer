@@ -32,9 +32,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   let podcast = dbPodcast;
 
-  const isMetadataTargetDomain = subdomain === 'makemypodcastsite.com' || subdomain.includes('localhost');
+  const normalizedMetadataSubdomain = subdomain.toLowerCase().trim().split(':')[0];
+  const isMetadataTargetDomain = normalizedMetadataSubdomain === 'makemypodcastsite.com' ||
+    normalizedMetadataSubdomain === 'localhost' ||
+    normalizedMetadataSubdomain === '127.0.0.1';
 
-  if (!podcast && (isMetadataTargetDomain || process.env.NODE_ENV === 'development')) {
+  if (!podcast && (isMetadataTargetDomain || process.env.NODE_ENV !== 'production')) {
     podcast = {
       title: 'Ready Set Do',
       description: 'The ultimate podcast show for creators and innovators.'
@@ -84,11 +87,14 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   let podcast = dbPodcast;
   let podcastError = dbError;
 
-  // GUARANTEED FALLBACK: If DB is empty or lookup fails, force load 'Ready Set Do' for this specific domain.
-  // This ensures the user is never blocked by an empty database or RLS issues.
-  const isTargetDomain = subdomain === 'makemypodcastsite.com' || subdomain.includes('localhost');
+  // Normalize subdomain for check (handle ports and whitespace)
+  const normalizedSubdomain = subdomain.toLowerCase().trim().split(':')[0];
+  const isTargetDomain = normalizedSubdomain === 'makemypodcastsite.com' ||
+    normalizedSubdomain === 'localhost' ||
+    normalizedSubdomain === '127.0.0.1';
 
-  if ((!podcast || podcastError) && (isTargetDomain || process.env.NODE_ENV === 'development')) {
+  // GUARANTEED FALLBACK: If DB is empty or lookup fails, force load 'Ready Set Do' for this specific domain.
+  if ((!podcast || podcastError) && (isTargetDomain || process.env.NODE_ENV !== 'production')) {
     console.log('>>> PodSite Killer: Activating GUARANTEED FALLBACK for:', subdomain);
     podcast = {
       id: 'default-podcast-id',
@@ -177,9 +183,13 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   let episodesError = dbEpError;
 
   // GUARANTEED FALLBACK: If episodes are missing, provide samples
-  const isEpTargetDomain = subdomain === 'makemypodcastsite.com' || subdomain.includes('localhost');
-  if ((!episodes || episodes.length === 0) && (isEpTargetDomain || process.env.NODE_ENV === 'development')) {
-    console.log('>>> PodSite Killer: Providing GUARANTEED FALLBACK episodes.');
+  const normalizedEpSubdomain = subdomain.toLowerCase().trim().split(':')[0];
+  const isEpTargetDomain = normalizedEpSubdomain === 'makemypodcastsite.com' ||
+    normalizedEpSubdomain === 'localhost' ||
+    normalizedEpSubdomain === '127.0.0.1';
+
+  if ((!episodes || episodes.length === 0) && (isEpTargetDomain || process.env.NODE_ENV !== 'production')) {
+    console.log('>>> PodSite Killer: Providing GUARANTEED FALLBACK episodes for:', normalizedEpSubdomain);
     episodes = [
       {
         id: 'ep1',
