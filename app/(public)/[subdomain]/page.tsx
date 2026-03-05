@@ -144,7 +144,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
           <div className="space-y-3">
             <h2 className="text-2xl font-bold text-white tracking-tight">Podcast not found</h2>
             <p className="text-slate-400 leading-relaxed">
-              We couldn't find a podcast associated with <code className="bg-white/5 px-1.5 py-0.5 rounded text-primary border border-white/10">{String(subdomain)}</code>.
+              We couldn&apos;t find a podcast associated with <code className="bg-white/5 px-1.5 py-0.5 rounded text-primary border border-white/10">{String(subdomain)}</code>.
             </p>
           </div>
 
@@ -226,9 +226,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     console.error('episodesError', episodesError);
   }
 
-  const hasMore = episodes && episodes.length === PAGE_SIZE;
   const latest = page === 1 ? episodes?.[0] : undefined;
-  const rest = page === 1 ? episodes?.slice(1) ?? [] : episodes ?? [];
 
   const themeConfig = (podcast.theme_config as unknown as ThemeConfig) || {};
   const podcastWithImage = {

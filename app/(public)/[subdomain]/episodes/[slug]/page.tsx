@@ -12,12 +12,16 @@ import GenZLayout from '@/components/layouts/GenZLayout';
 function isMainAppHost(host: string | null) {
   if (!host) return false;
   const rootDomain = host.split(':')[0].toLowerCase();
+  const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN?.split(':')[0]?.toLowerCase();
+
   return (
     rootDomain === 'localhost' ||
     rootDomain === '127.0.0.1' ||
-    rootDomain === 'podsite-killer.vercel.app' ||
-    rootDomain === 'makemypodcastsite.com' ||
-    host.includes('vercel.app')
+    rootDomain === '[::1]' ||
+    rootDomain === appDomain ||
+    rootDomain === 'app.podsitekiller.com' ||
+    rootDomain.includes('vercel.app') ||
+    rootDomain.includes('makemypodcastsite.com')
   );
 }
 
@@ -205,7 +209,7 @@ export default async function EpisodePage({ params }: PageProps) {
         <div className="max-w-md w-full text-center space-y-8 animate-in fade-in zoom-in duration-500">
           <h2 className="text-2xl font-bold text-white tracking-tight italic uppercase">Episode not found</h2>
           <p className="text-slate-400 leading-relaxed">
-            The requested episode <code className="bg-white/5 px-1.5 py-0.5 rounded text-primary border border-white/10">{slug}</code> doesn't exist.
+            The requested episode <code className="bg-white/5 px-1.5 py-0.5 rounded text-primary border border-white/10">{slug}</code> doesn&apos;t exist.
           </p>
           <Link href={`/${subdomain}`} className="inline-block px-8 py-3 bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-primary transition-all">
             Back to Show
@@ -226,7 +230,7 @@ export default async function EpisodePage({ params }: PageProps) {
               className="group mb-8 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-primary hover:opacity-80 transition-all"
             >
               <span className="transition-transform group-hover:-translate-x-1">←</span>
-              Back to {podcast.title}
+              Back to {resolvedPodcast.title}
             </Link>
             <h1 className="mt-6 text-5xl font-black italic tracking-tighter md:text-8xl leading-[0.85] uppercase">
               {episode.title}
@@ -252,7 +256,7 @@ export default async function EpisodePage({ params }: PageProps) {
                 ""
           }>
             <EpisodePlayer
-              podcastId={podcast.id}
+              podcastId={resolvedPodcast.id}
               youtubeVideoId={episode.youtube_video_id}
               audioUrl={episode.audio_url}
               title={episode.title || 'Untitled'}
@@ -268,7 +272,7 @@ export default async function EpisodePage({ params }: PageProps) {
               className="group inline-flex items-center gap-4 text-2xl font-black italic uppercase tracking-tighter text-current transition-all hover:text-primary"
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-current transition-transform group-hover:-translate-x-3">←</span>
-              <span>Keep Exploring {podcast.title}</span>
+              <span>Keep Exploring {resolvedPodcast.title}</span>
             </Link>
           </div>
         </div>
