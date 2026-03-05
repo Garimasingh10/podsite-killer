@@ -27,7 +27,7 @@ export type MatchResult = {
 };
 
 const STOP_WORDS = new Set([
-    'the', 'and', 'a', 'an', 'in', 'on', 'at', 'with', 'to', 'for', 'of', 'from', 'is', 'it', 'this', 'that', 'episode', 'ep'
+    'the', 'and', 'a', 'an', 'in', 'on', 'at', 'with', 'to', 'for', 'of', 'from', 'is', 'it', 'this', 'that', 'episode', 'ep', 'podcast', 'video', 'show', 'audio', 'hq', 'official', 'hd', 'part', 'pt'
 ]);
 
 function getSignificantWords(text: string): string[] {

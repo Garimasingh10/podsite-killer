@@ -53,15 +53,56 @@ export async function POST(req: Request) {
                         const emailOpts = {
                             from: 'PodSite <noreply@podsitekiller.com>',
                             to: customerEmail,
-                            subject: `Your Download: ${product.title}`,
+                            subject: `Download Ready: ${product.title}`,
                             html: `
-                                <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-w-xl; margin: 0 auto; background-color: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); text-align: center; border: 1px solid #e5e7eb;">
-                                            <h1 style="color: #111827; font-size: 28px; margin-bottom: 16px; font-weight: 700;">Thanks for your purchase!</h1>
-                                            <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin-bottom: 32px;">We're thrilled you chose PodSite. You can securely download <strong>${product.title}</strong> using the link below. Please note that for security reasons, this temporary link will expire in 24 hours.</p>
-                                            <a href="${signedUrl.signedUrl}" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);color:white;text-decoration:none;border-radius:8px;font-weight:600;font-size: 16px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);">Download Your File</a>
-                                            <hr style="border-top: 1px solid #e5e7eb; margin: 32px 0;" />
-                                            <p style="color: #9ca3af; font-size: 14px;">If you have any issues with your download, please reply to this email. We're here to help.</p>
-                                        </div>
+                                <!DOCTYPE html>
+                                <html>
+                                <head>
+                                    <style>
+                                        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+                                    </style>
+                                </head>
+                                <body style="margin: 0; padding: 0; background-color: #f9fafb; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f9fafb; padding: 48px 24px;">
+                                        <tr>
+                                            <td align="center">
+                                                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;">
+                                                    <!-- Header Accent -->
+                                                    <tr>
+                                                        <td style="height: 8px; background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 48px; text-align: center;">
+                                                            <div style="margin-bottom: 32px;">
+                                                                <span style="background: #eef2ff; color: #6366f1; padding: 8px 16px; border-radius: 99px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;">Order Confirmed</span>
+                                                            </div>
+                                                            <h1 style="color: #111827; font-size: 32px; font-weight: 800; margin: 0 0 16px 0; letter-spacing: -0.02em;">Thank you for your purchase!</h1>
+                                                            <p style="color: #64748b; font-size: 16px; line-height: 1.6; margin: 0 0 40px 0;">We're excited to get <strong>${product.title}</strong> into your hands. Your secure download link is ready below.</p>
+                                                            
+                                                            <a href="${signedUrl.signedUrl}" style="display: inline-block; background-color: #111827; color: #ffffff; padding: 18px 40px; border-radius: 16px; font-size: 16px; font-weight: 700; text-decoration: none; transition: all 0.2s; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
+                                                                Download Now
+                                                            </a>
+                                                            
+                                                            <div style="margin-top: 40px; padding: 20px; background-color: #f8fafc; border-radius: 16px; border: 1px solid #f1f5f9; text-align: left;">
+                                                                <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                                                                    <span style="color: #111827; font-size: 14px; font-weight: 700;">Security Note</span>
+                                                                </div>
+                                                                <p style="color: #64748b; font-size: 13px; line-height: 1.5; margin: 0;">For your protection, this link is temporary and will expire in <span style="color: #ef4444; font-weight: 600;">24 hours</span>. Please ensure you save the file to your device after downloading.</p>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 32px 48px; background-color: #f8fafc; border-top: 1px solid #f1f5f9; text-align: center;">
+                                                            <p style="color: #94a3b8; font-size: 13px; margin: 0 0 8px 0;">Need help? Reply to this email or visit our support center.</p>
+                                                            <p style="color: #cbd5e1; font-size: 12px; margin: 0;">&copy; ${new Date().getFullYear()} PodSite Inc. All rights reserved.</p>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </body>
+                                </html>
                             `
                         };
 

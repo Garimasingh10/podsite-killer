@@ -10,6 +10,7 @@ import GridBlock from '@/components/blocks/GridBlock';
 import SubscribeBlock from '@/components/blocks/SubscribeBlock';
 import HostBlock from '@/components/blocks/HostBlock';
 import ShortsBlock from '@/components/blocks/ShortsBlock';
+import ProductBlock from '@/components/blocks/ProductBlock';
 
 const PAGE_SIZE = 20;
 
@@ -65,17 +66,39 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subdomain);
   const { data: podcast, error: podcastError } = await supabase
     .from('podcasts')
-    .select('*')
+    .select('*, products(*)')
     .or(isUuid ? `id.eq.${subdomain},custom_domain.eq.${subdomain}` : `custom_domain.eq.${subdomain}`)
     .maybeSingle();
 
   if (podcastError || !podcast) {
     return (
-      <main className="mx-auto max-w-3xl px-4 py-8 font-sans">
-        <h1 className="mb-2 text-3xl font-semibold">Podcast not found</h1>
-        <p className="mt-2 text-sm text-slate-400">
-          Could not load podcast with id <code>{String(subdomain)}</code>.
-        </p>
+      <main className="min-h-screen flex items-center justify-center bg-[#0a0a0a] px-4 font-sans selection:bg-primary/30">
+        <div className="max-w-md w-full text-center space-y-8 animate-in fade-in zoom-in duration-500">
+          <div className="relative inline-block">
+            <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-purple-500/20 blur-2xl rounded-full opacity-50 animate-pulse" />
+            <h1 className="relative text-7xl font-black text-white tracking-tighter">404</h1>
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="text-2xl font-bold text-white tracking-tight">Podcast not found</h2>
+            <p className="text-slate-400 leading-relaxed">
+              We couldn't find a podcast associated with <code className="bg-white/5 px-1.5 py-0.5 rounded text-primary border border-white/10">{String(subdomain)}</code>.
+            </p>
+          </div>
+
+          <div className="pt-4">
+            <Link
+              href="https://podsitekiller.com"
+              className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white text-black font-bold text-sm uppercase tracking-widest hover:bg-primary transition-all active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+            >
+              Create Your Own
+            </Link>
+          </div>
+
+          <p className="text-[10px] text-slate-600 uppercase tracking-[0.2em] font-medium pt-8">
+            Powered by PodSite Killer
+          </p>
+        </div>
       </main>
     );
   }
@@ -140,6 +163,8 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
                 return <GridBlock key="grid" podcast={podcastWithImage} episodes={episodes || []} />;
               case 'subscribe':
                 return <SubscribeBlock key="subscribe" podcast={podcastWithImage} />;
+              case 'product':
+                return podcast.products?.[0] ? <ProductBlock key="product" product={podcast.products[0]} /> : null;
               case 'host':
                 return <HostBlock key="host" podcast={podcastWithImage} />;
               default:

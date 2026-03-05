@@ -10,6 +10,7 @@ export default function DomainsClient({ podcastId, initialDomain }: { podcastId:
     const [savedDomain, setSavedDomain] = useState(initialDomain || '');
     const [error, setError] = useState('');
     const [copied, setCopied] = useState(false);
+    const [isVerified, setIsVerified] = useState(false); // New state for verification
     const router = useRouter();
 
     const handleAddDomain = async (e: React.FormEvent) => {
@@ -36,6 +37,23 @@ export default function DomainsClient({ podcastId, initialDomain }: { podcastId:
             router.refresh();
         } catch (err: any) {
             setError(err.message);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const checkVerification = async () => {
+        setIsSubmitting(true);
+        try {
+            // Simulate API check for demo purposes, or link to a real check
+            const res = await fetch(`/api/domains/check?domain=${savedDomain}`);
+            const data = await res.json();
+            if (data.verified) {
+                setIsVerified(true);
+                router.refresh();
+            }
+        } catch (err) {
+            console.error('Verification check failed');
         } finally {
             setIsSubmitting(false);
         }
@@ -89,9 +107,17 @@ export default function DomainsClient({ podcastId, initialDomain }: { podcastId:
             {/* DNS Instructions appear once a domain is saved */}
             {savedDomain && !error && (
                 <div className="bg-primary/10 border-2 border-primary/20 rounded-[2rem] p-8 space-y-6 animate-in slide-in-from-bottom-4">
-                    <div className="flex items-center gap-3 text-primary">
-                        <CheckCircle2 size={24} />
-                        <h2 className="text-xl font-black">Domain Added to Project</h2>
+                    <div className="flex items-center justify-between gap-3 text-primary">
+                        <div className="flex items-center gap-3">
+                            <CheckCircle2 size={24} />
+                            <h2 className="text-xl font-black">Domain Added to Project</h2>
+                        </div>
+                        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-950 border border-slate-800">
+                            <div className={`h-2 w-2 rounded-full ${isVerified ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-amber-500 animate-pulse'}`} />
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300">
+                                {isVerified ? 'DNS Verified' : 'Pending DNS'}
+                            </span>
+                        </div>
                     </div>
 
                     <p className="text-slate-300 leading-relaxed text-sm">
@@ -131,6 +157,23 @@ export default function DomainsClient({ podcastId, initialDomain }: { podcastId:
                         <p className="text-xs text-slate-400 leading-relaxed">
                             DNS changes can take up to 24-48 hours to propagate, but usually happen within 15 minutes. Once propagated, your podcast site will be live and automatically receive a free SSL certificate.
                         </p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                        <button
+                            onClick={checkVerification}
+                            disabled={isSubmitting || isVerified}
+                            className={`flex-1 py-3 rounded-xl font-bold text-xs uppercase tracking-[0.15em] transition-all ${isVerified ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 cursor-default' : 'bg-white text-black hover:bg-primary shadow-lg shadow-white/5 whitespace-nowrap'}`}
+                        >
+                            {isSubmitting ? 'Checking...' : isVerified ? 'Verified' : 'Check DNS Status'}
+                        </button>
+                        <a
+                            href={`https://${savedDomain}`}
+                            target="_blank"
+                            className="flex-1 py-3 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500 hover:text-white font-bold text-xs uppercase tracking-[0.15em] transition-all text-center"
+                        >
+                            Visit Site
+                        </a>
                     </div>
 
                     {copied && (

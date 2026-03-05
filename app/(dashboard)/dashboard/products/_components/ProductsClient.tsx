@@ -54,42 +54,32 @@ export default function ProductsClient({ podcastId, stripeAccountId, products }:
         try {
             // 1. Upload to Supabase Storage
             const fileExt = file.name.split('.').pop();
-            const fileName = `${podcastId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+            const fileName = `${podcastId}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9]/g, '_')}.${fileExt}`;
 
             const { data: uploadData, error: uploadError } = await supabase.storage
                 .from('products')
                 .upload(fileName, file);
 
-            if (uploadError) {
-                if (uploadError.message.includes('Bucket not found')) {
-                    throw new Error('Supabase Storage bucket "products" does not exist. Please create it.');
-                }
-                throw uploadError;
-            }
+            if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`);
 
             const filePath = uploadData.path;
 
-            // 2. Save product to database
-            const priceNum = parseFloat(price);
-            if (isNaN(priceNum) || priceNum < 0.5) throw new Error('Price must be at least $0.50');
-
-            const { error: dbError } = await supabase
-                .from('products')
-                .insert({
-                    podcast_id: podcastId,
+            // 2. Call our API to create Stripe Product & Save to DB
+            const res = await fetch('/api/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
                     title,
                     description,
-                    price: priceNum,
-                    file_path: filePath,
-                    file_name: file.name
-                });
+                    price: parseFloat(price),
+                    podcastId,
+                    filePath,
+                    fileName: file.name
+                })
+            });
 
-            if (dbError) {
-                if (dbError.message.includes('relation "products" does not exist')) {
-                    throw new Error('Database table "products" does not exist. Please run migration.');
-                }
-                throw dbError;
-            }
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to create product');
 
             setTitle('');
             setDescription('');
