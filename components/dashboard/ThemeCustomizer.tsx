@@ -139,12 +139,15 @@ export default function ThemeCustomizer({
                                         onChange={(e) => updateConfig({ primaryColor: e.target.value })}
                                         className="w-20 bg-transparent text-right font-mono text-[10px] text-white focus:outline-none"
                                     />
-                                    <input
-                                        type="color"
-                                        value={config.primaryColor || '#0ea5e9'}
-                                        onChange={(e) => updateConfig({ primaryColor: e.target.value })}
-                                        className="h-6 w-6 cursor-pointer appearance-none overflow-hidden rounded bg-transparent p-0 [&::-moz-color-swatch]:border-none [&::-moz-color-swatch]:rounded [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none [&::-webkit-color-swatch]:rounded"
-                                    />
+                                    <div className="relative h-6 w-6 overflow-hidden rounded bg-slate-800 ring-1 ring-white/10 shadow-inner group-hover:ring-white/30 transition-all">
+                                        <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: config.primaryColor || '#0ea5e9' }} />
+                                        <input
+                                            type="color"
+                                            value={config.primaryColor || '#0ea5e9'}
+                                            onChange={(e) => updateConfig({ primaryColor: e.target.value })}
+                                            className="absolute -inset-4 h-14 w-14 cursor-pointer opacity-0"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                             <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 p-2 pl-4">
@@ -156,12 +159,15 @@ export default function ThemeCustomizer({
                                         onChange={(e) => updateConfig({ backgroundColor: e.target.value })}
                                         className="w-20 bg-transparent text-right font-mono text-[10px] text-white focus:outline-none"
                                     />
-                                    <input
-                                        type="color"
-                                        value={config.backgroundColor || '#020617'}
-                                        onChange={(e) => updateConfig({ backgroundColor: e.target.value })}
-                                        className="h-6 w-6 cursor-pointer appearance-none overflow-hidden rounded bg-transparent p-0 [&::-moz-color-swatch]:border-none [&::-moz-color-swatch]:rounded [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none [&::-webkit-color-swatch]:rounded"
-                                    />
+                                    <div className="relative h-6 w-6 overflow-hidden rounded bg-slate-800 ring-1 ring-white/10 shadow-inner group-hover:ring-white/30 transition-all">
+                                        <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: config.backgroundColor || '#020617' }} />
+                                        <input
+                                            type="color"
+                                            value={config.backgroundColor || '#020617'}
+                                            onChange={(e) => updateConfig({ backgroundColor: e.target.value })}
+                                            className="absolute -inset-4 h-14 w-14 cursor-pointer opacity-0"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                             <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 p-2 pl-4">
@@ -173,12 +179,15 @@ export default function ThemeCustomizer({
                                         onChange={(e) => updateConfig({ accentColor: e.target.value })}
                                         className="w-20 bg-transparent text-right font-mono text-[10px] text-white focus:outline-none"
                                     />
-                                    <input
-                                        type="color"
-                                        value={config.accentColor || '#f59e0b'}
-                                        onChange={(e) => updateConfig({ accentColor: e.target.value })}
-                                        className="h-6 w-6 cursor-pointer appearance-none overflow-hidden rounded bg-transparent p-0 [&::-moz-color-swatch]:border-none [&::-moz-color-swatch]:rounded [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none [&::-webkit-color-swatch]:rounded"
-                                    />
+                                    <div className="relative h-6 w-6 overflow-hidden rounded bg-slate-800 ring-1 ring-white/10 shadow-inner group-hover:ring-white/30 transition-all">
+                                        <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: config.accentColor || '#f59e0b' }} />
+                                        <input
+                                            type="color"
+                                            value={config.accentColor || '#f59e0b'}
+                                            onChange={(e) => updateConfig({ accentColor: e.target.value })}
+                                            className="absolute -inset-4 h-14 w-14 cursor-pointer opacity-0"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -236,7 +245,7 @@ export default function ThemeCustomizer({
                                             }
                                             updateConfig({ customFontUrl: finalUrl });
                                         }}
-                                        className="rounded-lg bg-primary px-3 py-1 text-[8px] font-black uppercase tracking-widest text-black hover:scale-105 transition-all"
+                                        className="rounded-lg bg-slate-200 px-3 py-1 text-[8px] font-black uppercase tracking-widest text-slate-900 hover:scale-105 transition-all shadow-md"
                                     >
                                         Apply
                                     </button>
@@ -255,7 +264,7 @@ export default function ThemeCustomizer({
                                 <button
                                     key={r}
                                     onClick={() => updateConfig({ cornerRadius: r })}
-                                    className={`rounded-xl border py-3 text-[10px] font-black uppercase tracking-widest transition-all ${config.cornerRadius === r
+                                    className={`rounded-xl border py-2 px-1 text-[9px] font-black uppercase tracking-wider transition-all ${config.cornerRadius === r
                                         ? 'border-primary bg-primary text-white'
                                         : 'border-slate-800 bg-slate-950 text-slate-500 hover:border-slate-700'
                                         }`}

@@ -41,6 +41,7 @@ export default function DashboardClient({
 }) {
   const router = useRouter();
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [favoriteEpisodes, setFavoriteEpisodes] = useState<any[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Load favorites from localStorage
@@ -52,6 +53,12 @@ export default function DashboardClient({
       } catch (e) {
         console.error('Failed to load favorites', e);
       }
+    }
+    const savedEps = localStorage.getItem('pk_episode_favorites');
+    if (savedEps) {
+      try {
+        setFavoriteEpisodes(JSON.parse(savedEps));
+      } catch (e) {}
     }
   }, []);
 
@@ -65,6 +72,14 @@ export default function DashboardClient({
     
     setFavorites(newFavs);
     localStorage.setItem('pk_favorites', JSON.stringify(newFavs));
+  };
+
+  const toggleEpisodeFavorite = (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const newFavs = favoriteEpisodes.filter(fav => fav.id !== id);
+    setFavoriteEpisodes(newFavs);
+    localStorage.setItem('pk_episode_favorites', JSON.stringify(newFavs));
   };
 
   // Auto-refresh logic (every 60 seconds)
@@ -178,14 +193,14 @@ export default function DashboardClient({
       )}
 
       {/* Show favorites empty state */}
-      {showFavorites && displayedPodcasts.length === 0 && (
+      {showFavorites && displayedPodcasts.length === 0 && favoriteEpisodes.length === 0 && (
           <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-white/5 bg-white/[0.02] py-24 text-center">
             <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[var(--podcast-primary)]/10 text-[var(--podcast-primary)]">
               <Star size={40} />
             </div>
             <h3 className="text-xl font-black text-white tracking-tight">No Favorites Yet</h3>
             <p className="mt-2 max-w-sm text-sm text-slate-500 leading-relaxed">
-              Click the star on any podcast to add it to your favorites list for quick access.
+              Click the star or heart on any podcast or episode to add it to your favorites list for quick access.
             </p>
           </div>
       )}
@@ -290,7 +305,7 @@ export default function DashboardClient({
       )}
 
       {/* Library Section (Clean Grid) */}
-      {displayedPodcasts.length > 0 && (
+      {(displayedPodcasts.length > 0 || favoriteEpisodes.length > 0) && (
         <section className="animate-fade-in-up [animation-delay:200ms] space-y-10 pt-8 pb-32">
             <div className={`flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-200 dark:border-zinc-800 pb-10 ${showFavorites ? 'bg-gradient-to-r from-[var(--podcast-primary)]/10 to-transparent p-8 rounded-[2rem] border-none shadow-2xl' : ''}`}>
               <div className="space-y-2">
@@ -370,6 +385,39 @@ export default function DashboardClient({
               );
             })}
           </div>
+        </section>
+      )}
+
+      {/* Favorite Episodes Section */}
+      {showFavorites && favoriteEpisodes.length > 0 && (
+        <section className="animate-fade-in-up [animation-delay:300ms] pb-32">
+            <div className="mb-10 p-8 rounded-[2rem] bg-gradient-to-r from-[var(--podcast-primary)]/5 to-transparent shadow-xl">
+              <h3 className="text-3xl font-bold tracking-tight text-[var(--podcast-primary)] italic font-black">
+                🎙️ Favorite Episodes
+              </h3>
+              <p className="text-sm font-medium text-zinc-500 uppercase tracking-widest opacity-80 mt-2">
+                Your Saved Audio & Video
+              </p>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {favoriteEpisodes.map(ep => (
+                    <Link key={ep.id} href={`/${ep.podcastId}/episodes/${ep.slug}`} target="_blank" className="relative group flex flex-col justify-between overflow-hidden rounded-[2rem] bg-zinc-950 border-4 border-white/5 p-5 transition-all hover:-translate-y-2 hover:border-[var(--podcast-primary)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)]">
+                        <div className="aspect-video w-full mb-6 relative rounded-xl overflow-hidden ring-1 ring-white/10 shadow-xl">
+                            <img src={ep.image || 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618'} alt={ep.title} className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700" />
+                            <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                        </div>
+                        <h4 className="text-lg font-black tracking-tighter text-white italic line-clamp-2 leading-tight group-hover:text-[var(--podcast-primary)] transition-colors">{ep.title}</h4>
+                        <div className="mt-6 flex items-center justify-between border-t border-white/5 pt-4">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
+                                {new Date(ep.published_at).toLocaleDateString()}
+                            </span>
+                        </div>
+                        <button onClick={(e) => toggleEpisodeFavorite(ep.id, e)} className="absolute top-6 right-6 p-2 rounded-full bg-[var(--podcast-primary)] text-black border-2 border-[var(--podcast-primary)] transition-all z-20 shadow-lg hover:scale-110 active:scale-95">
+                            <Star size={14} fill="currentColor" />
+                        </button>
+                    </Link>
+                ))}
+            </div>
         </section>
       )}
     </div>
