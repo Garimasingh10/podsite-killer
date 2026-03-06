@@ -136,7 +136,8 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   const podcastWithImage = {
     ...podcast,
     image: themeConfig.imageUrl,
-    latest_video_id: latest?.youtube_video_id
+    latest_video_id: latest?.youtube_video_id,
+    title: podcast.title as string // Ensure title is explicitly passed
   };
   const layout = themeConfig.layout || 'netflix';
 
@@ -152,14 +153,18 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   // Filter out hidden blocks
   const pageLayout = rawLayout.filter(block => !hiddenBlocks.includes(block));
 
+  // Create a properly typed podcast object for the Layout
+  const layoutPodcast = {
+    ...podcastWithImage,
+    title: podcastWithImage.title,
+    tagline: themeConfig.tagline,
+    latest_video_id: latest?.youtube_video_id
+  };
+
   return (
     <>
       <ThemeEngine config={themeConfig} />
-      <LayoutComponent podcast={{
-        ...podcastWithImage,
-        tagline: themeConfig.tagline,
-        latest_video_id: latest?.youtube_video_id
-      }}>
+      <LayoutComponent podcast={layoutPodcast}>
         <div className="flex flex-col">
           {pageLayout.map((blockType) => {
             switch (blockType) {

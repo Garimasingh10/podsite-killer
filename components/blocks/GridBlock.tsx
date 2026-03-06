@@ -18,7 +18,7 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                         <Link
                             key={ep.id}
                             href={`/${podcast.id}/episodes/${ep.slug}`}
-                            className="group block border-l-4 border-transparent hover:border-[var(--primary)] pl-6 py-4 -ml-6 hover:bg-zinc-50/50 hover:translate-x-2 transition-all duration-300 ease-in-out rounded-r-xl"
+                            className="group block border-l-4 border-transparent hover:border-[var(--primary)] pl-6 py-4 -ml-6 hover:bg-zinc-50/50 hover:translate-x-2 transition-all duration-300 ease-in-out rounded-r-xl no-underline"
                         >
                             <div className="flex flex-col gap-2">
                                 <span className="text-[10px] md:text-xs font-bold text-zinc-400 uppercase tracking-[0.2em] group-hover:text-[var(--primary)] transition-colors duration-200">
@@ -52,7 +52,7 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                         <Link
                             key={ep.id}
                             href={`/${podcast.id}/episodes/${ep.slug}`}
-                            className="group relative border-8 border-black bg-white p-6 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:shadow-[20px_20px_0px_0px_rgba(var(--accent-rgb),1)] hover:-translate-x-2 hover:-translate-y-2 transition-all duration-200 active:translate-x-0 active:translate-y-0 active:shadow-none"
+                            className="group relative border-8 border-black bg-white p-6 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:shadow-[20px_20px_0px_0px_rgba(var(--accent-rgb),1)] hover:-translate-x-2 hover:-translate-y-2 transition-all duration-200 active:translate-x-0 active:translate-y-0 active:shadow-none no-underline"
                         >
                             <div className="aspect-video w-full border-4 border-black overflow-hidden mb-6 relative">
                                 <div className="absolute inset-0 bg-[var(--primary)] mix-blend-multiply opacity-0 group-hover:opacity-30 transition-opacity z-10" />
@@ -87,7 +87,7 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                     <Link
                         key={ep.id}
                         href={`/${podcast.id}/episodes/${ep.slug}`}
-                        className="group relative aspect-video overflow-visible rounded-sm transition-transform duration-500 ease-out hover:z-50 hover:scale-115"
+                        className="group relative aspect-video overflow-visible rounded-sm transition-transform duration-500 ease-out hover:z-50 hover:scale-115 no-underline"
                     >
                         <div className="h-full w-full overflow-hidden rounded-sm ring-1 ring-white/10 shadow-2xl transition-all group-hover:ring-[var(--primary)]/50">
                             <img
