@@ -8,7 +8,6 @@ export function SignOutButton() {
     const supabase = createSupabaseBrowserClient();
 
     const handleSignOut = async () => {
-    const signOut = async () => {
         await supabase.auth.signOut();
         router.refresh();
         router.push('/login');
@@ -16,7 +15,7 @@ export function SignOutButton() {
 
     return (
         <button
-            onClick={() => signOut()}
+            onClick={handleSignOut}
             className="hover:text-white transition-colors"
         >
             Sign Out
