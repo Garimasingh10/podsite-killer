@@ -84,7 +84,7 @@ export default async function DashboardLayout({
           </div>
 
 
-          <nav className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
+          <nav className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
             <Link
               href="/dashboard"
               className="hover:text-[var(--podcast-primary,white)] hover:scale-105 transition-all duration-300 font-[family-name:var(--font-heading,inherit)]"

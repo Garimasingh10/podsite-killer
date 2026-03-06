@@ -92,7 +92,7 @@ export default function DashboardClient({
         '--podcast-accent': accentColor,
       } as React.CSSProperties}
     >
-      <ThemeEngine config={activePodcast?.theme_config || {}} scope=".dashboard-active-scope" />
+      <ThemeEngine config={activePodcast?.theme_config || {}} scope=":root" />
 
       {/* Header Info & Auto Refresh Status */}
       <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-2 px-6 py-2 bg-white/5 rounded-full border border-white/5 backdrop-blur-sm shadow-inner">
