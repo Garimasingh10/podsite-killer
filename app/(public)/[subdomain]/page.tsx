@@ -12,10 +12,9 @@ import SubscribeBlock from '@/components/blocks/SubscribeBlock';
 import HostBlock from '@/components/blocks/HostBlock';
 import ShortsBlock from '@/components/blocks/ShortsBlock';
 import DigitalProductBlock from '@/components/blocks/DigitalProductBlock';
-import LiveLayoutController from '@/components/dashboard/LiveLayoutController';
 import LivePodcastManager from '@/components/public/LivePodcastManager';
 import SubscribeModal from '@/components/public/SubscribeModal';
-import { useState } from 'react';
+import PodcastPageWrapper from '@/components/public/PodcastPageWrapper';
 
 const PAGE_SIZE = 20;
 
@@ -370,27 +369,3 @@ async function PodcastHomeClient({ params, searchParams }: PageProps) {
   );
 }
 
-function PodcastPageWrapper({ podcast, themeConfig, layoutComponent: LayoutComponent, pageLayout, blockDict }: any) {
-  const [isSubscribeOpen, setIsSubscribeOpen] = useState(false);
-
-  return (
-    <LivePodcastManager initialPodcast={podcast}>
-      {(livePodcast: any) => (
-        <>
-          <ThemeEngine config={themeConfig} />
-          <LayoutComponent 
-            podcast={livePodcast} 
-            onSubscribeClick={() => setIsSubscribeOpen(true)}
-          >
-            <LiveLayoutController initialLayout={pageLayout} blocks={blockDict} />
-          </LayoutComponent>
-          <SubscribeModal 
-            isOpen={isSubscribeOpen} 
-            onClose={() => setIsSubscribeOpen(false)} 
-            podcastTitle={livePodcast.title} 
-          />
-        </>
-      )}
-    </LivePodcastManager>
-  );
-}
