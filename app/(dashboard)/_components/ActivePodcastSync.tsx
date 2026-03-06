@@ -38,7 +38,9 @@ export function ActivePodcastSync({
       }
 
       setMessage(
-        `Success: Matched ${json.matchedCount} videos.`
+        json.matchedCount > 0
+          ? `Success! Found ${json.matchedCount} pending matches. Go to Video Sync to approve them.`
+          : `Success: Checked for matches but found 0 new syncs.`
       );
       router.refresh();
     } catch (err: unknown) {

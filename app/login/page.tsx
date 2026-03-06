@@ -16,6 +16,7 @@ function LoginContent() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [resendSent, setResendSent] = useState(false);
@@ -36,121 +37,140 @@ function LoginContent() {
     setLoading(true);
     setMessage(null);
 
-    if (isSignUp) {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(
-            DASHBOARD,
-          )}`,
-          // Prevent auto-confirm in production (requires email verification)
-          // In development, you might want to disable email confirmation in Supabase settings
-        },
-      });
-      
-      console.log('signUp result', { error, email });
-      
-      if (error) {
-        // Handle specific signup errors
-        let errorMsg = error.message;
-        if (error.message.includes('already registered') || error.message.includes('already exists')) {
-          errorMsg = 'An account with this email already exists. Please log in instead.';
-        } else if (error.message.includes('password')) {
-          errorMsg = 'Password is too weak. Please use a stronger password.';
+    try {
+      if (isForgotPassword) {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/update-password`,
+        });
+        if (error) {
+          setMessage(error.message);
+        } else {
+          setMessage('Password reset instructions sent. Please check your email.');
+          setIsForgotPassword(false);
         }
-        setMessage(errorMsg);
         setLoading(false);
         return;
       }
+
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(
+              DASHBOARD,
+            )}`,
+            // Prevent auto-confirm in production (requires email verification)
+            // In development, you might want to disable email confirmation in Supabase settings
+          },
+        });
+        
+        console.log('signUp result', { error, email });
+        
+        if (error) {
+          // Handle specific signup errors
+          let errorMsg = error.message;
+          if (error.message.includes('already registered') || error.message.includes('already exists')) {
+            errorMsg = 'An account with this email already exists. Please log in instead.';
+          } else if (error.message.includes('password')) {
+            errorMsg = 'Password is too weak. Please use a stronger password.';
+          }
+          setMessage(errorMsg);
+          setLoading(false);
+          return;
+        }
+        
+        setMessage(
+          'Account created! Check your email (and spam folder) for a verification link to activate your studio.'
+        );
+        // Send welcome email (onboarding) — fire-and-forget
+        fetch('/api/emails/welcome', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        }).catch(() => {});
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
       
-      setMessage(
-        'Account created! Check your email (and spam folder) for a verification link to activate your studio.'
-      );
-      // Send welcome email (onboarding) — fire-and-forget
-      fetch('/api/emails/welcome', {
+      console.log('signIn result', { 
+        email,
+        hasData: !!data,
+        hasUser: !!data?.user,
+        error: error ? {
+          message: error.message,
+          status: error.status,
+          name: error.name,
+        } : null,
+      });
+
+      if (error) {
+        console.error('Login error details:', {
+          email,
+          message: error.message,
+          status: error.status,
+          name: error.name,
+        });
+        
+        // Provide user-friendly error messages
+        let errorMsg = error.message;
+        if (error.message.includes('Invalid login credentials') || error.message.includes('Invalid password')) {
+          errorMsg = 'Invalid email or password. Please check your credentials and try again.';
+        } else if (error.message.includes('Email not confirmed')) {
+          errorMsg = 'Please check your email and click the confirmation link before logging in.';
+        } else if (error.message.includes('too many requests')) {
+          errorMsg = 'Too many login attempts. Please wait a few minutes and try again.';
+        } else if (error.message.includes('User not found')) {
+          errorMsg = 'No account found with this email. Please sign up first.';
+        }
+        
+        setMessage(errorMsg || 'Login failed. Please try again.');
+        setLoading(false);
+        return;
+      }
+
+      if (!data?.user) {
+        console.error('Login succeeded but no user data returned');
+        setMessage('Login succeeded but session not established. Please try again.');
+        setLoading(false);
+        return;
+      }
+
+      // Verify session is actually set before redirecting
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData?.session) {
+        console.error('No session after login, retrying...');
+        // Wait a bit and check again (cookie propagation delay)
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const { data: retrySession } = await supabase.auth.getSession();
+        if (!retrySession?.session) {
+          setMessage('Session not established. Please try "Clear session and try again" below.');
+          setLoading(false);
+          return;
+        }
+      }
+
+      console.log('Login successful, session verified, redirecting to dashboard');
+      
+      // Fire-and-forget successful login email
+      fetch('/api/emails/login-success', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       }).catch(() => {});
+
+      // Keep loading spinner active during page transition
+      // Use window.location for a full page reload to ensure cookies are set
+      window.location.href = DASHBOARD;
+    } catch (err: any) {
+      setMessage(err?.message || 'An unexpected error occurred during login. Please try again.');
       setLoading(false);
-      return;
     }
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    
-    console.log('signIn result', { 
-      email,
-      hasData: !!data,
-      hasUser: !!data?.user,
-      error: error ? {
-        message: error.message,
-        status: error.status,
-        name: error.name,
-      } : null,
-    });
-
-    if (error) {
-      console.error('Login error details:', {
-        email,
-        message: error.message,
-        status: error.status,
-        name: error.name,
-      });
-      
-      // Provide user-friendly error messages
-      let errorMsg = error.message;
-      if (error.message.includes('Invalid login credentials') || error.message.includes('Invalid password')) {
-        errorMsg = 'Invalid email or password. Please check your credentials and try again.';
-      } else if (error.message.includes('Email not confirmed')) {
-        errorMsg = 'Please check your email and click the confirmation link before logging in.';
-      } else if (error.message.includes('too many requests')) {
-        errorMsg = 'Too many login attempts. Please wait a few minutes and try again.';
-      } else if (error.message.includes('User not found')) {
-        errorMsg = 'No account found with this email. Please sign up first.';
-      }
-      
-      setMessage(errorMsg || 'Login failed. Please try again.');
-      setLoading(false);
-      return;
-    }
-
-    if (!data?.user) {
-      console.error('Login succeeded but no user data returned');
-      setMessage('Login succeeded but session not established. Please try again.');
-      setLoading(false);
-      return;
-    }
-
-    // Verify session is actually set before redirecting
-    const { data: sessionData } = await supabase.auth.getSession();
-    if (!sessionData?.session) {
-      console.error('No session after login, retrying...');
-      // Wait a bit and check again (cookie propagation delay)
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const { data: retrySession } = await supabase.auth.getSession();
-      if (!retrySession?.session) {
-        setMessage('Session not established. Please try "Clear session and try again" below.');
-        setLoading(false);
-        return;
-      }
-    }
-
-    console.log('Login successful, session verified, redirecting to dashboard');
-    
-    // Fire-and-forget successful login email
-    fetch('/api/emails/login-success', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    }).catch(() => {});
-
-    setLoading(false);
-    // Use window.location for a full page reload to ensure cookies are set
-    window.location.href = DASHBOARD;
   };
 
   const onGoogleLogin = async () => {
@@ -203,7 +223,9 @@ function LoginContent() {
             PodSite-Killer
           </div>
           <h2 className="mt-4 text-2xl font-semibold text-slate-50">
-            {isSignUp ? 'Create your studio account' : 'Sign in to your studio'}
+            {isForgotPassword 
+              ? 'Reset your password' 
+              : isSignUp ? 'Create your studio account' : 'Sign in to your studio'}
           </h2>
           <p className="mt-2 text-sm text-slate-400">
             Import RSS, sync episodes, and manage YouTube from one dashboard.
@@ -232,70 +254,83 @@ function LoginContent() {
               />
             </div>
 
-            <div>
-              <div className="mb-1 flex items-center justify-between">
-                <label
-                  htmlFor="password"
-                  className="text-xs font-medium text-slate-300"
-                >
-                  Password
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="text-[11px] font-medium text-sky-400 hover:text-sky-300"
-                >
-                  {showPassword ? 'Hide password' : 'Show password'}
-                </button>
-              </div>
+            {!isForgotPassword && (
+              <div>
+                <div className="mb-1 flex items-center justify-between">
+                  <label
+                    htmlFor="password"
+                    className="text-xs font-medium text-slate-300"
+                  >
+                    Password
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-[11px] font-medium text-sky-400 hover:text-sky-300"
+                  >
+                    {showPassword ? 'Hide password' : 'Show password'}
+                  </button>
+                </div>
 
-              <div className="relative">
-                <input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  autoComplete={isSignUp ? 'new-password' : 'current-password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950/80 px-3 py-2 pr-10 text-sm text-slate-100 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 focus:outline-none"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? (
-                    // eye
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="h-4 w-4"
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    autoComplete={isSignUp ? 'new-password' : 'current-password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full rounded-lg border border-slate-700 bg-slate-950/80 px-3 py-2 pr-10 text-sm text-slate-100 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 focus:outline-none"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? (
+                      // eye
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="h-4 w-4"
+                      >
+                        <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                        <path
+                          fillRule="evenodd"
+                          d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    ) : (
+                      // eye-off
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="h-4 w-4"
+                      >
+                        <path d="M3.53 2.47a.75.75 0 00-1.06 1.06l18 18a.75.75 0 101.06-1.06l-18-18zM22.676 12.553a11.249 11.249 0 01-2.631 4.31l-3.099-3.099a5.25 5.25 0 00-6.71-6.71L7.759 4.577a11.217 11.217 0 014.242-.827c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113z" />
+                        <path d="M15.75 12c0 .18-.013.357-.037.53l-4.244-4.243A3.75 3.75 0 0115.75 12zM12.53 15.713l-4.243-4.244a3.75 3.75 0 004.243 4.243z" />
+                        <path d="M6.75 12c0-.619.107-1.213.304-1.764l-3.1-3.1a11.25 11.25 0 00-2.63 4.31c-.12.362-.12.752 0 1.114 1.489 4.467 5.702 7.69 10.677 7.69.612 0 1.209-.046 1.793-.135l-3.563-3.563A5.25 5.25 0 016.75 12z" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+                {!isSignUp && (
+                  <div className="mt-2 text-right">
+                    <button
+                      type="button"
+                      onClick={() => setIsForgotPassword(true)}
+                      className="text-[11px] font-medium text-sky-400 hover:text-sky-300"
                     >
-                      <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-                      <path
-                        fillRule="evenodd"
-                        d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  ) : (
-                    // eye-off
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="h-4 w-4"
-                    >
-                      <path d="M3.53 2.47a.75.75 0 00-1.06 1.06l18 18a.75.75 0 101.06-1.06l-18-18zM22.676 12.553a11.249 11.249 0 01-2.631 4.31l-3.099-3.099a5.25 5.25 0 00-6.71-6.71L7.759 4.577a11.217 11.217 0 014.242-.827c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113z" />
-                      <path d="M15.75 12c0 .18-.013.357-.037.53l-4.244-4.243A3.75 3.75 0 0115.75 12zM12.53 15.713l-4.243-4.244a3.75 3.75 0 004.243 4.243z" />
-                      <path d="M6.75 12c0-.619.107-1.213.304-1.764l-3.1-3.1a11.25 11.25 0 00-2.63 4.31c-.12.362-.12.752 0 1.114 1.489 4.467 5.702 7.69 10.677 7.69.612 0 1.209-.046 1.793-.135l-3.563-3.563A5.25 5.25 0 016.75 12z" />
-                    </svg>
-                  )}
-                </button>
+                      Forgot password?
+                    </button>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
 
             {displayMessage && (
               <div className={`rounded-lg px-3 py-2 text-sm border ${displayMessage.includes('Account created')
@@ -312,12 +347,16 @@ function LoginContent() {
               className="w-full rounded-lg bg-sky-500 px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm shadow-sky-500/40 hover:bg-sky-400 disabled:opacity-60"
             >
               {loading
-                ? isSignUp
-                  ? 'Creating account…'
-                  : 'Signing in…'
-                : isSignUp
-                  ? 'Sign up'
-                  : 'Login'}
+                ? isForgotPassword 
+                  ? 'Sending...'
+                  : isSignUp
+                    ? 'Creating account…'
+                    : 'Signing in…'
+                : isForgotPassword
+                  ? 'Send Reset Link'
+                  : isSignUp
+                    ? 'Sign up'
+                    : 'Login'}
             </button>
           </form>
 
@@ -342,7 +381,18 @@ function LoginContent() {
           </button>
 
           <p className="mt-5 text-center text-sm text-slate-400">
-            {isSignUp ? (
+            {isForgotPassword ? (
+              <>
+                Remembered your password?{' '}
+                <button
+                  type="button"
+                  onClick={() => setIsForgotPassword(false)}
+                  className="font-medium text-sky-400 hover:underline"
+                >
+                  Log in
+                </button>
+              </>
+            ) : isSignUp ? (
               <>
                 Already have an account?{' '}
                 <button
