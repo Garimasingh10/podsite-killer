@@ -12,11 +12,11 @@ export async function POST(req: Request) {
 
     const html = getLoginSuccessEmailHtml();
 
-    await sendResend({
-      to: [email],
-      subject: 'Successful login to PodSite Killer',
-      html,
-    });
+    await sendResend(
+      email.trim(),
+      'Successful login to PodSite Killer',
+      html
+    );
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
