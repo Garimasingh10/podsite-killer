@@ -6,7 +6,7 @@ import { NewPodcastForm } from '../_components/NewPodcastForm';
 import { SearchForm } from '../_components/SearchForm';
 import { Headphones, Layout, ExternalLink, Settings, Clock } from 'lucide-react';
 import ThemeEngine, { ThemeConfig } from '@/components/ThemeEngine';
-import { ActivePodcastSync } from '../_components/ActivePodcastSync';
+import DashboardClient from '../_components/DashboardClient';
 
 type PageProps = {
   searchParams: Promise<{ q?: string; active?: string; favorites?: string }>;
