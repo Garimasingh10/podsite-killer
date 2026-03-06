@@ -97,7 +97,7 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
                                     STAY<br />FRESH
                                 </h2>
                                 <p className="text-2xl font-bold uppercase italic tracking-tight">
-                                    © {new Date().getFullYear()} {podcast.title}. All rights reserved lol.
+                                    © {new Date().getFullYear()} {podcast.title}. All rights reserved.
                                 </p>
                             </div>
                             <div className="flex gap-4">

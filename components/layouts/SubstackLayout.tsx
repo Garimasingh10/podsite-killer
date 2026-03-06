@@ -108,7 +108,7 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
                             <span className="text-xl">📻</span>
                         </div>
                         <p className="text-xs font-bold uppercase tracking-[0.3em] text-zinc-400">
-                            © {new Date().getFullYear()} {podcast.title}. Powered by PodSite.
+                            © {new Date().getFullYear()} {podcast.title}.
                         </p>
                     </div>
                 </footer>

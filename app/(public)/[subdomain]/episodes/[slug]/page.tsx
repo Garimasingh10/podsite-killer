@@ -103,7 +103,11 @@ export default async function EpisodePage({ params }: PageProps) {
   }
 
   const themeConfig = (podcast.theme_config as unknown as ThemeConfig) || {};
-  const podcastWithImage = { ...podcast, image: themeConfig.imageUrl };
+  const podcastWithImage = { 
+    ...podcast, 
+    image: themeConfig.imageUrl,
+    title: podcast.title as string // Ensure title is explicitly passed
+  };
   const layout = themeConfig.layout || 'netflix';
 
   const LayoutComponent =
@@ -147,7 +151,7 @@ export default async function EpisodePage({ params }: PageProps) {
               className="group mb-8 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-primary hover:opacity-80 transition-all font-sans"
             >
               <span className="transition-transform group-hover:-translate-x-1">←</span>
-              Back to {podcast.title}
+              Back to {podcastWithImage.title}
             </Link>
             <h1 className="mt-6 text-5xl font-black italic tracking-tighter md:text-8xl leading-[0.85] uppercase">
               {episode.title}
@@ -189,7 +193,7 @@ export default async function EpisodePage({ params }: PageProps) {
               className="group inline-flex items-center gap-4 text-2xl font-black italic uppercase tracking-tighter text-current transition-all hover:text-primary no-underline"
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-current transition-transform group-hover:-translate-x-3 no-underline">←</span>
-              <span>Keep Exploring {podcast.title}</span>
+              <span>Keep Exploring {podcastWithImage.title}</span>
             </Link>
           </div>
         </div>
