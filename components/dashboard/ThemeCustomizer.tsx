@@ -87,14 +87,16 @@ export default function ThemeCustomizer({
                         <button
                             key={l.id}
                             onClick={() => updateConfig({ layout: l.id as ThemeConfig['layout'] })}
-                            className={`flex flex-col items-start rounded-xl border-2 p-4 text-left transition-all ${config.layout === l.id
-                                ? 'border-primary bg-primary/5'
-                                : 'border-slate-800 bg-slate-950 hover:border-slate-700'
-                                }`}
+                            style={{ 
+                                borderRadius: config.cornerRadius || '8px',
+                                borderColor: config.layout === l.id ? config.primaryColor : config.primaryColor + '40',
+                                backgroundColor: config.layout === l.id ? config.primaryColor + '1A' : config.primaryColor + '0A'
+                            }}
+                            className={`flex flex-col items-start border-2 p-4 text-left transition-all hover:opacity-80`}
                         >
-                            <Layout size={18} className={`mb-2 ${config.layout === l.id ? 'text-primary' : 'text-slate-500'}`} />
-                            <span className={`text-sm font-bold ${config.layout === l.id ? 'text-white' : 'text-slate-400'}`}>{l.name}</span>
-                            <span className="text-[10px] text-slate-600 uppercase tracking-tighter">{l.desc}</span>
+                            <Layout size={18} className={`mb-2`} style={{ color: config.layout === l.id ? config.primaryColor : config.primaryColor + '80' }} />
+                            <span className={`text-sm font-bold transition-colors`} style={{ color: config.layout === l.id ? '#ffffff' : config.primaryColor + 'CC' }}>{l.name}</span>
+                            <span className="text-[10px] uppercase tracking-tighter" style={{ color: config.primaryColor + '66' }}>{l.desc}</span>
                         </button>
                     ))}
                 </div>
@@ -113,7 +115,12 @@ export default function ThemeCustomizer({
                                 <button
                                     key={p.name}
                                     onClick={() => updateConfig({ primaryColor: p.primary, accentColor: p.accent })}
-                                    className="group flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/50 px-3 py-1.5 text-[10px] font-bold text-slate-400 transition-all hover:border-slate-600 hover:text-white"
+                                    style={{
+                                        borderColor: config.primaryColor + '40',
+                                        backgroundColor: config.primaryColor + '0A',
+                                        color: config.primaryColor + 'CC'
+                                    }}
+                                    className="group flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-bold transition-all hover:opacity-80 hover:text-white"
                                 >
                                     <div
                                         className="h-2 w-2 rounded-full"
@@ -130,14 +137,15 @@ export default function ThemeCustomizer({
                             Custom Colors
                         </h4>
                         <div className="space-y-3">
-                            <div style={{ borderRadius: config.cornerRadius || '8px' }} className="flex items-center justify-between border-2 border-slate-800/80 bg-slate-900/50 p-2 pl-3 pr-2 transition-all hover:border-[var(--primary)] group">
-                                <span className="text-xs font-black uppercase tracking-widest text-slate-500 group-hover:text-white transition-colors">Primary</span>
-                                <div className="flex items-center gap-2">
+                            <div style={{ borderRadius: config.cornerRadius || '8px', borderColor: config.primaryColor + '40', backgroundColor: config.primaryColor + '0A' }} className="flex items-center justify-between border-2 p-2 pl-3 pr-2 transition-all hover:border-[var(--primary)] group">
+                                <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest transition-colors min-w-0 truncate pr-2 group-hover:opacity-100" style={{ color: config.primaryColor, opacity: 0.7 }}>Primary</span>
+                                <div className="flex items-center gap-1.5 shrink-0">
                                     <input
                                         type="text"
                                         value={config.primaryColor || '#0ea5e9'}
                                         onChange={(e) => updateConfig({ primaryColor: e.target.value })}
-                                        className="w-[56px] min-w-0 bg-transparent text-right font-mono text-[11px] text-slate-400 group-hover:text-white focus:outline-none transition-colors"
+                                        className="w-[52px] bg-transparent text-right font-mono text-[10px] sm:text-[11px] focus:outline-none transition-colors"
+                                        style={{ color: config.primaryColor, opacity: 0.6 }}
                                     />
                                     <div className="relative h-6 w-6 flex-shrink-0 overflow-hidden rounded-[4px] bg-slate-800 ring-1 ring-white/10 shadow-lg transition-all group-hover:ring-[var(--primary)]/50">
                                         <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: config.primaryColor || '#0ea5e9' }} />
@@ -150,14 +158,15 @@ export default function ThemeCustomizer({
                                     </div>
                                 </div>
                             </div>
-                             <div style={{ borderRadius: config.cornerRadius || '8px' }} className="flex items-center justify-between border-2 border-slate-800/80 bg-slate-900/50 p-2 pl-3 pr-2 transition-all hover:border-[var(--primary)] group">
-                                <span className="text-xs font-black uppercase tracking-widest text-slate-500 group-hover:text-white transition-colors">Background</span>
-                                <div className="flex items-center gap-2">
+                             <div style={{ borderRadius: config.cornerRadius || '8px', borderColor: config.primaryColor + '40', backgroundColor: config.primaryColor + '0A' }} className="flex items-center justify-between border-2 p-2 pl-3 pr-2 transition-all hover:border-[var(--primary)] group">
+                                <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest transition-colors min-w-0 truncate pr-2 group-hover:opacity-100" style={{ color: config.primaryColor, opacity: 0.7 }}>Background</span>
+                                <div className="flex items-center gap-1.5 shrink-0">
                                     <input
                                         type="text"
                                         value={config.backgroundColor || '#020617'}
                                         onChange={(e) => updateConfig({ backgroundColor: e.target.value })}
-                                        className="w-[56px] min-w-0 bg-transparent text-right font-mono text-[11px] text-slate-400 group-hover:text-white focus:outline-none transition-colors"
+                                        className="w-[52px] bg-transparent text-right font-mono text-[10px] sm:text-[11px] focus:outline-none transition-colors"
+                                        style={{ color: config.primaryColor, opacity: 0.6 }}
                                     />
                                     <div className="relative flex-shrink-0 h-6 w-6 overflow-hidden rounded-[4px] bg-slate-800 ring-1 ring-white/10 shadow-lg transition-all group-hover:ring-[var(--primary)]/50">
                                         <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: config.backgroundColor || '#020617' }} />
@@ -170,14 +179,15 @@ export default function ThemeCustomizer({
                                     </div>
                                 </div>
                             </div>
-                            <div style={{ borderRadius: config.cornerRadius || '8px' }} className="flex items-center justify-between border-2 border-slate-800/80 bg-slate-900/50 p-2 pl-3 pr-2 transition-all hover:border-[var(--primary)] group">
-                                <span className="text-xs font-black uppercase tracking-widest text-slate-500 group-hover:text-white transition-colors">Accent</span>
-                                <div className="flex items-center gap-2">
+                            <div style={{ borderRadius: config.cornerRadius || '8px', borderColor: config.primaryColor + '40', backgroundColor: config.primaryColor + '0A' }} className="flex items-center justify-between border-2 p-2 pl-3 pr-2 transition-all hover:border-[var(--primary)] group">
+                                <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest transition-colors min-w-0 truncate pr-2 group-hover:opacity-100" style={{ color: config.primaryColor, opacity: 0.7 }}>Accent</span>
+                                <div className="flex items-center gap-1.5 shrink-0">
                                     <input
                                         type="text"
                                         value={config.accentColor || '#f59e0b'}
                                         onChange={(e) => updateConfig({ accentColor: e.target.value })}
-                                        className="w-[56px] min-w-0 bg-transparent text-right font-mono text-[11px] text-slate-400 group-hover:text-white focus:outline-none transition-colors"
+                                        className="w-[52px] bg-transparent text-right font-mono text-[10px] sm:text-[11px] focus:outline-none transition-colors"
+                                        style={{ color: config.primaryColor, opacity: 0.6 }}
                                     />
                                     <div className="relative flex-shrink-0 h-6 w-6 overflow-hidden rounded-[4px] bg-slate-800 ring-1 ring-white/10 shadow-lg transition-all group-hover:ring-[var(--primary)]/50">
                                         <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: config.accentColor || '#f59e0b' }} />
@@ -208,34 +218,50 @@ export default function ThemeCustomizer({
                                         setLocalFontUrl('');
                                         updateConfig({ fontHeading: p.heading, fontBody: p.body, customFontUrl: '' });
                                     }}
-                                    className={`group flex items-center justify-between border p-3.5 transition-all ${config.fontHeading === p.heading && !config.customFontUrl
-                                        ? 'border-primary bg-primary/5'
-                                        : 'border-slate-800/80 bg-slate-900/50 hover:border-slate-700'
+                                    className={`group flex items-center justify-between border-2 p-3.5 transition-all ${config.fontHeading === p.heading && !config.customFontUrl
+                                        ? 'border-[var(--primary)] bg-[var(--primary)]/5'
+                                        : 'hover:border-[var(--primary)]/50'
                                         }`}
-                                    style={{ borderRadius: config.cornerRadius || '8px' }}
+                                    style={{ 
+                                        borderRadius: config.cornerRadius || '8px',
+                                        borderColor: (config.fontHeading === p.heading && !config.customFontUrl) ? config.primaryColor : config.primaryColor + '40',
+                                        backgroundColor: (config.fontHeading === p.heading && !config.customFontUrl) ? config.primaryColor + '1A' : config.primaryColor + '0A'
+                                    }}
                                 >
                                     <div className="flex flex-col items-start min-w-0">
-                                        <span className={`text-sm font-bold truncate ${config.fontHeading === p.heading && !config.customFontUrl ? 'text-primary' : 'text-slate-300'}`}>
+                                        <span className={`text-sm font-bold truncate transition-colors`} style={{ color: (config.fontHeading === p.heading && !config.customFontUrl) ? config.primaryColor : config.primaryColor + 'CC' }}>
                                             {p.name}
                                         </span>
-                                        <span className="text-[10px] text-slate-600 font-bold">Standard</span>
+                                        <span className="text-[10px] font-bold" style={{ color: config.primaryColor, opacity: 0.6 }}>Standard</span>
                                     </div>
-                                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-all ${config.fontHeading === p.heading && !config.customFontUrl ? 'border-primary/50 text-primary' : 'border-slate-800 text-slate-600'}`}>
+                                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg border-2 transition-all`} style={{ 
+                                        borderColor: (config.fontHeading === p.heading && !config.customFontUrl) ? config.primaryColor : config.primaryColor + '40',
+                                        color: (config.fontHeading === p.heading && !config.customFontUrl) ? config.primaryColor : config.primaryColor + '80'
+                                    }}>
                                         <span className="text-sm font-serif">Aa</span>
                                     </div>
                                 </button>
                             ))}
 
-                            <div style={{ borderRadius: config.cornerRadius || '8px' }} className={`space-y-3 border-2 p-4 transition-all flex flex-col ${config.customFontUrl ? 'border-[var(--primary)] bg-primary/5' : 'border-slate-800/80 bg-slate-900/50'}`}>
-                                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500">Custom Font URL</label>
+                            <div style={{ 
+                                borderRadius: config.cornerRadius || '8px',
+                                borderColor: config.customFontUrl ? config.primaryColor : config.primaryColor + '40',
+                                backgroundColor: config.customFontUrl ? config.primaryColor + '1A' : config.primaryColor + '0A'
+                            }} className={`space-y-3 border-2 p-4 transition-all flex flex-col`}>
+                                <label className="block text-[10px] font-black uppercase tracking-widest" style={{ color: config.primaryColor, opacity: 0.7 }}>Custom Font URL</label>
                                 <div className="flex flex-col gap-2">
                                     <input
                                         type="text"
                                         placeholder="https://fonts.googleapis.com/..."
                                         value={localFontUrl}
                                         onChange={(e) => setLocalFontUrl(e.target.value)}
-                                        style={{ borderRadius: config.cornerRadius === '16px' ? '8px' : config.cornerRadius }}
-                                        className="w-full bg-slate-950/50 px-3 py-2 text-xs text-white focus:outline-none placeholder:text-slate-700 font-mono border border-white/5 focus:border-[var(--primary)]/50"
+                                        style={{ 
+                                            borderRadius: config.cornerRadius === '16px' ? '8px' : config.cornerRadius,
+                                            backgroundColor: config.primaryColor + '0A',
+                                            borderColor: config.primaryColor + '20',
+                                            color: config.primaryColor
+                                        }}
+                                        className="w-full px-3 py-2 text-[10px] focus:outline-none font-mono border-2 focus:border-[var(--primary)]/50 transition-colors"
                                     />
                                     <button
                                         onClick={() => {
@@ -246,13 +272,17 @@ export default function ThemeCustomizer({
                                             }
                                             updateConfig({ customFontUrl: finalUrl });
                                         }}
-                                        style={{ borderRadius: config.cornerRadius === '16px' ? '8px' : config.cornerRadius }}
-                                        className="w-full bg-white px-4 py-2 text-[10px] font-black uppercase tracking-widest text-black transition-all hover:bg-slate-200 active:scale-95"
+                                        style={{ 
+                                            borderRadius: config.cornerRadius === '16px' ? '8px' : config.cornerRadius,
+                                            backgroundColor: config.primaryColor,
+                                            color: '#000000'
+                                        }}
+                                        className="w-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all hover:opacity-80 active:scale-95"
                                     >
                                         Apply
                                     </button>
                                 </div>
-                                <p className="text-[9px] text-slate-600 italic px-1 m-0">Paste a Google Fonts URL or Font Name.</p>
+                                <p className="text-[9px] italic px-1 m-0" style={{ color: config.primaryColor, opacity: 0.6 }}>Paste a Google Fonts URL or Font Name.</p>
                             </div>
                         </div>
                     </div>
@@ -266,10 +296,15 @@ export default function ThemeCustomizer({
                                 <button
                                     key={r}
                                     onClick={() => updateConfig({ cornerRadius: r })}
-                                    style={{ borderRadius: r }}
+                                    style={{ 
+                                        borderRadius: r,
+                                        borderColor: config.cornerRadius === r ? config.primaryColor : config.primaryColor + '40',
+                                        backgroundColor: config.cornerRadius === r ? config.primaryColor : config.primaryColor + '0A',
+                                        color: config.cornerRadius === r ? '#000000' : config.primaryColor + 'B3'
+                                    }}
                                     className={`border-2 py-2 px-1 text-[10px] font-black tracking-tighter transition-all ${config.cornerRadius === r
-                                        ? 'border-[var(--primary)] bg-[var(--primary)] text-black shadow-[0_0_15px_-3px_var(--primary)] scale-105'
-                                        : 'border-slate-700/50 bg-slate-900/50 text-slate-500 hover:border-slate-600 hover:text-slate-300'
+                                        ? 'shadow-[0_0_15px_-3px_var(--primary)] scale-105'
+                                        : 'hover:opacity-80 hover:text-white'
                                         }`}
                                 >
                                     {r === '0px' ? 'SHARP' : r === '8px' ? 'SOFT' : 'ROUND'}
