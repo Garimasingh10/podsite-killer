@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import ProductsClient from './_components/ProductsClient';
 import Link from 'next/link';
 import { ChevronLeft, AlertCircle } from 'lucide-react';
+import ThemeEngine from '@/components/ThemeEngine';
 
 export default async function ProductsPage() {
     const supabase = await createSupabaseServerClient();
@@ -12,7 +13,7 @@ export default async function ProductsPage() {
 
     const { data: podcasts } = await supabase
         .from('podcasts')
-        .select('id, title, stripe_account_id')
+        .select('id, title, stripe_account_id, theme_config')
         .eq('owner_id', user.id);
 
     const activePodcast = podcasts?.[0];
@@ -39,34 +40,47 @@ export default async function ProductsPage() {
         products = fetchedProducts;
     }
 
+    const primaryColor = activePodcast.theme_config?.primaryColor || '#6366f1';
+    const accentColor = activePodcast.theme_config?.accentColor || '#8b5cf6';
+
     return (
-        <div className="max-w-4xl mx-auto py-12 px-4 space-y-12 animate-in fade-in">
-            <header className="flex items-center justify-between border-b border-white/5 pb-8">
-                <div>
-                    <h1 className="text-4xl font-black text-white tracking-tight">Digital Products</h1>
-                    <p className="text-slate-400 mt-2">Sell premium audio, PDFs, and bonuses directly on your site.</p>
-                </div>
-                <Link
-                    href={`/dashboard`}
-                    className="flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900 px-6 py-2 text-sm font-bold text-slate-200 transition-all hover:border-primary hover:text-primary"
-                >
-                    <ChevronLeft size={18} />
-                    Dashboard
-                </Link>
-            </header>
+        <div className="product-theme-scope">
+            <ThemeEngine config={activePodcast.theme_config || {}} scope=".product-theme-scope" />
+            <div 
+                className="max-w-4xl mx-auto py-12 px-4 space-y-12 animate-in fade-in"
+                style={{
+                    '--podcast-primary': primaryColor,
+                    '--podcast-accent': accentColor,
+                    '--primary': primaryColor, // Fallback for some components
+                } as React.CSSProperties}
+            >
+                <header className="flex items-center justify-between border-b border-white/5 pb-8">
+                    <div>
+                        <h1 className="text-4xl font-black text-white tracking-tight">Digital Products</h1>
+                        <p className="text-slate-400 mt-2">Sell premium audio, PDFs, and bonuses directly on your site.</p>
+                    </div>
+                    <Link
+                        href={`/dashboard`}
+                        className="flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900 px-6 py-2 text-sm font-bold text-slate-200 transition-all hover:border-[var(--podcast-primary)] hover:text-[var(--podcast-primary)]"
+                    >
+                        <ChevronLeft size={18} />
+                        Dashboard
+                    </Link>
+                </header>
 
-            {!process.env.STRIPE_SECRET_KEY && (
-                <div className="bg-amber-500/10 border border-amber-500/20 text-amber-500 p-4 rounded-xl text-sm font-semibold flex items-center gap-3">
-                    <AlertCircle size={18} />
-                    Developer Notice: Stripe Keys are not configured in environment variables.
-                </div>
-            )}
+                {!process.env.STRIPE_SECRET_KEY && (
+                    <div className="bg-amber-500/10 border border-amber-500/20 text-amber-500 p-4 rounded-xl text-sm font-semibold flex items-center gap-3">
+                        <AlertCircle size={18} />
+                        Developer Notice: Stripe Keys are not configured in environment variables.
+                    </div>
+                )}
 
-            <ProductsClient
-                podcastId={activePodcast.id}
-                stripeAccountId={stripeAccountId}
-                products={products}
-            />
+                <ProductsClient
+                    podcastId={activePodcast.id}
+                    stripeAccountId={stripeAccountId}
+                    products={products}
+                />
+            </div>
         </div>
     );
 }

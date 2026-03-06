@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Globe, AlertCircle, CheckCircle2, Copy } from 'lucide-react';
+import { Globe, AlertCircle, Copy, Check, Loader2, ArrowRight, ExternalLink, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function DomainsClient({ podcastId, initialDomain }: { podcastId: string, initialDomain: string | null }) {
@@ -71,51 +71,62 @@ export default function DomainsClient({ podcastId, initialDomain }: { podcastId:
     };
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
-            <div className="bg-slate-900/50 border border-slate-800 rounded-[2rem] p-8">
+        <div className="grid gap-8">
+            {/* 1. Add Domain Section */}
+            <section className="bg-slate-900/50 border border-white/5 rounded-[2rem] p-8 md:p-12 backdrop-blur-xl">
                 <form onSubmit={handleAddDomain} className="space-y-6">
-                    <div className="space-y-2">
-                        <label className="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2">
-                            <Globe size={16} className="text-primary" />
-                            Domain Name
-                        </label>
-                        <p className="text-xs text-slate-400">Enter the domain you want to connect (e.g. podcasts.com or mypodcast.com)</p>
+                    <div className="flex items-center gap-3 mb-8">
+                        <div className="h-10 w-10 rounded-2xl bg-[var(--podcast-primary)]/10 flex items-center justify-center text-[var(--podcast-primary)]">
+                            <Globe size={20} />
+                        </div>
+                        <h2 className="text-xl font-bold text-white tracking-tight uppercase">1. Link your domain</h2>
                     </div>
 
-                    <div className="flex gap-4">
-                        <input
-                            type="text"
-                            placeholder="namanspodcast.com"
-                            value={domain}
-                            onChange={(e) => setDomain(e.target.value.toLowerCase().replace('https://', '').replace('http://', ''))}
-                            className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-                            disabled={isSubmitting}
-                        />
+                    <div className="space-y-6">
+                        <div className="relative group">
+                            <input
+                                type="text"
+                                value={domain}
+                                onChange={(e) => setDomain(e.target.value.toLowerCase().trim())}
+                                placeholder="podcastsite.com"
+                                className="w-full bg-slate-950 border border-white/10 rounded-2xl px-6 py-5 text-lg text-white font-mono focus:outline-none focus:border-[var(--podcast-primary)]/50 transition-all placeholder:text-slate-700"
+                                disabled={isSubmitting}
+                            />
+                            {savedDomain && !error && (
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-500 animate-in zoom-in">
+                                    <Check size={24} />
+                                </div>
+                            )}
+                        </div>
+
+                        {error && (
+                            <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-bold">
+                                <AlertCircle size={18} />
+                                {error}
+                            </div>
+                        )}
+
                         <button
                             type="submit"
                             disabled={isSubmitting || domain === savedDomain || !domain}
-                            className="bg-primary text-black px-8 py-3 rounded-xl font-bold text-sm tracking-widest uppercase hover:bg-primary/90 disabled:opacity-50 transition-colors whitespace-nowrap"
+                            className="w-full md:w-auto px-12 py-5 rounded-2xl bg-white text-black font-black uppercase tracking-[0.2em] italic hover:bg-[var(--podcast-primary)] transition-all disabled:opacity-50 flex items-center justify-center gap-3 shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:-translate-y-1 active:scale-95"
                         >
-                            {isSubmitting ? 'Adding...' : savedDomain ? (domain !== savedDomain ? 'Update' : 'Saved') : 'Add Domain'}
+                            {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <Globe size={20} />}
+                            {savedDomain === domain ? 'Domain Linked!' : (savedDomain ? 'Update Domain' : 'Save Domain')}
                         </button>
                     </div>
                 </form>
+            </section>
 
-                {error && (
-                    <div className="mt-6 flex items-start gap-3 bg-red-950/50 border border-red-900/50 text-red-400 p-4 rounded-xl text-sm">
-                        <AlertCircle size={18} className="shrink-0 mt-0.5" />
-                        <p>{error}</p>
-                    </div>
-                )}
-            </div>
-
-            {/* DNS Instructions appear once a domain is saved */}
+            {/* 2. DNS Instructions (Visible once domain is saved) */}
             {savedDomain && !error && (
-                <div className="bg-primary/10 border-2 border-primary/20 rounded-[2rem] p-8 space-y-6 animate-in slide-in-from-bottom-4">
-                    <div className="flex items-center justify-between gap-3 text-primary">
+                <section className="bg-slate-900/50 border border-white/5 rounded-[2rem] p-8 md:p-12 backdrop-blur-xl animate-in slide-in-from-bottom-8 duration-500">
+                    <div className="flex items-center justify-between gap-3 mb-8">
                         <div className="flex items-center gap-3">
-                            <CheckCircle2 size={24} />
-                            <h2 className="text-xl font-black">Domain Added to Project</h2>
+                            <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                                <ShieldCheck size={20} />
+                            </div>
+                            <h2 className="text-xl font-bold text-white tracking-tight uppercase">2. Configure DNS</h2>
                         </div>
                         <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-950 border border-slate-800">
                             <div className={`h-2 w-2 rounded-full ${isVerified ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-amber-500 animate-pulse'}`} />
@@ -125,68 +136,59 @@ export default function DomainsClient({ podcastId, initialDomain }: { podcastId:
                         </div>
                     </div>
 
-                    <p className="text-slate-300 leading-relaxed text-sm">
-                        To complete the configuration, add the following <strong className="text-white">A Record</strong> to your DNS settings in your domain registrar (GoDaddy, Namecheap, Route53, etc).
+                    <p className="text-sm text-slate-400 mb-8 font-medium leading-relaxed">
+                        Update your DNS settings at your domain registrar (GoDaddy, Namecheap, etc.) to point to our servers:
                     </p>
 
-                    <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden">
-                        <table className="w-full text-sm text-left">
-                            <thead className="bg-slate-900/80 text-slate-400 uppercase text-[10px] font-black tracking-widest">
-                                <tr>
-                                    <th className="px-6 py-4">Type</th>
-                                    <th className="px-6 py-4">Name</th>
-                                    <th className="px-6 py-4">Value</th>
-                                </tr>
-                            </thead>
-                            <tbody className="text-slate-200 font-mono">
-                                <tr>
-                                    <td className="px-6 py-4 border-t border-slate-800">A</td>
-                                    <td className="px-6 py-4 border-t border-slate-800">@</td>
-                                    <td className="px-6 py-4 border-t border-slate-800 flex justify-between items-center group">
-                                        76.76.21.21
-                                        <button
-                                            onClick={() => copyToClipboard('76.76.21.21')}
-                                            className="text-slate-500 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                                            title="Copy IP"
-                                        >
-                                            <Copy size={16} />
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div className="space-y-4">
+                        <div className="group rounded-2xl border border-white/5 bg-slate-950 p-6 hover:border-white/10 transition-all relative">
+                            <div className="flex items-center justify-between mb-4">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">A Record</span>
+                                <button onClick={() => copyToClipboard('76.76.21.21')} className="text-[var(--podcast-primary)] hover:text-white transition-colors"><Copy size={14} /></button>
+                            </div>
+                            <div className="grid grid-cols-3 gap-4 text-sm font-mono">
+                                <div className="col-span-1 text-slate-500">Hostname</div>
+                                <div className="col-span-2 text-white">@</div>
+                                <div className="col-span-1 text-slate-500">Value</div>
+                                <div className="col-span-2 text-[var(--podcast-primary)] font-black uppercase">76.76.21.21</div>
+                            </div>
+                            {copied && <span className="absolute top-4 right-12 text-[10px] bg-emerald-500 text-black px-2 py-1 rounded font-bold animate-in fade-in">COPIED!</span>}
+                        </div>
+
+                        <div className="group rounded-2xl border border-white/5 bg-slate-950 p-6 hover:border-white/10 transition-all">
+                            <div className="flex items-center justify-between mb-4">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">CNAME Record</span>
+                                <button onClick={() => copyToClipboard('cname.vercel-dns.com')} className="text-[var(--podcast-primary)] hover:text-white transition-colors"><Copy size={14} /></button>
+                            </div>
+                            <div className="grid grid-cols-3 gap-4 text-sm font-mono">
+                                <div className="col-span-1 text-slate-500">Hostname</div>
+                                <div className="col-span-2 text-white">www</div>
+                                <div className="col-span-1 text-slate-500">Value</div>
+                                <div className="col-span-2 text-[var(--podcast-primary)] font-black uppercase">cname.vercel-dns.com</div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="flex items-start gap-3 bg-slate-900/50 rounded-xl p-4 border border-slate-800/50">
-                        <AlertCircle size={16} className="text-slate-500 mt-0.5 shrink-0" />
-                        <p className="text-xs text-slate-400 leading-relaxed">
-                            DNS changes can take up to 24-48 hours to propagate, but usually happen within 15 minutes. Once propagated, your podcast site will be live and automatically receive a free SSL certificate.
-                        </p>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                    <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center gap-6">
                         <button
                             onClick={checkVerification}
                             disabled={isSubmitting || isVerified}
-                            className={`flex-1 py-3 rounded-xl font-bold text-xs uppercase tracking-[0.15em] transition-all ${isVerified ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 cursor-default' : 'bg-white text-black hover:bg-primary shadow-lg shadow-white/5 whitespace-nowrap'}`}
+                            className={`w-full md:w-auto px-10 py-4 rounded-xl border-2 border-[var(--podcast-primary)] text-[var(--podcast-primary)] font-black uppercase tracking-widest text-xs hover:bg-[var(--podcast-primary)] hover:text-black transition-all flex items-center justify-center gap-2`}
                         >
-                            {isSubmitting ? 'Checking...' : isVerified ? 'Verified' : 'Check DNS Status'}
+                            {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : <ExternalLink size={16} />}
+                            {isVerified ? 'Configuration Verified' : 'Verify DNS Status'}
                         </button>
+
                         <a
                             href={`https://${savedDomain}`}
                             target="_blank"
-                            className="flex-1 py-3 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500 hover:text-white font-bold text-xs uppercase tracking-[0.15em] transition-all text-center"
+                            className="w-full md:w-auto px-10 py-4 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500 hover:text-white font-bold text-xs uppercase tracking-[0.15em] transition-all text-center flex items-center justify-center gap-2"
                         >
+                            <ExternalLink size={16} />
                             Visit Site
                         </a>
                     </div>
-
-                    {copied && (
-                        <div className="absolute top-8 right-8 bg-emerald-500 text-black px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg shadow-xl animate-in fade-in slide-in-from-top-4">
-                            Copied to clipboard
-                        </div>
-                    )}
-                </div>
+                </section>
             )}
         </div>
     );

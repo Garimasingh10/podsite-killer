@@ -30,20 +30,20 @@ export function SearchForm({
   };
 
   return (
-    <form onSubmit={onSubmit} className={`flex gap-3 ${className}`}>
+    <form onSubmit={onSubmit} className={`flex items-center bg-white/5 rounded-2xl border border-white/10 px-4 py-2 focus-within:border-sky-500/50 transition-all ${className}`}>
       <input
         type="text"
         name="q"
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder={placeholder}
-        className="flex-1 rounded-2xl border-2 border-white/10 bg-black/40 px-5 py-4 text-sm text-white shadow-inner backdrop-blur-md placeholder:text-zinc-600 focus:border-[var(--podcast-primary)]/50 focus:outline-none focus:ring-4 focus:ring-[var(--podcast-primary)]/10 transition-all font-bold"
+        className="flex-1 bg-transparent text-sm text-white focus:outline-none placeholder:text-slate-500 font-bold"
       />
       <button
         type="submit"
-        className="rounded-2xl bg-[var(--podcast-primary)] px-8 py-4 text-xs font-black uppercase tracking-[0.2em] text-black shadow-2xl hover:scale-[1.05] transition-all active:scale-[0.98]"
+        className="ml-2 text-slate-400 hover:text-white transition-colors"
       >
-        Search
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
       </button>
     </form>
   );

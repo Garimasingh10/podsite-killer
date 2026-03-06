@@ -24,8 +24,13 @@ function baseWrap(html: string) {
         <tr><td style="padding:48px 40px;">
           ${html}
         </td></tr>
-        <tr><td style="padding:32px 40px;background:#020617;border-top:1px solid #1e293b;text-align:center;">
-          <p style="color:#64748b;font-size:12px;margin:0;font-family:'Space Grotesk',sans-serif;letter-spacing:0.05em;">&copy; ${new Date().getFullYear()} PODSITE-KILLER. ALL RIGHTS RESERVED.</p>
+        <tr><td style="padding:40px;background:#020617;border-top:1px solid #1e293b;text-align:center;">
+          <div style="margin-bottom:24px;">
+            <a href="#" style="display:inline-block;width:36px;height:36px;background:#0f172a;border:1px solid #1e293b;border-radius:8px;line-height:36px;text-align:center;color:#f8fafc;text-decoration:none;margin:0 8px;font-weight:900;font-style:italic;font-size:16px;">𝕏</a>
+            <a href="#" style="display:inline-block;width:36px;height:36px;background:#0f172a;border:1px solid #1e293b;border-radius:8px;line-height:36px;text-align:center;color:#f8fafc;text-decoration:none;margin:0 8px;font-weight:900;font-style:italic;font-size:14px;">in</a>
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://podsite-killer.vercel.app'}/dashboard" style="display:inline-block;background:#f8fafc;color:#020617;padding:8px 20px;border-radius:8px;font-size:12px;font-weight:900;text-decoration:none;margin-left:16px;text-transform:uppercase;letter-spacing:0.1em;box-shadow:4px 4px 0px #38bdf8;">SUBSCRIBE NOW</a>
+          </div>
+          <p style="color:#64748b;font-size:11px;margin:0;font-family:'Space Grotesk',sans-serif;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;">&copy; ${new Date().getFullYear()} PODSITE-KILLER. ALL RIGHTS RESERVED.</p>
         </td></tr>
       </table>
     </td></tr>

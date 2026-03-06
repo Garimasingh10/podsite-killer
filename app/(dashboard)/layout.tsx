@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import Link from 'next/link';
 import { SignOutButton } from './_components/SignOutButton';
+import { SearchForm } from './_components/SearchForm';
+import { Layout, Heart, Headphones, Globe, Zap } from 'lucide-react';
 
 export default async function DashboardLayout({
   children,
@@ -60,48 +62,65 @@ export default async function DashboardLayout({
       <div className="fixed inset-0 z-0 grid-pattern opacity-[0.05]" />
 
       {/* Top glass header */}
-      <header className="sticky top-0 z-20 border-b border-white/5 bg-slate-950/40 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500/70 to-cyan-400/70 text-xs font-bold text-slate-950 shadow-lg shadow-sky-500/30">
-              PK
-            </div>
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                PodSite‑Killer
-              </p>
-              <p className="text-xs text-slate-300">
-                Hello <span className="font-medium text-slate-100">{displayName}</span>
-              </p>
-              <p className="text-[10px] text-slate-500 font-mono">{user.email}</p>
-            </div>
+      <header className="sticky top-0 z-20 border-b border-white/5 bg-slate-950/60 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-6">
+            <Link href="/dashboard" className="group flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-400 to-indigo-500 text-sm font-black text-white shadow-[0_0_20px_rgba(56,189,248,0.3)] transition-all group-hover:scale-110 group-hover:shadow-[0_0_30px_rgba(56,189,248,0.5)]">
+                PK
+              </div>
+              <div className="hidden sm:block">
+                <p className="text-xs font-black uppercase tracking-[0.3em] text-white">
+                  PodSite Studio
+                </p>
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <p className="text-[10px] font-bold text-slate-400">
+                    <span className="text-slate-100">{displayName}</span>
+                  </p>
+                </div>
+              </div>
+            </Link>
           </div>
 
-          <nav className="flex items-center gap-3 text-[11px] text-slate-400">
+          <div className="flex flex-1 items-center justify-center px-8">
+            <SearchForm 
+              initialQuery="" 
+              placeholder="Search your empire..." 
+              className="w-full max-w-md scale-90 opacity-80 transition-all focus-within:opacity-100 focus-within:scale-100" 
+            />
+          </div>
+
+          <nav className="flex items-center gap-4 text-[11px] font-black uppercase tracking-widest text-slate-400">
             <Link
               href="/dashboard"
-              className="rounded-full border border-transparent px-3 py-1 hover:border-sky-500 hover:bg-slate-900/60 hover:text-sky-400"
+              className="group flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 py-2 transition-all hover:border-sky-500/50 hover:bg-sky-500/10 hover:text-sky-400"
             >
-              Dashboard
+              <Layout size={14} />
+              <span className="hidden lg:inline">Dashboard</span>
+            </Link>
+            <Link
+              href="/dashboard?favorites=true"
+              className="group flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 py-2 transition-all hover:border-pink-500/50 hover:bg-pink-500/10 hover:text-pink-400"
+            >
+              <Heart size={14} className="fill-current" />
+              <span className="hidden lg:inline">Favorites</span>
             </Link>
             <Link
               href="/dashboard/products"
-              className="rounded-full border border-transparent px-3 py-1 hover:border-sky-500 hover:bg-slate-900/60 hover:text-sky-400"
+              className="group flex items-center gap-2 rounded-xl border border-white/5 px-4 py-2 transition-all hover:text-slate-100"
             >
-              Products
+              <Zap size={14} />
+              <span className="hidden lg:inline">Products</span>
             </Link>
             <Link
               href="/dashboard/domains"
-              className="rounded-full border border-transparent px-3 py-1 hover:border-sky-500 hover:bg-slate-900/60 hover:text-sky-400"
+              className="group flex items-center gap-2 rounded-xl border border-white/5 px-4 py-2 transition-all hover:text-slate-100"
             >
-              Domains
+              <Globe size={14} />
+              <span className="hidden lg:inline">Domains</span>
             </Link>
-            <Link
-              href="/dashboard/video-sync"
-              className="rounded-full border border-transparent px-3 py-1 hover:border-sky-500 hover:bg-slate-900/60 hover:text-sky-400"
-            >
-              Sync
-            </Link>
+            <div className="h-4 w-px bg-white/10 mx-2" />
             <SignOutButton />
           </nav>
         </div>
