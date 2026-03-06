@@ -215,7 +215,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
 
   let episodesQuery = supabase
     .from('episodes')
-    .select('id, title, slug, published_at, image_url, youtube_video_id, video_sync_status')
+    .select('id, title, slug, published_at, image_url, youtube_video_id')
     .eq('podcast_id', podcast.id)
     .order('published_at', { ascending: false });
 
