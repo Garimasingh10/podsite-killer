@@ -47,20 +47,33 @@ export default function DashboardClient({
 
   // Load favorites from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('pk_favorites');
-    if (saved) {
-      try {
-        setFavorites(JSON.parse(saved));
-      } catch (e) {
-        console.error('Failed to load favorites', e);
+    const loadFavs = () => {
+      const saved = localStorage.getItem('pk_favorites');
+      if (saved) {
+        try {
+          setFavorites(JSON.parse(saved));
+        } catch (e) {
+          console.error('Failed to load favorites', e);
+        }
       }
-    }
-    const savedEps = localStorage.getItem('pk_episode_favorites');
-    if (savedEps) {
-      try {
-        setFavoriteEpisodes(JSON.parse(savedEps));
-      } catch (e) {}
-    }
+      const savedEps = localStorage.getItem('pk_episode_favorites');
+      if (savedEps) {
+        try {
+          setFavoriteEpisodes(JSON.parse(savedEps));
+        } catch (e) {}
+      }
+    };
+
+    loadFavs();
+
+    // Sync across tabs
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'pk_favorites' || e.key === 'pk_episode_favorites') {
+        loadFavs();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   // Save favorites to localStorage
@@ -306,22 +319,151 @@ export default function DashboardClient({
       )}
 
       {/* Library Section (Clean Grid) */}
-      {(displayedPodcasts.length > 0 || favoriteEpisodes.length > 0) && (
-        <section className="animate-fade-in-up [animation-delay:200ms] space-y-10 pt-8 pb-32">
-            <div className={`flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-200 dark:border-zinc-800 pb-10 ${showFavorites ? 'bg-gradient-to-r from-[var(--podcast-primary)]/10 to-transparent p-8 rounded-[2rem] border-none shadow-2xl' : ''}`}>
-              <div className="space-y-2">
-                <h3 className={`text-3xl font-bold tracking-tight ${showFavorites ? 'text-[var(--podcast-primary)] italic font-black' : 'text-zinc-900 dark:text-zinc-100'}`}>
-                  {showFavorites ? '✨ Favorite Podcasts' : (q ? `Results for "${q}"` : 'Your Studio Library')}
+      {/* Favorites View (Re-prioritized) */}
+      {showFavorites ? (
+        <div className="space-y-20">
+          {/* 1. Favorite Episodes (TOP PRIORITY) */}
+          {favoriteEpisodes.length > 0 && (
+            <section className="animate-fade-in-up [animation-delay:200ms]">
+              <div className="mb-10 p-8 rounded-[3rem] bg-gradient-to-r from-[var(--podcast-primary)]/10 via-[var(--podcast-primary)]/5 to-transparent border-l-8 border-[var(--podcast-primary)] shadow-2xl">
+                <h3 className="text-4xl font-black tracking-tighter text-[var(--podcast-primary)] italic uppercase flex items-center gap-4">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--podcast-primary)] text-black not-italic text-2xl animate-bounce">🎙️</span>
+                  Favorite Episodes
                 </h3>
-                <p className="text-sm font-medium text-zinc-500 uppercase tracking-widest opacity-80">
-                  {showFavorites ? 'Your Handpicked Selection' : 'Connected RSS Feeds'}
+                <p className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500 mt-3 opacity-70 ml-16">
+                  Your High-Priority Saved Content
                 </p>
               </div>
-              {!showFavorites && (
-                <div className="w-full max-w-xs">
-                  <SearchForm initialQuery={q} />
-                </div>
-              )}
+              
+              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+                {favoriteEpisodes.map(ep => (
+                  <Link 
+                    key={ep.id} 
+                    href={`/${ep.podcastId}/episodes/${ep.slug}`} 
+                    target="_blank" 
+                    className="group relative flex flex-col justify-between overflow-hidden rounded-[2.5rem] bg-zinc-950 border-4 border-white/5 p-6 transition-all hover:-translate-y-3 hover:border-[var(--podcast-primary)] hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)]"
+                  >
+                    <div className="aspect-video w-full mb-8 relative rounded-2xl overflow-hidden ring-2 ring-white/5 shadow-2xl">
+                        <img src={ep.image || 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618'} alt={ep.title} className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-1000 ease-out" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-20 transition-opacity" />
+                        <div className="absolute bottom-4 left-4 right-4">
+                           <span className="px-2 py-1 bg-[var(--podcast-primary)] text-black text-[8px] font-black uppercase tracking-widest rounded-sm">Episode</span>
+                        </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h4 className="text-xl font-black tracking-tighter text-white italic line-clamp-2 leading-[1.1] group-hover:text-[var(--podcast-primary)] transition-colors">
+                        {ep.title}
+                      </h4>
+                      <div className="flex items-center justify-between border-t border-white/10 pt-4">
+                        <div className="flex items-center gap-2">
+                           <div className="h-2 w-2 rounded-full bg-[var(--podcast-primary)] animate-pulse" />
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500">
+                             {new Date(ep.published_at).toLocaleDateString()}
+                           </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button 
+                      onClick={(e) => toggleEpisodeFavorite(ep.id, e)} 
+                      className="absolute top-8 right-8 p-3 rounded-full bg-[var(--podcast-primary)] text-black border-4 border-black transition-all z-20 shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none active:scale-90"
+                    >
+                      <Star size={16} fill="currentColor" />
+                    </button>
+                    
+                    {/* Background Glow */}
+                    <div className="absolute -bottom-20 -right-20 h-40 w-40 bg-[var(--podcast-primary)]/10 blur-[80px] pointer-events-none group-hover:bg-[var(--podcast-primary)]/20 transition-colors" />
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* 2. Favorite Podcasts */}
+          {displayedPodcasts.length > 0 && (
+            <section className="animate-fade-in-up [animation-delay:400ms]">
+              <div className="mb-10 p-8 rounded-[3rem] bg-zinc-900/40 border border-white/5 shadow-xl">
+                <h3 className="text-3xl font-black tracking-tighter text-white italic uppercase flex items-center gap-4">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-xl not-italic border border-white/10">✨</span>
+                  Favorite Podcasts
+                </h3>
+              </div>
+              
+              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                {displayedPodcasts.map((p) => {
+                  const pColor = p.theme_config?.primaryColor || '#6366f1';
+                  return (
+                    <div key={p.id} className="relative group">
+                        <Link
+                        href={`/${p.id}`}
+                        target="_blank"
+                        className={`flex flex-col justify-between overflow-hidden rounded-[2.5rem] bg-zinc-950 border-4 p-8 transition-all hover:-translate-y-2 hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] h-full ${activePodcast?.id === p.id ? 'border-[var(--podcast-primary)] shadow-[0_0_30px_-5px_var(--podcast-primary)]' : 'border-white/5 hover:border-[var(--podcast-primary)]/50'}`}
+                        style={{ '--podcast-item-primary': pColor } as React.CSSProperties}
+                        >
+                        <div className="flex gap-6">
+                            {p.theme_config?.imageUrl && (
+                            <div className="shrink-0 relative">
+                                <img
+                                src={p.theme_config.imageUrl}
+                                alt={p.title || 'Show'}
+                                className="h-24 w-24 rounded-2xl object-cover shadow-2xl ring-2 ring-white/10 group-hover:scale-110 transition-transform duration-500"
+                                />
+                                <div className="absolute inset-0 rounded-2xl ring-inset ring-1 ring-white/20" />
+                            </div>
+                            )}
+                            <div className="space-y-2 min-w-0">
+                            <h4 className="text-2xl font-black tracking-tighter text-white italic group-hover:text-[var(--podcast-item-primary)] transition-colors truncate">
+                                {p.title || 'Untitled'}
+                            </h4>
+                            {p.description && (
+                                <p className="text-sm leading-relaxed text-zinc-500 line-clamp-2 font-bold uppercase tracking-tighter opacity-80">
+                                {p.description}
+                                </p>
+                            )}
+                            </div>
+                        </div>
+
+                        <div className="mt-8 flex items-center justify-between border-t-2 border-white/5 pt-6 relative z-10">
+                            <div className="flex items-center gap-2">
+                            <div className="h-3 w-3 rounded-full bg-[var(--podcast-item-primary)] shadow-[0_0_10px_var(--podcast-item-primary)]" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Podcast Site</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-[var(--podcast-item-primary)] animate-pulse">
+                              <Star size={10} fill="currentColor" />
+                              <span className="text-[8px] font-black uppercase tracking-widest">Favorited</span>
+                            </div>
+                        </div>
+                        </Link>
+                        
+                        <button
+                            onClick={(e) => toggleFavorite(p.id, e)}
+                            className={`absolute top-6 right-6 p-2 rounded-full border-2 transition-all z-20 ${favorites.includes(p.id) ? 'bg-[var(--podcast-primary)] text-black border-[var(--podcast-primary)]' : 'bg-black/50 text-white/40 border-white/10 hover:border-[var(--podcast-primary)]/50 hover:text-[var(--podcast-primary)] backdrop-blur-md opacity-0 group-hover:opacity-100'}`}
+                        >
+                            <Star size={14} fill={favorites.includes(p.id) ? 'currentColor' : 'none'} />
+                        </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+        </div>
+      ) : (
+        /* Original Library View */
+        <section className="animate-fade-in-up [animation-delay:200ms] space-y-10 pt-8 pb-32">
+            <div className={`flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-200 dark:border-zinc-800 pb-10`}>
+              <div className="space-y-2">
+                <h3 className={`text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100`}>
+                  {q ? `Results for "${q}"` : 'Your Studio Library'}
+                </h3>
+                <p className="text-sm font-medium text-zinc-500 uppercase tracking-widest opacity-80">
+                  Connected RSS Feeds
+                </p>
+              </div>
+              <div className="w-full max-w-xs">
+                <SearchForm initialQuery={q} />
+              </div>
             </div>
 
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -330,8 +472,7 @@ export default function DashboardClient({
               return (
                 <div key={p.id} className="relative group">
                     <Link
-                    href={showFavorites ? `/${p.id}` : `/dashboard?active=${p.id}`}
-                    target={showFavorites ? "_blank" : "_self"}
+                    href={`/dashboard?active=${p.id}`}
                     className={`flex flex-col justify-between overflow-hidden rounded-[2.5rem] bg-zinc-950 border-4 p-8 transition-all hover:-translate-y-2 hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] h-full ${activePodcast?.id === p.id ? 'border-[var(--podcast-primary)] shadow-[0_0_30px_-5px_var(--podcast-primary)]' : 'border-white/5 hover:border-[var(--podcast-primary)]/50'}`}
                     style={{ '--podcast-item-primary': pColor } as React.CSSProperties}
                     >
@@ -361,22 +502,14 @@ export default function DashboardClient({
                     <div className="mt-8 flex items-center justify-between border-t-2 border-white/5 pt-6 relative z-10">
                         <div className="flex items-center gap-2">
                         <div className="h-3 w-3 rounded-full bg-[var(--podcast-item-primary)] shadow-[0_0_10px_var(--podcast-item-primary)]" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Podcast Site</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Podcast Admin</span>
                         </div>
-                        {showFavorites ? (
-                          <div className="flex items-center gap-1 text-[var(--podcast-item-primary)] animate-pulse">
-                            <Star size={10} fill="currentColor" />
-                            <span className="text-[8px] font-black uppercase tracking-widest">Favorited</span>
-                          </div>
-                        ) : (
-                          <span className="rounded-lg bg-white/5 px-2 py-1 text-[10px] font-mono text-zinc-500 border border-white/10">
-                            {p.id.slice(0, 8)}
-                          </span>
-                        )}
+                        <span className="rounded-lg bg-white/5 px-2 py-1 text-[10px] font-mono text-zinc-500 border border-white/10">
+                          {p.id.slice(0, 8)}
+                        </span>
                     </div>
                     </Link>
                     
-                    {/* Favorite Button Overlay for Library Cards */}
                     <button
                         onClick={(e) => toggleFavorite(p.id, e)}
                         className={`absolute top-6 right-6 p-2 rounded-full border-2 transition-all z-20 ${favorites.includes(p.id) ? 'bg-[var(--podcast-primary)] text-black border-[var(--podcast-primary)]' : 'bg-black/50 text-white/40 border-white/10 hover:border-[var(--podcast-primary)]/50 hover:text-[var(--podcast-primary)] backdrop-blur-md opacity-0 group-hover:opacity-100'}`}
@@ -387,39 +520,6 @@ export default function DashboardClient({
               );
             })}
           </div>
-        </section>
-      )}
-
-      {/* Favorite Episodes Section */}
-      {showFavorites && favoriteEpisodes.length > 0 && (
-        <section className="animate-fade-in-up [animation-delay:300ms] pb-32">
-            <div className="mb-10 p-8 rounded-[2rem] bg-gradient-to-r from-[var(--podcast-primary)]/5 to-transparent shadow-xl">
-              <h3 className="text-3xl font-bold tracking-tight text-[var(--podcast-primary)] italic font-black">
-                🎙️ Favorite Episodes
-              </h3>
-              <p className="text-sm font-medium text-zinc-500 uppercase tracking-widest opacity-80 mt-2">
-                Your Saved Audio & Video
-              </p>
-            </div>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {favoriteEpisodes.map(ep => (
-                    <Link key={ep.id} href={`/${ep.podcastId}/episodes/${ep.slug}`} target="_blank" className="relative group flex flex-col justify-between overflow-hidden rounded-[2rem] bg-zinc-950 border-4 border-white/5 p-5 transition-all hover:-translate-y-2 hover:border-[var(--podcast-primary)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)]">
-                        <div className="aspect-video w-full mb-6 relative rounded-xl overflow-hidden ring-1 ring-white/10 shadow-xl">
-                            <img src={ep.image || 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618'} alt={ep.title} className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700" />
-                            <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-                        </div>
-                        <h4 className="text-lg font-black tracking-tighter text-white italic line-clamp-2 leading-tight group-hover:text-[var(--podcast-primary)] transition-colors">{ep.title}</h4>
-                        <div className="mt-6 flex items-center justify-between border-t border-white/5 pt-4">
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
-                                {new Date(ep.published_at).toLocaleDateString()}
-                            </span>
-                        </div>
-                        <button onClick={(e) => toggleEpisodeFavorite(ep.id, e)} className="absolute top-6 right-6 p-2 rounded-full bg-[var(--podcast-primary)] text-black border-2 border-[var(--podcast-primary)] transition-all z-20 shadow-lg hover:scale-110 active:scale-95">
-                            <Star size={14} fill="currentColor" />
-                        </button>
-                    </Link>
-                ))}
-            </div>
         </section>
       )}
 

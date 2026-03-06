@@ -260,7 +260,7 @@ export default async function EpisodePage({ params }: PageProps) {
   return (
     <>
       <ThemeEngine config={themeConfig} />
-      <LayoutComponent podcast={podcastWithImage}>
+      <LayoutComponent podcast={podcastWithImage} episode={finalEpisode}>
         <div className="mx-auto max-w-5xl py-20 px-4">
           <header className="mb-16">
             <Link

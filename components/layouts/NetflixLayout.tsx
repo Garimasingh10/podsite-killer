@@ -19,29 +19,56 @@ interface NetflixLayoutProps {
         twitterUrl?: string;
         linkedInUrl?: string;
     };
+    episode?: any;
     onSubscribeClick?: () => void;
 }
 
-export default function NetflixLayout({ children, podcast, onSubscribeClick }: NetflixLayoutProps) {
+export default function NetflixLayout({ children, podcast, episode, onSubscribeClick }: NetflixLayoutProps) {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const [isFavorited, setIsFavorited] = useState(false);
 
     useEffect(() => {
-        const favorites = JSON.parse(localStorage.getItem('pk_favorites') || '[]');
-        setIsFavorited(favorites.includes(podcast.id));
-    }, [podcast.id]);
+        if (episode) {
+            const favs = JSON.parse(localStorage.getItem('pk_episode_favorites') || '[]');
+            setIsFavorited(favs.some((f: any) => f.id === episode.id));
+        } else {
+            const favorites = JSON.parse(localStorage.getItem('pk_favorites') || '[]');
+            setIsFavorited(favorites.includes(podcast.id));
+        }
+    }, [podcast.id, episode?.id]);
 
     const toggleFavorite = () => {
-        const favorites = JSON.parse(localStorage.getItem('pk_favorites') || '[]');
-        let newFavorites;
-        if (favorites.includes(podcast.id)) {
-            newFavorites = favorites.filter((id: string) => id !== podcast.id);
-            setIsFavorited(false);
+        if (episode) {
+            const favs = JSON.parse(localStorage.getItem('pk_episode_favorites') || '[]');
+            const exists = favs.find((f: any) => f.id === episode.id);
+            let newFavs;
+            if (exists) {
+                newFavs = favs.filter((f: any) => f.id !== episode.id);
+                setIsFavorited(false);
+            } else {
+                newFavs = [...favs, {
+                    id: episode.id,
+                    title: episode.title,
+                    podcastId: podcast.id,
+                    slug: episode.slug,
+                    image: episode.image_url || podcast.image,
+                    published_at: episode.published_at
+                }];
+                setIsFavorited(true);
+            }
+            localStorage.setItem('pk_episode_favorites', JSON.stringify(newFavs));
         } else {
-            newFavorites = [...favorites, podcast.id];
-            setIsFavorited(true);
+            const favorites = JSON.parse(localStorage.getItem('pk_favorites') || '[]');
+            let newFavorites;
+            if (favorites.includes(podcast.id)) {
+                newFavorites = favorites.filter((id: string) => id !== podcast.id);
+                setIsFavorited(false);
+            } else {
+                newFavorites = [...favorites, podcast.id];
+                setIsFavorited(true);
+            }
+            localStorage.setItem('pk_favorites', JSON.stringify(newFavorites));
         }
-        localStorage.setItem('pk_favorites', JSON.stringify(newFavorites));
     };
 
     return (

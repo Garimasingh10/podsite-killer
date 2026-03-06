@@ -130,62 +130,62 @@ export default function ThemeCustomizer({
                             Custom Colors
                         </h4>
                         <div className="space-y-3">
-                            <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 p-2 pl-4">
-                                <span className="text-xs font-bold text-slate-400">Primary</span>
-                                <div className="flex items-center gap-3">
+                            <div className="flex items-center justify-between rounded-[2rem] border-2 border-slate-800 bg-slate-950 p-3 pl-6 transition-all hover:border-[var(--primary)] group">
+                                <span className="text-xs font-black uppercase tracking-widest text-slate-500 group-hover:text-white transition-colors">Primary</span>
+                                <div className="flex items-center gap-4">
                                     <input
                                         type="text"
                                         value={config.primaryColor || '#0ea5e9'}
                                         onChange={(e) => updateConfig({ primaryColor: e.target.value })}
-                                        className="w-20 bg-transparent text-right font-mono text-[10px] text-white focus:outline-none"
+                                        className="w-20 bg-transparent text-right font-mono text-xs text-slate-400 group-hover:text-white focus:outline-none transition-colors"
                                     />
-                                    <div className="relative h-7 w-7 flex-shrink-0 overflow-hidden rounded bg-slate-800 ring-1 ring-white/10 shadow-inner group-hover:ring-white/30 transition-all">
+                                    <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-xl bg-slate-800 ring-2 ring-white/10 shadow-2xl transition-all group-hover:ring-[var(--primary)]/50">
                                         <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: config.primaryColor || '#0ea5e9' }} />
                                         <input
                                             type="color"
                                             value={config.primaryColor || '#0ea5e9'}
                                             onChange={(e) => updateConfig({ primaryColor: e.target.value })}
-                                            className="absolute -inset-4 h-16 w-16 cursor-pointer opacity-0"
+                                            className="absolute -inset-4 h-20 w-20 cursor-pointer opacity-0"
                                         />
                                     </div>
                                 </div>
                             </div>
-                             <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 p-2 pl-4">
-                                <span className="text-xs font-bold text-slate-400">Background</span>
-                                <div className="flex items-center gap-3">
+                             <div className="flex items-center justify-between rounded-[2rem] border-2 border-slate-800 bg-slate-950 p-3 pl-6 transition-all hover:border-[var(--primary)] group">
+                                <span className="text-xs font-black uppercase tracking-widest text-slate-500 group-hover:text-white transition-colors">Background</span>
+                                <div className="flex items-center gap-4">
                                     <input
                                         type="text"
                                         value={config.backgroundColor || '#020617'}
                                         onChange={(e) => updateConfig({ backgroundColor: e.target.value })}
-                                        className="w-20 bg-transparent text-right font-mono text-[10px] text-white focus:outline-none"
+                                        className="w-20 bg-transparent text-right font-mono text-xs text-slate-400 group-hover:text-white focus:outline-none transition-colors"
                                     />
-                                    <div className="relative flex-shrink-0 h-7 w-7 overflow-hidden rounded bg-slate-800 ring-1 ring-white/10 shadow-inner group-hover:ring-white/30 transition-all">
+                                    <div className="relative flex-shrink-0 h-10 w-10 overflow-hidden rounded-xl bg-slate-800 ring-2 ring-white/10 shadow-2xl transition-all group-hover:ring-[var(--primary)]/50">
                                         <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: config.backgroundColor || '#020617' }} />
                                         <input
                                             type="color"
                                             value={config.backgroundColor || '#020617'}
                                             onChange={(e) => updateConfig({ backgroundColor: e.target.value })}
-                                            className="absolute -inset-4 h-16 w-16 cursor-pointer opacity-0"
+                                            className="absolute -inset-4 h-20 w-20 cursor-pointer opacity-0"
                                         />
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 p-2 pl-4">
-                                <span className="text-xs font-bold text-slate-400">Accent</span>
-                                <div className="flex items-center gap-3">
+                            <div className="flex items-center justify-between rounded-[2rem] border-2 border-slate-800 bg-slate-950 p-3 pl-6 transition-all hover:border-[var(--primary)] group">
+                                <span className="text-xs font-black uppercase tracking-widest text-slate-500 group-hover:text-white transition-colors">Accent</span>
+                                <div className="flex items-center gap-4">
                                     <input
                                         type="text"
                                         value={config.accentColor || '#f59e0b'}
                                         onChange={(e) => updateConfig({ accentColor: e.target.value })}
-                                        className="w-20 bg-transparent text-right font-mono text-[10px] text-white focus:outline-none"
+                                        className="w-20 bg-transparent text-right font-mono text-xs text-slate-400 group-hover:text-white focus:outline-none transition-colors"
                                     />
-                                    <div className="relative flex-shrink-0 h-7 w-7 overflow-hidden rounded bg-slate-800 ring-1 ring-white/10 shadow-inner group-hover:ring-white/30 transition-all">
+                                    <div className="relative flex-shrink-0 h-10 w-10 overflow-hidden rounded-xl bg-slate-800 ring-2 ring-white/10 shadow-2xl transition-all group-hover:ring-[var(--primary)]/50">
                                         <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: config.accentColor || '#f59e0b' }} />
                                         <input
                                             type="color"
                                             value={config.accentColor || '#f59e0b'}
                                             onChange={(e) => updateConfig({ accentColor: e.target.value })}
-                                            className="absolute -inset-4 h-16 w-16 cursor-pointer opacity-0"
+                                            className="absolute -inset-4 h-20 w-20 cursor-pointer opacity-0"
                                         />
                                     </div>
                                 </div>
@@ -225,32 +225,31 @@ export default function ThemeCustomizer({
                                 </button>
                             ))}
 
-                            <div className={`space-y-2 rounded-xl border p-4 transition-all ${config.customFontUrl ? 'border-primary bg-primary/5' : 'border-slate-800 bg-slate-950'}`}>
-                                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500">Custom Google Font URL</label>
-                                <div className="flex gap-2">
+                            <div className={`space-y-4 rounded-3xl border-2 p-6 transition-all ${config.customFontUrl ? 'border-[var(--primary)] bg-primary/5' : 'border-slate-800 bg-slate-950'}`}>
+                                <label className="block text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">Custom Google Font URL</label>
+                                <div className="flex items-center gap-3">
                                     <input
                                         type="text"
                                         placeholder="https://fonts.googleapis.com/css2?family=..."
                                         value={localFontUrl}
                                         onChange={(e) => setLocalFontUrl(e.target.value)}
-                                        className="flex-1 min-w-0 bg-transparent text-[10px] text-white focus:outline-none placeholder:text-slate-700 font-mono"
+                                        className="flex-1 min-w-0 bg-slate-900/50 rounded-xl px-4 py-3 text-xs text-white focus:outline-none placeholder:text-slate-700 font-mono border border-white/5 focus:border-[var(--primary)]/50"
                                     />
                                     <button
                                         onClick={() => {
                                             let finalUrl = localFontUrl;
                                             if (finalUrl && !finalUrl.startsWith('http')) {
-                                                // It's likely just a font name
                                                 const fontName = finalUrl.replace(/\s+/g, '+');
                                                 finalUrl = `https://fonts.googleapis.com/css2?family=${fontName}:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap`;
                                             }
                                             updateConfig({ customFontUrl: finalUrl });
                                         }}
-                                        className="shrink-0 rounded bg-slate-200 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-slate-900 transition-all shadow-md active:scale-95"
+                                        className="shrink-0 rounded-xl bg-white px-6 py-3 text-[10px] font-black uppercase tracking-widest text-black transition-all shadow-[8px_8px_0px_0px_rgba(var(--podcast-primary-rgb,0,0,0),0.2)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 active:scale-95"
                                     >
                                         Apply
                                     </button>
                                 </div>
-                                <p className="text-[9px] text-slate-600 italic">Paste a Google Fonts URL.</p>
+                                <p className="text-[9px] text-slate-600 italic px-1">Paste a Google Fonts URL or Font Name.</p>
                             </div>
                         </div>
                     </div>
@@ -259,14 +258,14 @@ export default function ThemeCustomizer({
                         <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">
                             <Square size={14} /> Corner Radius
                         </h4>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-3 gap-3">
                             {['0px', '8px', '16px'].map((r) => (
                                 <button
                                     key={r}
                                     onClick={() => updateConfig({ cornerRadius: r })}
-                                    className={`rounded-xl border py-2 px-1 text-[9px] font-black uppercase tracking-wider transition-all ${config.cornerRadius === r
-                                        ? 'border-primary bg-primary text-white'
-                                        : 'border-slate-800 bg-slate-950 text-slate-500 hover:border-slate-700'
+                                    className={`rounded-full border-2 py-4 px-2 text-[10px] font-black uppercase tracking-widest transition-all ${config.cornerRadius === r
+                                        ? 'border-[var(--primary)] bg-[var(--primary)] text-black shadow-[0_0_20px_-5px_var(--primary)] scale-105'
+                                        : 'border-slate-800 bg-slate-950 text-slate-500 hover:border-slate-700 hover:text-slate-300'
                                         }`}
                                 >
                                     {r === '0px' ? 'Sharp' : r === '8px' ? 'Soft' : 'Rounded'}
