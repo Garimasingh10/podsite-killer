@@ -232,7 +232,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   // Filter out pending/rejected youtube videos
   const safeEpisodes = (episodes || []).map((ep: any) => ({
     ...ep,
-    youtube_video_id: (ep.video_sync_status === 'pending' || ep.video_sync_status === 'rejected') ? null : ep.youtube_video_id
+    youtube_video_id: (ep.video_sync_status === 'pending' || ep.video_sync_status === 'rejected' || !ep.youtube_video_id) ? null : ep.youtube_video_id
   }));
 
   let finalEpisodes = safeEpisodes;
@@ -281,12 +281,22 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
       layout === 'genz' ? GenZLayout :
         NetflixLayout;
 
-  const defaultLayout = ['hero', 'shorts', 'subscribe', 'grid', 'host'];
+  const defaultLayout = ['hero', 'shorts', 'subscribe', 'product', 'grid', 'host'];
   const rawLayout = (podcast.page_layout as string[]) || defaultLayout;
   const hiddenBlocks = themeConfig.hiddenBlocks || [];
 
   // Filter out hidden blocks
-  const pageLayout = rawLayout.filter(block => !hiddenBlocks.includes(block));
+  let pageLayout = rawLayout.filter(block => !hiddenBlocks.includes(block));
+
+  // Auto-inject product block if products exist but it's not in layout
+  if (products.length > 0 && !pageLayout.includes('product') && !hiddenBlocks.includes('product')) {
+    const subscribeIndex = pageLayout.indexOf('subscribe');
+    if (subscribeIndex !== -1) {
+      pageLayout.splice(subscribeIndex + 1, 0, 'product');
+    } else {
+      pageLayout.push('product');
+    }
+  }
 
   // Create a properly typed podcast object for the Layout
   const layoutPodcast = {

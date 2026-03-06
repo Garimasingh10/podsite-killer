@@ -88,7 +88,7 @@ export async function POST(req: Request) {
     accent_color: themeConfig.accentColor,
     youtube_channel_id: detectedYtId,
     theme_config: { ...themeConfig, imageUrl: parsed.image },
-    page_layout: ['hero', 'shorts', 'subscribe', 'grid', 'host'],
+    page_layout: ['hero', 'shorts', 'subscribe', 'product', 'grid', 'host'],
   };
 
   if (existingPodcast) {
