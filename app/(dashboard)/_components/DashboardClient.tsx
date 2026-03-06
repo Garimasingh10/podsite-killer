@@ -330,7 +330,8 @@ export default function DashboardClient({
               return (
                 <div key={p.id} className="relative group">
                     <Link
-                    href={`/dashboard?active=${p.id}`}
+                    href={showFavorites ? `/${p.id}` : `/dashboard?active=${p.id}`}
+                    target={showFavorites ? "_blank" : "_self"}
                     className={`flex flex-col justify-between overflow-hidden rounded-[2.5rem] bg-zinc-950 border-4 p-8 transition-all hover:-translate-y-2 hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] h-full ${activePodcast?.id === p.id ? 'border-[var(--podcast-primary)] shadow-[0_0_30px_-5px_var(--podcast-primary)]' : 'border-white/5 hover:border-[var(--podcast-primary)]/50'}`}
                     style={{ '--podcast-item-primary': pColor } as React.CSSProperties}
                     >
