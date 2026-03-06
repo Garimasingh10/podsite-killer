@@ -99,6 +99,9 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     console.log('Looking for podcast with subdomain:', subdomain, 'isUuid:', isUuid);
   }
 
+  // FALLBACK: Demo podcast for fe816460-cbe9-49eb-949e-b943e0086328 if not found
+  const isDemoPodcast = subdomain === 'fe816460-cbe9-49eb-949e-b943e0086328';
+
   // Prefer id lookup when segment is UUID (View site from dashboard); else custom_domain
   let podcast: { id: string; [k: string]: unknown } | null = null;
   let podcastError: unknown = null;
@@ -139,6 +142,31 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
       podcast = byId.data;
       podcastError = byId.error;
     }
+  }
+
+  // If demo podcast and not found, use demo data
+  if (isDemoPodcast && !podcast) {
+    console.log('Using demo podcast data for:', subdomain);
+    podcast = {
+      id: 'fe816460-cbe9-49eb-949e-b943e0086328',
+      title: 'The Tech Explorer',
+      description: 'Exploring the latest in technology, startups, and innovation. Join us on a journey through the digital frontier.',
+      rss_url: 'https://anchor.fm/s/abc123/podcast/rss',
+      youtube_channel_id: null,
+      theme_config: {
+        primaryColor: '#6366f1',
+        backgroundColor: '#0f172a',
+        foregroundColor: '#f8fafc',
+        accentColor: '#8b5cf6',
+        borderColor: '#334155',
+        fontHeading: "'Inter', sans-serif",
+        fontBody: "'Inter', sans-serif",
+        cornerRadius: '8px',
+        layout: 'netflix',
+        imageUrl: 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=800&h=800&fit=crop',
+      },
+      page_layout: ['hero', 'shorts', 'subscribe', 'grid', 'host'],
+    } as any;
   }
 
   if (podcastError) {
@@ -190,7 +218,38 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     console.error('episodesError', episodesError);
   }
 
-  const latest = page === 1 ? episodes?.[0] : undefined;
+  // For demo podcast, provide sample episodes if none in DB
+  let finalEpisodes = episodes;
+  if (isDemoPodcast && (!episodes || episodes.length === 0)) {
+    finalEpisodes = [
+      {
+        id: 'demo-1',
+        title: 'The Future of AI: What to Expect in 2025',
+        slug: 'the-future-of-ai-what-to-expect-in-2025',
+        published_at: '2025-01-15T10:00:00Z',
+        image_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=800&fit=crop',
+        youtube_video_id: null,
+      },
+      {
+        id: 'demo-2',
+        title: 'Building a Startup: From Zero to Hero',
+        slug: 'building-a-startup-from-zero-to-hero',
+        published_at: '2025-01-08T10:00:00Z',
+        image_url: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&h=800&fit=crop',
+        youtube_video_id: null,
+      },
+      {
+        id: 'demo-3',
+        title: 'The Rise of Remote Work Culture',
+        slug: 'the-rise-of-remote-work-culture',
+        published_at: '2025-01-01T10:00:00Z',
+        image_url: 'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=800&h=800&fit=crop',
+        youtube_video_id: null,
+      },
+    ];
+  }
+
+  const latest = page === 1 ? finalEpisodes?.[0] : undefined;
 
   const themeConfig = (podcast.theme_config as unknown as ThemeConfig) || {};
   const podcastWithImage = {

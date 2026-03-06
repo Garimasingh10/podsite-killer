@@ -133,6 +133,33 @@ export default async function EpisodePage({ params }: PageProps) {
     }
   }
 
+  // If demo podcast and not found, use demo data
+  const isDemoPodcast = subdomain === 'fe816460-cbe9-49eb-949e-b943e0086328';
+  
+  if (isDemoPodcast && !podcast) {
+    console.log('Using demo podcast data for episode page:', subdomain);
+    podcast = {
+      id: 'fe816460-cbe9-49eb-949e-b943e0086328',
+      title: 'The Tech Explorer',
+      description: 'Exploring the latest in technology, startups, and innovation.',
+      rss_url: 'https://anchor.fm/s/abc123/podcast/rss',
+      youtube_channel_id: null,
+      theme_config: {
+        primaryColor: '#6366f1',
+        backgroundColor: '#0f172a',
+        foregroundColor: '#f8fafc',
+        accentColor: '#8b5cf6',
+        borderColor: '#334155',
+        fontHeading: "'Inter', sans-serif",
+        fontBody: "'Inter', sans-serif",
+        cornerRadius: '8px',
+        layout: 'netflix',
+        imageUrl: 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=800&h=800&fit=crop',
+      },
+      page_layout: ['hero', 'shorts', 'subscribe', 'grid', 'host'],
+    } as any;
+  }
+
   if (podcastError) {
     console.error('Episode page - Podcast query error:', podcastError);
   }
@@ -178,7 +205,43 @@ export default async function EpisodePage({ params }: PageProps) {
     .eq('slug', slug)
     .maybeSingle();
 
-  if (!episode) {
+  // Demo episode data if demo podcast
+  let finalEpisode = episode;
+  if (isDemoPodcast && !episode) {
+    // Check if it's a valid demo episode slug
+    const demoEpisodes: Record<string, any> = {
+      'the-future-of-ai-what-to-expect-in-2025': {
+        id: 'demo-1',
+        title: 'The Future of AI: What to Expect in 2025',
+        published_at: '2025-01-15T10:00:00Z',
+        audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+        youtube_video_id: null,
+        description: '<p>In this episode, we explore the cutting-edge developments in artificial intelligence and what to expect in the coming year. From large language models to AI-powered tools, we cover it all.</p>',
+      },
+      'building-a-startup-from-zero-to-hero': {
+        id: 'demo-2',
+        title: 'Building a Startup: From Zero to Hero',
+        published_at: '2025-01-08T10:00:00Z',
+        audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+        youtube_video_id: null,
+        description: '<p>Join us as we dive into the journey of building a successful startup. We share tips, strategies, and real-world examples from founders who have been there.</p>',
+      },
+      'the-rise-of-remote-work-culture': {
+        id: 'demo-3',
+        title: 'The Rise of Remote Work Culture',
+        published_at: '2025-01-01T10:00:00Z',
+        audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+        youtube_video_id: null,
+        description: '<p>Remote work is no longer a trend—it\'s a way of life. Learn how companies are adapting to this new normal and what it means for the future of work.</p>',
+      },
+    };
+    
+    if (demoEpisodes[slug]) {
+      finalEpisode = demoEpisodes[slug];
+    }
+  }
+
+  if (!finalEpisode) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-[#0a0a0a] px-4 font-sans selection:bg-primary/30">
         <div className="max-w-md w-full text-center space-y-8 animate-in fade-in zoom-in duration-500">
@@ -208,12 +271,12 @@ export default async function EpisodePage({ params }: PageProps) {
               Back to {podcastWithImage.title}
             </Link>
             <h1 className="mt-6 text-5xl font-black italic tracking-tighter md:text-8xl leading-[0.85] uppercase">
-              {episode.title}
+              {finalEpisode.title}
             </h1>
             <div className="mt-8 flex items-center gap-6">
-              {episode.published_at && (
+              {finalEpisode.published_at && (
                 <p className="text-sm font-black uppercase tracking-widest text-zinc-500">
-                  {new Date(episode.published_at).toLocaleDateString(undefined, {
+                  {new Date(finalEpisode.published_at).toLocaleDateString(undefined, {
                     dateStyle: 'long'
                   })}
                 </p>
@@ -232,10 +295,10 @@ export default async function EpisodePage({ params }: PageProps) {
           }>
             <EpisodePlayer
               podcastId={podcast.id}
-              youtubeVideoId={episode.youtube_video_id}
-              audioUrl={episode.audio_url}
-              title={episode.title || 'Untitled'}
-              description={episode.description || ''}
+              youtubeVideoId={finalEpisode.youtube_video_id}
+              audioUrl={finalEpisode.audio_url}
+              title={finalEpisode.title || 'Untitled'}
+              description={finalEpisode.description || ''}
               primaryColor={themeConfig.primaryColor}
               accentColor={themeConfig.accentColor}
             />
