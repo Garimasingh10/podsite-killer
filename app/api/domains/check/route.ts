@@ -5,7 +5,7 @@ export async function GET(req: Request) {
     const domain = searchParams.get('domain');
 
     if (!domain) {
-        return NextResponse.json({ error: 'Missing domain' }, { status: 400 });
+        return NextResponse.json({ error: 'Missing domain parameter' }, { status: 400 });
     }
 
     try {
@@ -13,8 +13,9 @@ export async function GET(req: Request) {
         const teamId = process.env.VERCEL_TEAM_ID;
         const token = process.env.VERCEL_TOKEN;
 
+        // If no Vercel token, we can just return a mock success for local development
         if (!projectId || !token) {
-            // For dev/demo, always return verified if tokens missing
+            console.warn('Vercel credentials missing. Mocking verification success.');
             return NextResponse.json({ verified: true });
         }
 
@@ -23,18 +24,27 @@ export async function GET(req: Request) {
             : `https://api.vercel.com/v9/projects/${projectId}/domains/${domain}`;
 
         const res = await fetch(fetchUrl, {
+            method: 'GET',
             headers: {
                 Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
             },
         });
 
         if (!res.ok) {
-            return NextResponse.json({ verified: false });
+            return NextResponse.json({ verified: false, error: 'Failed to verify domain with Vercel' });
         }
 
         const data = await res.json();
-        return NextResponse.json({ verified: data.verified });
-    } catch (error: any) {
-        return NextResponse.json({ verified: false, error: error.message });
+        
+        // Vercel returns verified: true when DNS is configured correctly
+        if (data.verified) {
+            return NextResponse.json({ verified: true });
+        } else {
+            return NextResponse.json({ verified: false });
+        }
+    } catch (e: any) {
+        console.error('Domain Verification Error:', e);
+        return NextResponse.json({ verified: false, error: e.message });
     }
 }

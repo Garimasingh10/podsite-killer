@@ -210,3 +210,22 @@ export async function sendResend(to: string, subject: string, html: string): Pro
     return { ok: false, error: e?.message };
   }
 }
+
+export function getProductDeliveryEmailHtml(productName: string, downloadUrl: string) {
+  const html = `
+    <div style="text-align:center;">
+      <div style="margin-bottom:32px;">
+        <span style="background:rgba(99,102,241,0.1);color:#818cf8;padding:8px 16px;border-radius:99px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;display:inline-block;border:1px solid rgba(99,102,241,0.2);">Purchase Complete</span>
+      </div>
+      <h1 style="color:#f8fafc;font-size:36px;font-weight:700;margin:0 0 16px;font-family:'Space Grotesk',sans-serif;letter-spacing:-0.03em;">Thanks for your purchase!</h1>
+      <p style="color:#94a3b8;font-size:16px;line-height:1.6;margin:0 0 40px;font-weight:400;">Your digital product <strong style="color:#fff;">\${productName}</strong> is ready for download.</p>
+      
+      <a href="\${downloadUrl}" style="display:inline-block;background:linear-gradient(90deg,#818cf8 0%,#4f46e5 100%);color:#020617;padding:18px 48px;border-radius:12px;font-size:16px;font-weight:700;font-family:'Space Grotesk',sans-serif;text-decoration:none;margin-bottom:40px;text-transform:uppercase;letter-spacing:0.05em;box-shadow:0 10px 25px -5px rgba(99,102,241,0.4);border:2px solid #c7d2fe;">Download Now</a>
+
+      <p style="color:#64748b;font-size:13px;margin:0 0 16px;font-family:'Space Grotesk',sans-serif;text-transform:uppercase;letter-spacing:0.1em;">Or paste this link manually (valid for 7 days):</p>
+      <div style="background:#0f172a;border-radius:12px;padding:20px;border:1px solid #1e293b;margin-bottom:40px;box-shadow:inset 0 2px 4px 0 rgba(0,0,0,0.06);">
+        <p style="color:#a5b4fc;font-size:13px;margin:0;word-break:break-all;font-family:monospace;letter-spacing:0.05em;">\${downloadUrl}</p>
+      </div>
+    </div>`;
+  return baseWrap(html);
+}

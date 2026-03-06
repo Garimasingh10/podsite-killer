@@ -82,16 +82,22 @@ export async function GET(request: Request) {
   // Send welcome email EXACTLY ONCE upon first verified login
   if (data.user.email && !data.user.user_metadata?.welcome_email_sent) {
     console.log('Auth Callback - First time verification/login! Sending Welcome Email...');
-    fetch(`${url.origin}/api/emails/welcome`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: data.user.email }),
-    }).catch(() => {}); // Fire and forget
-
-    // Mark user as having received the welcome blast
-    await supabase.auth.updateUser({
-      data: { welcome_email_sent: true }
-    });
+    
+    // We run the fetch directly to Resend instead of internal API route looping
+    // to prevent serverless function timeouts/drops.
+    try {
+      const { getWelcomeEmailHtml, sendResend } = await import('@/lib/emails');
+      const html = getWelcomeEmailHtml();
+      await sendResend(data.user.email, 'Welcome to PodSite 🚀', html);
+      
+      // Mark user as having received the welcome blast
+      await supabase.auth.updateUser({
+        data: { welcome_email_sent: true }
+      });
+      console.log('Welcome Email dispatched successfully.');
+    } catch (emailErr) {
+      console.error('Failed to dispatch welcome email:', emailErr);
+    }
   }
 
   // HTML Bridge: Sets cookies via JS and THEN redirects.

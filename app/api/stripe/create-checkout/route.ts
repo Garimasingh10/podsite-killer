@@ -4,58 +4,53 @@ import Stripe from 'stripe';
 
 export async function POST(req: Request) {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-        apiVersion: '2026-02-25.clover' as any,
+        apiVersion: '2023-10-16' as any,
     });
+    
     try {
-        const { productId } = await req.json();
-        const supabase = await createSupabaseServerClient();
+        const { productId, podcastId, returnUrl } = await req.json();
 
-        // Fetch product and its podcast
+        if (!productId || !podcastId) {
+            return NextResponse.json({ error: 'Missing product details' }, { status: 400 });
+        }
+
+        // 1. Get Product and Podcast Data (Anonymous Access is fine for buyers)
+        const supabase = await createSupabaseServerClient();
+        
         const { data: product } = await supabase
             .from('products')
-            .select(`
-                *,
-                podcasts(
-                    id, 
-                    title,
-                    custom_domain,
-                    stripe_account_id
-                )
-            `)
+            .select('*')
             .eq('id', productId)
             .single();
 
-        if (!product || !(product.podcasts as any)?.stripe_account_id) {
-            return NextResponse.json({ error: 'Product unavailable' }, { status: 400 });
+        const { data: podcast } = await supabase
+            .from('podcasts')
+            .select('id, stripe_account_id')
+            .eq('id', podcastId)
+            .single();
+
+        if (!product || !podcast?.stripe_account_id) {
+            return NextResponse.json({ error: 'Product or Seller not configured correctly' }, { status: 400 });
         }
 
-        const podcast = product.podcasts as any;
+        // 2. We calculate application fee (e.g. 10%)
+        const priceCents = Math.round(product.price * 100);
+        const applicationFeeAmount = Math.round(priceCents * 0.10);
 
-        // 10% application fee for instance
-        const feePercentage = 0.10;
-        const applicationFeeAmount = Math.round(product.price * feePercentage * 100);
-
-        const successUrl = podcast.custom_domain
-            ? `https://${podcast.custom_domain}?success=true`
-            : `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/${podcast.id}?success=true`;
-
-        // Create Checkout Session
+        // 3. Create Checkout Session pointing to the connected account
         const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
+            mode: 'payment',
             line_items: [{
                 price_data: {
                     currency: 'usd',
                     product_data: {
                         name: product.title,
-                        description: product.description || undefined,
+                        description: product.description || 'Digital Product',
                     },
-                    unit_amount: Math.round(product.price * 100), // in cents
+                    unit_amount: priceCents,
                 },
                 quantity: 1,
             }],
-            mode: 'payment',
-            success_url: successUrl,
-            cancel_url: `${successUrl.split('?')[0]}?canceled=true`,
             payment_intent_data: {
                 application_fee_amount: applicationFeeAmount,
                 transfer_data: {
@@ -65,12 +60,16 @@ export async function POST(req: Request) {
             metadata: {
                 productId: product.id,
                 podcastId: podcast.id,
-            }
+                filePath: product.file_path,
+                fileName: product.file_name,
+            },
+            success_url: `${returnUrl}?success=true`,
+            cancel_url: `${returnUrl}?canceled=true`,
         });
 
         return NextResponse.json({ url: session.url });
-    } catch (err: any) {
-        console.error(err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    } catch (error: any) {
+        console.error('Chekout Error:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

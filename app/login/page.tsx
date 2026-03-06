@@ -150,13 +150,6 @@ function LoginContent() {
 
       console.log('Login successful, session verified, redirecting to dashboard');
       
-      // Fire-and-forget successful login email
-      fetch('/api/emails/login-success', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      }).catch(() => {});
-
       // Keep loading spinner active during page transition
       // Use window.location for a full page reload to ensure cookies are set
       window.location.href = DASHBOARD;

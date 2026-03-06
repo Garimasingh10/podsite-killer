@@ -16,19 +16,15 @@ export default async function middleware(request: NextRequest) {
         hostname === 'app.podsitekiller.com' ||
         hostname.includes('vercel.app');
 
-    const isReservedRoute =
-        pathname === '/' || // Protect home page from rewrite on main app
-        pathname === '/login' ||
-        pathname.startsWith('/auth') ||
-        pathname.startsWith('/dashboard') ||
+    const isMainAppAssetOrApi =
         pathname.startsWith('/api') ||
         pathname.startsWith('/_next') ||
         pathname.includes('.');
 
-    // If it's a custom domain and NOT a reserved route, we rewrite to the specific podcast route
-    if (!isMainApp && !isReservedRoute) {
+    // If it's a custom domain, rewrite ALL non-asset traffic to the dynamic /[subdomain] route
+    if (!isMainApp && !isMainAppAssetOrApi) {
         const cleanHostname = hostname.replace('www.', '');
-        console.log(`Middleware - Rewriting domain ${cleanHostname} to /[subdomain]${pathname}`);
+        console.log(`Middleware - Rewriting custom domain: ${cleanHostname} -> /[subdomain]${pathname}`);
         return NextResponse.rewrite(new URL(`/${cleanHostname}${pathname === '/' ? '' : pathname}`, request.url));
     }
 
