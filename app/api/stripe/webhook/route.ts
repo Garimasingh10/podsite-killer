@@ -3,13 +3,12 @@ import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import Stripe from 'stripe';
 import { getProductDeliveryEmailHtml, sendResend } from '@/lib/emails';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-    apiVersion: '2025-01-27.clover' as any,
-});
-
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
 export async function POST(req: Request) {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+        apiVersion: '2025-01-27.clover' as any,
+    });
+    const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
     const body = await req.text();
     const sig = req.headers.get('stripe-signature');
 
