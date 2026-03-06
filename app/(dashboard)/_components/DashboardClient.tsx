@@ -115,29 +115,32 @@ export default function DashboardClient({
       </div>
 
       {/* Top Welcome Section (Vibrant & Magic) */}
-      <section className="animate-fade-in-up rounded-[2.5rem] relative overflow-hidden p-10 mb-10 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] border border-white/10 group"
-        style={{
-          background: `radial-gradient(circle at top right, ${primaryColor}44, transparent), radial-gradient(circle at bottom left, ${accentColor}22, #000)`,
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none opacity-50" />
-        <div className="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-[var(--podcast-primary)] blur-[100px] opacity-20 animate-pulse group-hover:opacity-30 transition-opacity duration-700" />
-        <div className="relative flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
-          <div className="space-y-3">
-            <h1 className="text-5xl font-black tracking-tighter text-white leading-none italic drop-shadow-2xl">
-              Welcome back, <span className="text-[var(--podcast-primary)]">Creator</span>
-            </h1>
-            <p className="max-w-md text-[10px] leading-relaxed text-zinc-500 font-black uppercase tracking-[0.3em] opacity-80 flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" /> Studio Live / Paste RSS Feed
-            </p>
-          </div>
-          <div className="flex w-full flex-col gap-4 sm:w-auto">
-            <div className="rounded-2xl bg-white/5 p-1 ring-1 ring-white/10 backdrop-blur-xl shadow-2xl hover:ring-white/20 transition-all duration-500">
-              <NewPodcastForm />
+      {!showFavorites && (
+        <section className="animate-fade-in-up rounded-[2.5rem] relative overflow-hidden p-10 mb-10 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] border border-white/10 group"
+          style={{
+            background: `radial-gradient(circle at top right, ${primaryColor}44, transparent), radial-gradient(circle at bottom left, ${accentColor}22, #000)`,
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none opacity-50" />
+          <div className="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-[var(--podcast-primary)] blur-[100px] opacity-20 animate-pulse group-hover:opacity-30 transition-opacity duration-700" />
+          <div className="relative flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
+            <div className="space-y-3">
+              <h1 className="text-5xl font-black tracking-tighter text-white leading-none italic drop-shadow-2xl">
+                Welcome back, <span className="text-[var(--podcast-primary)]">Creator</span>
+              </h1>
+              <p className="max-w-md text-[10px] leading-relaxed text-zinc-500 font-black uppercase tracking-[0.3em] opacity-80 flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" /> Studio Live / Paste RSS Feed
+              </p>
+            </div>
+            <div className="flex w-full flex-col gap-4 sm:w-auto">
+              <div className="rounded-2xl bg-white/5 p-1 ring-1 ring-white/10 backdrop-blur-xl shadow-2xl hover:ring-white/20 transition-all duration-500">
+                <NewPodcastForm />
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
 
       {!allPodcasts.length && (
         <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-white/5 bg-white/[0.02] py-24 text-center">

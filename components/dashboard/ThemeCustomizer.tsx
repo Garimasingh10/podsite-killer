@@ -143,7 +143,7 @@ export default function ThemeCustomizer({
                                         type="color"
                                         value={config.primaryColor || '#0ea5e9'}
                                         onChange={(e) => updateConfig({ primaryColor: e.target.value })}
-                                        className="h-6 w-6 cursor-pointer overflow-hidden rounded bg-transparent"
+                                        className="h-6 w-6 cursor-pointer appearance-none overflow-hidden rounded bg-transparent p-0 [&::-moz-color-swatch]:border-none [&::-moz-color-swatch]:rounded [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none [&::-webkit-color-swatch]:rounded"
                                     />
                                 </div>
                             </div>
@@ -160,7 +160,7 @@ export default function ThemeCustomizer({
                                         type="color"
                                         value={config.backgroundColor || '#020617'}
                                         onChange={(e) => updateConfig({ backgroundColor: e.target.value })}
-                                        className="h-6 w-6 cursor-pointer overflow-hidden rounded bg-transparent"
+                                        className="h-6 w-6 cursor-pointer appearance-none overflow-hidden rounded bg-transparent p-0 [&::-moz-color-swatch]:border-none [&::-moz-color-swatch]:rounded [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none [&::-webkit-color-swatch]:rounded"
                                     />
                                 </div>
                             </div>
@@ -177,7 +177,7 @@ export default function ThemeCustomizer({
                                         type="color"
                                         value={config.accentColor || '#f59e0b'}
                                         onChange={(e) => updateConfig({ accentColor: e.target.value })}
-                                        className="h-6 w-6 cursor-pointer overflow-hidden rounded bg-transparent"
+                                        className="h-6 w-6 cursor-pointer appearance-none overflow-hidden rounded bg-transparent p-0 [&::-moz-color-swatch]:border-none [&::-moz-color-swatch]:rounded [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none [&::-webkit-color-swatch]:rounded"
                                     />
                                 </div>
                             </div>

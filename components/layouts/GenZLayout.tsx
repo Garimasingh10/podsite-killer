@@ -73,15 +73,18 @@ export default function GenZLayout({ children, podcast, onSubscribeClick }: GenZ
 
                         <div className="flex items-center gap-6">
                             <nav className="hidden items-center gap-8 md:flex">
-                                {['HOME', 'ARCHIVE', 'SHOP', 'ABOUT'].map((item) => (
-                                    <Link
-                                        key={item}
-                                        href={item === 'HOME' ? `/${podcast.id}` : item === 'ARCHIVE' ? `/${podcast.id}/episodes` : item === 'SHOP' ? `/${podcast.id}#product` : `/${podcast.id}#host`}
-                                        className="text-lg font-black uppercase italic transition-all hover:text-[var(--primary)]"
-                                    >
-                                        {item}
-                                    </Link>
-                                ))}
+                                {['HOME', 'ARCHIVE', 'SHOP', 'ABOUT'].map((item) => {
+                                    const href = item === 'HOME' ? `/${podcast.id}` : item === 'ARCHIVE' ? `/${podcast.id}/episodes` : item === 'SHOP' ? `/${podcast.id}#product` : `/${podcast.id}#host`;
+                                    return (
+                                        <a
+                                            key={item}
+                                            href={href}
+                                            className="text-lg font-black uppercase italic transition-all hover:text-[color:var(--primary)]"
+                                        >
+                                            {item}
+                                        </a>
+                                    );
+                                })}
                             </nav>
                             <div className="hidden md:flex items-center gap-4">
                                 <PublicSearch podcastId={podcast.id} />
