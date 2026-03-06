@@ -35,12 +35,11 @@ export function NewPodcastForm({ initialRss = '' }: { initialRss?: string }) {
     );
     setRssUrl('');
     
-    // Refresh immediately to show newly imported podcast as active
-    // and seamlessly redirect to the customization screen to fulfill onboarding
+    // Refresh and seamlessly redirect to the customization screen to fulfill onboarding
     setTimeout(() => {
       router.refresh();
       if (json.podcastId) {
-        router.push(`/dashboard?active=${json.podcastId}`);
+        router.push(`/dashboard/customize?siteId=${json.podcastId}`);
       }
       setMessage(null);
     }, 1000);

@@ -296,16 +296,31 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     latest_video_id: latest?.youtube_video_id
   };
 
-  // Create dictionary of blocks for LiveLayoutController
-  const blockDict: Record<string, React.ReactNode> = {
-    hero: <HeroBlock podcast={podcastWithImage} latestEpisode={latest} />,
-    shorts: <ShortsBlock podcast={podcastWithImage} />,
-    grid: <GridBlock podcast={podcastWithImage} episodes={finalEpisodes || []} />,
-    episodes: <GridBlock podcast={podcastWithImage} episodes={finalEpisodes || []} />,
-    subscribe: <SubscribeBlock podcast={podcastWithImage} />,
-    product: products[0] ? <ProductBlock product={products[0]} /> : null,
-    host: <HostBlock podcast={podcastWithImage} />
-  };
+    // Create dictionary of blocks for LiveLayoutController
+    const blockDict: Record<string, React.ReactNode> = {
+        hero: <HeroBlock podcast={podcastWithImage} latestEpisode={latest} />,
+        shorts: <ShortsBlock podcast={podcastWithImage} />,
+        grid: (
+            <div className="space-y-12">
+                <GridBlock podcast={podcastWithImage} episodes={finalEpisodes || []} />
+                {finalEpisodes.length >= PAGE_SIZE && (
+                    <div className="flex justify-center pb-20">
+                        <Link
+                            href={`/${subdomain}/episodes`}
+                            className="group relative inline-flex items-center gap-4 rounded-full border-4 border-current px-12 py-5 text-xl font-black uppercase italic tracking-tighter transition-all hover:bg-white hover:text-black hover:scale-105 active:scale-95"
+                        >
+                            <span>Browse All Episodes</span>
+                            <span className="transition-transform group-hover:translate-x-2">→</span>
+                        </Link>
+                    </div>
+                )}
+            </div>
+        ),
+        episodes: <GridBlock podcast={podcastWithImage} episodes={finalEpisodes || []} />,
+        subscribe: <SubscribeBlock podcast={podcastWithImage} />,
+        product: products[0] ? <ProductBlock product={products[0]} /> : null,
+        host: <HostBlock podcast={podcastWithImage} />
+    };
 
   return (
     <>

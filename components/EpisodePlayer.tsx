@@ -36,23 +36,19 @@ export default function EpisodePlayer({
     // Default to a single mode if only one exists
     useEffect(() => {
         if (!mode) {
-            if (youtubeVideoId && !audioUrl) setMode('video');
-            else if (audioUrl && !youtubeVideoId) setMode('audio');
+            if (youtubeVideoId) setMode('video');
+            else if (audioUrl) setMode('audio');
         }
     }, [youtubeVideoId, audioUrl, mode]);
 
     // Intersection Observer for Sticky Mode
     useEffect(() => {
-        if (mode !== 'audio') {
-            setIsSticky(false);
-            return;
-        }
-
         const observer = new IntersectionObserver(
             ([entry]) => {
+                // Stick if we've scrolled past the player
                 setIsSticky(!entry.isIntersecting && entry.boundingClientRect.top < 0);
             },
-            { threshold: 0.1, rootMargin: '-100px 0px 0px 0px' }
+            { threshold: 0, rootMargin: '-80px 0px 0px 0px' }
         );
 
         if (containerRef.current) {
@@ -60,7 +56,7 @@ export default function EpisodePlayer({
         }
 
         return () => observer.disconnect();
-    }, [mode]);
+    }, []);
 
     // Sync Audio State
     useEffect(() => {
@@ -105,14 +101,18 @@ export default function EpisodePlayer({
         if (mode === 'audio' && audioRef.current) {
             audioRef.current.currentTime = seconds;
             audioRef.current.play();
-        } else if (mode === 'video') {
-            const iframe = document.querySelector('iframe');
-            if (iframe) {
-                const currentSrc = new URL(iframe.src);
-                currentSrc.searchParams.set('start', seconds.toString());
-                currentSrc.searchParams.set('autoplay', '1');
-                iframe.src = currentSrc.toString();
-            }
+        } else if (mode === 'video' || (youtubeVideoId && !mode)) {
+            if (mode !== 'video') setMode('video');
+            // Small delay to ensure iframe is rendered if mode just changed
+            setTimeout(() => {
+                const iframe = document.querySelector('iframe');
+                if (iframe) {
+                    const currentSrc = new URL(iframe.src);
+                    currentSrc.searchParams.set('start', seconds.toString());
+                    currentSrc.searchParams.set('autoplay', '1');
+                    iframe.src = currentSrc.toString();
+                }
+            }, mode === 'video' ? 0 : 300);
         }
     };
 
@@ -268,39 +268,63 @@ export default function EpisodePlayer({
                 )}
             </div>
 
-            {/* Sticky Player */}
-            {isSticky && mode === 'audio' && (
-                <div className="fixed bottom-0 left-0 right-0 z-50 border-t-4 border-black bg-white p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] animate-in slide-in-from-bottom-full duration-300">
-                    <div className="mx-auto flex max-w-4xl items-center gap-4">
-                        <button
-                            onClick={togglePlay}
-                            className="flex h-14 w-14 flex-shrink-0 items-center justify-center border-4 border-black bg-primary text-primary-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-1 active:translate-x-1 active:translate-y-1 active:shadow-none"
-                        >
-                            {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
-                        </button>
-                        <div className="flex-1 min-w-0">
-                            <h4 className="truncate text-sm font-black uppercase tracking-tighter italic">{title}</h4>
-                            <div className="flex items-center gap-2">
-                                <span className="text-[10px] font-bold font-mono">{formatTime(currentTime)}</span>
-                                <input
-                                    type="range"
-                                    min="0"
-                                    max={duration || 100}
-                                    value={currentTime}
-                                    onChange={handleSeek}
-                                    className="h-2 flex-1 cursor-pointer appearance-none rounded-full bg-slate-200 accent-black"
-                                />
-                                <span className="text-[10px] font-bold font-mono">{formatTime(duration)}</span>
+            {/* Sticky/Floating Player */}
+            {isSticky && (
+                <>
+                    {mode === 'audio' && audioUrl && (
+                        <div className="fixed bottom-0 left-0 right-0 z-50 border-t-4 border-black bg-white p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] animate-in slide-in-from-bottom-full duration-300">
+                            <div className="mx-auto flex max-w-4xl items-center gap-4">
+                                <button
+                                    onClick={togglePlay}
+                                    className="flex h-14 w-14 flex-shrink-0 items-center justify-center border-4 border-black bg-primary text-primary-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-1 active:translate-x-1 active:translate-y-1 active:shadow-none"
+                                >
+                                    {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
+                                </button>
+                                <div className="flex-1 min-w-0">
+                                    <h4 className="truncate text-sm font-black uppercase tracking-tighter italic">{title}</h4>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[10px] font-bold font-mono">{formatTime(currentTime)}</span>
+                                        <input
+                                            type="range"
+                                            min="0"
+                                            max={duration || 100}
+                                            value={currentTime}
+                                            onChange={handleSeek}
+                                            className="h-2 flex-1 cursor-pointer appearance-none rounded-full bg-slate-200 accent-black"
+                                        />
+                                        <span className="text-[10px] font-bold font-mono">{formatTime(duration)}</span>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setIsSticky(false)}
+                                    className="h-10 w-10 flex items-center justify-center border-2 border-black hover:bg-slate-100"
+                                >
+                                    <X size={16} />
+                                </button>
                             </div>
                         </div>
-                        <button
-                            onClick={() => setIsSticky(false)}
-                            className="h-10 w-10 flex items-center justify-center border-2 border-black hover:bg-slate-100"
-                        >
-                            <X size={16} />
-                        </button>
-                    </div>
-                </div>
+                    )}
+
+                    {mode === 'video' && youtubeVideoId && (
+                        <div className="fixed bottom-6 right-6 z-[100] w-[320px] shadow-2xl transition-all animate-in slide-in-from-bottom-4">
+                            <div className="relative aspect-video w-full group overflow-hidden rounded-2xl border-4 border-black">
+                                <iframe
+                                    className="h-full w-full"
+                                    src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&mute=0`}
+                                    title={title}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                />
+                                <button
+                                    onClick={() => setIsSticky(false)}
+                                    className="absolute -top-1 -left-1 flex h-8 w-8 items-center justify-center rounded-full bg-black text-white hover:bg-primary transition-colors opacity-0 group-hover:opacity-100 border-2 border-white"
+                                >
+                                    <X size={16} />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </>
             )}
 
             {/* Show Notes (Vibrant & High Reading Energy) */}

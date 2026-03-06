@@ -14,6 +14,8 @@ export default async function middleware(request: NextRequest) {
         rootDomain === '[::1]' ||
         hostname === process.env.NEXT_PUBLIC_APP_DOMAIN ||
         hostname === 'app.podsitekiller.com' ||
+        hostname === 'makemypodcastsite.com' ||
+        hostname === 'www.makemypodcastsite.com' ||
         hostname.includes('vercel.app');
 
     const isMainAppAssetOrApi =
@@ -100,7 +102,7 @@ export default async function middleware(request: NextRequest) {
             return NextResponse.redirect(new URL('/dashboard', request.url));
         }
     } else {
-        if (isDashboard) {
+        if (isDashboard || (isMainApp && pathname === '/')) {
             return NextResponse.redirect(new URL('/login', request.url));
         }
     }
