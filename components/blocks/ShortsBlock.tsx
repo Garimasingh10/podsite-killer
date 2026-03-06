@@ -1,102 +1,89 @@
-// components/blocks/ShortsBlock.tsx
-import React from 'react';
-import Image from 'next/image';
-import { fetchChannelUploads } from '@/lib/youtube/fetchUploads';
-import { Headphones } from 'lucide-react';
+'use client';
 
-export default async function ShortsBlock({ podcast }: { podcast: any }) {
-    const channelId = podcast.youtube_channel_id;
+import React, { useState } from 'react';
+import { Play, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
-    if (!channelId) {
-        return null;
-    }
+export default function ShortsBlock({ shorts }: { shorts: any[] }) {
+    const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
-    const apiKey = process.env.YOUTUBE_API_KEY;
-    let videos: any[] = [];
-
-    if (apiKey) {
-        try {
-            // Re-use our existing helper which fetches latest 50 uploads
-            // We can just take the top 10 for the carousel
-            videos = await fetchChannelUploads(apiKey, channelId, 10);
-        } catch (e) {
-            console.error('Failed to fetch shorts/videos for block', e);
-        }
-    }
-
-    if (!videos.length) {
-        return null;
-    }
+    if (!shorts || shorts.length === 0) return null;
 
     return (
-        <section className="mb-20 animate-fade-in-up [animation-delay:200ms]">
-            <div className="mb-10 flex items-center justify-between px-4 md:px-0">
-                <div className="space-y-1">
-                    <h3 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-                        Shorts & Clips
-                    </h3>
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)] opacity-80">
-                        From our YouTube Channel
-                    </p>
+        <section className="py-20 bg-black/20">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-end justify-between mb-10">
+                    <div className="space-y-2">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-[0.2em] border border-red-500/20">
+                            🎥 YouTube Shorts
+                        </div>
+                        <h2 className="text-4xl font-black text-white tracking-tighter uppercase italic">
+                            Watch Shorts
+                        </h2>
+                    </div>
+                    
+                    <div className="hidden sm:flex items-center gap-3">
+                        <button className="p-3 rounded-full bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-all">
+                            <ChevronLeft size={20} />
+                        </button>
+                        <button className="p-3 rounded-full bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-all">
+                            <ChevronRight size={20} />
+                        </button>
+                    </div>
                 </div>
-                <a
-                    href={`https://www.youtube.com/channel/${channelId}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 shadow-sm transition-all hover:scale-105 hover:bg-zinc-50 dark:hover:bg-zinc-800"
-                >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
-                    </svg>
-                </a>
+
+                {/* Horizontal Scroll Carousel */}
+                <div className="flex gap-4 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory">
+                    {shorts.map((short) => (
+                        <div 
+                            key={short.youtube_video_id}
+                            onClick={() => setSelectedVideo(short.youtube_video_id)}
+                            className="flex-none w-[280px] aspect-[9/16] relative rounded-[2rem] overflow-hidden group cursor-pointer snap-start bg-zinc-900 border border-white/5"
+                        >
+                            <img 
+                                src={short.thumbnail} 
+                                alt={short.title}
+                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
+                            
+                            {/* Overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
+                            
+                            {/* Content */}
+                            <div className="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                                <div className="self-end">
+                                    <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
+                                        <Play size={20} fill="currentColor" />
+                                    </div>
+                                </div>
+                                <h3 className="text-lg font-bold text-white line-clamp-2 leading-tight tracking-tight">
+                                    {short.title}
+                                </h3>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
 
-            <div className="no-scrollbar flex gap-6 overflow-x-auto pb-10 scrollbar-hide snap-x snap-mandatory px-4 md:px-0">
-                {videos.map((video) => (
-                    <a
-                        key={video.id}
-                        href={`https://www.youtube.com/watch?v=${video.id}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="group relative h-[420px] w-[240px] flex-shrink-0 cursor-pointer overflow-hidden rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-zinc-950 snap-start block shadow-xl transition-all hover:-translate-y-3 hover:shadow-2xl hover:border-[var(--primary)]/50"
+            {/* Modal Player */}
+            {selectedVideo && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 sm:p-8 animate-in fade-in duration-300">
+                    <button 
+                        onClick={() => setSelectedVideo(null)}
+                        className="absolute top-4 right-4 sm:top-10 sm:right-10 p-4 rounded-full bg-white/5 text-white hover:bg-white/10 transition-all"
                     >
-                        <Image
-                            src={`https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`}
-                            alt={video.title || 'Short'}
-                            fill
-                            sizes="240px"
-                            className="object-cover transition-transform duration-1000 group-hover:scale-110 opacity-90 group-hover:opacity-100"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
-
-                        {/* Status Badge */}
-                        <div className="absolute top-6 right-6 flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-md ring-1 ring-white/20">
-                            <div className="h-1.5 w-1.5 rounded-full bg-[var(--primary)] animate-pulse" />
-                            <span className="text-[10px] font-bold text-white uppercase tracking-widest">Clip</span>
-                        </div>
-
-                        <div className="absolute bottom-8 left-8 right-8 text-white text-left">
-                            <p className="font-bold leading-tight line-clamp-2 text-lg tracking-tight mb-3">
-                                {video.title}
-                            </p>
-                            <div className="flex items-center gap-3">
-                                <span className="h-1 w-6 bg-[var(--primary)] rounded-full" />
-                                <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">
-                                    {new Date(video.publishedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-500 group-hover:opacity-100 bg-black/20 backdrop-blur-[2px]">
-                            <div className="h-16 w-16 rounded-full bg-white text-black flex items-center justify-center shadow-2xl scale-50 group-hover:scale-100 transition-transform duration-500">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M8 5v14l11-7z" />
-                                </svg>
-                            </div>
-                        </div>
-                    </a>
-                ))}
-            </div>
+                        <X size={24} />
+                    </button>
+                    
+                    <div className="w-full max-w-[450px] aspect-[9/16] bg-black rounded-[2.5rem] overflow-hidden shadow-2xl relative">
+                        <iframe
+                            src={`https://www.youtube.com/embed/${selectedVideo}?autoplay=1`}
+                            className="absolute inset-0 w-full h-full border-0"
+                            allow="autoplay; encrypted-media"
+                            allowFullScreen
+                        ></iframe>
+                    </div>
+                </div>
+            )}
         </section>
     );
 }

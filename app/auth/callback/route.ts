@@ -81,26 +81,29 @@ export async function GET(request: Request) {
 
   // Send welcome email EXACTLY ONCE upon first verified login
   if (data.user.email && !data.user.user_metadata?.welcome_email_sent) {
-    console.log('Auth Callback - First time verification/login! Sending Welcome Email...');
+    console.log('Auth Callback - First time verification/login! Sending Welcome Email to:', data.user.email);
     
-    // We run the fetch directly to Resend instead of internal API route looping
-    // to prevent serverless function timeouts/drops.
     try {
       if (process.env.RESEND_API_KEY) {
         const { getWelcomeEmailHtml, sendResend } = await import('@/lib/emails');
         const html = getWelcomeEmailHtml();
-        await sendResend(data.user.email, 'Welcome to PodSite 🚀', html);
+        const emailResult = await sendResend(data.user.email, 'Welcome to PodSite 🚀', html);
         
-        // Mark user as having received the welcome blast
-        await supabase.auth.updateUser({
-          data: { welcome_email_sent: true }
-        });
-        console.log('Welcome Email dispatched successfully.');
+        if (emailResult.ok) {
+          // Mark user as having received the welcome blast
+          const { error: updateError } = await supabase.auth.updateUser({
+            data: { welcome_email_sent: true }
+          });
+          if (updateError) console.error('Auth Callback - Failed to update user metadata:', updateError);
+          else console.log('Auth Callback - Welcome Email status saved to metadata.');
+        } else {
+          console.error('Auth Callback - Welcome Email failed to send:', emailResult.error);
+        }
       } else {
-        console.warn('RESEND_API_KEY missing - skipping welcome email');
+        console.warn('Auth Callback - RESEND_API_KEY missing - skipping welcome email');
       }
     } catch (emailErr) {
-      console.error('Failed to dispatch welcome email:', emailErr);
+      console.error('Auth Callback - Unexpected error during welcome email dispatch:', emailErr);
     }
   }
 

@@ -11,7 +11,7 @@ import GridBlock from '@/components/blocks/GridBlock';
 import SubscribeBlock from '@/components/blocks/SubscribeBlock';
 import HostBlock from '@/components/blocks/HostBlock';
 import ShortsBlock from '@/components/blocks/ShortsBlock';
-import ProductBlock from '@/components/blocks/ProductBlock';
+import DigitalProductBlock from '@/components/blocks/DigitalProductBlock';
 import LiveLayoutController from '@/components/dashboard/LiveLayoutController';
 
 const PAGE_SIZE = 20;
@@ -133,11 +133,31 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     }
   }
 
-  // Separate query for products to avoid join failures
+  // Separate query for products and shorts to avoid join failures
   let products: any[] = [];
+  let shorts: any[] = [];
   if (podcast) {
     const { data: productsData } = await supabase.from('products').select('*').eq('podcast_id', podcast.id);
     products = productsData || [];
+
+    const { data: shortsData } = await supabase.from('shorts').select('*').eq('podcast_id', podcast.id).order('published_at', { ascending: false }).limit(10);
+    shorts = shortsData || [];
+
+    // If no shorts found but we have a channel ID, try a one-time fetch and sync
+    if (shorts.length === 0 && podcast.youtube_channel_id) {
+       try {
+         const { fetchShorts } = await import('@/lib/youtube/shorts');
+         const fetchedShorts = await fetchShorts(podcast.youtube_channel_id as string);
+         if (fetchedShorts.length > 0) {
+            // Background sync (not blocking for this request would be better, but for "functioning well" on first load we can do a quick insert)
+            const shortsToSave = fetchedShorts.map((s: any) => ({ ...s, podcast_id: podcast!.id }));
+            const { data: savedShorts } = await supabase.from('shorts').insert(shortsToSave).select();
+            shorts = savedShorts || fetchedShorts;
+         }
+       } catch (e) {
+         console.warn('Failed to auto-sync shorts on first load:', e);
+       }
+    }
   }
 
   // If demo podcast and not found, use demo data
@@ -309,7 +329,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     // Create dictionary of blocks for LiveLayoutController
     const blockDict: Record<string, React.ReactNode> = {
         hero: <HeroBlock podcast={podcastWithImage} latestEpisode={latest} />,
-        shorts: <ShortsBlock podcast={podcastWithImage} />,
+        shorts: <ShortsBlock shorts={shorts} />,
         grid: (
             <div className="space-y-12">
                 <GridBlock podcast={podcastWithImage} episodes={finalEpisodes || []} />
@@ -328,7 +348,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
         ),
         episodes: <GridBlock podcast={podcastWithImage} episodes={finalEpisodes || []} />,
         subscribe: <SubscribeBlock podcast={podcastWithImage} />,
-        product: products[0] ? <ProductBlock product={products[0]} /> : null,
+        product: products[0] ? <DigitalProductBlock product={products[0]} /> : null,
         host: <HostBlock podcast={podcastWithImage} />
     };
 

@@ -208,19 +208,19 @@ export default function ProductsClient({ podcastId, stripeAccountId, products }:
 
                         <button
                             type="submit"
-                            disabled={isUploading || !stripeAccountId}
-                            className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl font-black text-sm uppercase tracking-widest transition-all ${!stripeAccountId ? 'bg-slate-800 text-slate-500 cursor-not-allowed hidden' : isUploading ? 'bg-primary/50 text-black' : 'bg-primary text-black hover:bg-primary/90'}`}
+                            disabled={isUploading}
+                            className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl font-black text-sm uppercase tracking-widest transition-all ${isUploading ? 'bg-primary/50 text-black' : 'bg-primary text-black hover:bg-primary/90'}`}
                         >
                             {isUploading ? (
                                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-black border-t-transparent" />
                             ) : (
-                                <><Plus size={18} strokeWidth={3} /> Create Product</>
+                                <><Plus size={18} strokeWidth={3} /> {stripeAccountId ? 'Create Product' : 'Create Product (Mock)'}</>
                             )}
                         </button>
 
                         {!stripeAccountId && (
-                            <p className="text-center text-xs text-amber-500 font-bold uppercase tracking-widest">
-                                Connect Stripe to enable product creation
+                            <p className="text-center text-[10px] text-amber-500 font-bold uppercase tracking-widest opacity-70">
+                                No Stripe Account: Products will be created in mock mode
                             </p>
                         )}
                     </form>
