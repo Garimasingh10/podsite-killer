@@ -83,21 +83,7 @@ export default function SubstackLayout({ children, podcast, onSubscribeClick }: 
                                     >
                                         <Heart size={18} />
                                     </button>
-                                    
-                                    <a href={podcast.twitterUrl || '#'} className="h-8 w-8 bg-black flex items-center justify-center text-white shadow-[2px_2px_0px_rgba(0,0,0,0.1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all">
-                                        <span className="text-[10px] font-black italic">𝕏</span>
-                                    </a>
-                                    <a href={podcast.linkedInUrl || '#'} className="h-8 w-8 bg-black flex items-center justify-center text-white shadow-[2px_2px_0px_rgba(0,0,0,0.1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all">
-                                        <span className="text-[9px] font-black italic">in</span>
-                                    </a>
                                 </div>
-
-                                <button 
-                                    onClick={onSubscribeClick}
-                                    className="rounded-full bg-black px-6 py-2 text-[10px] font-black uppercase tracking-widest text-white hover:bg-[var(--primary)] transition-all"
-                                >
-                                    Subscribe
-                                </button>
                             </div>
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -155,15 +141,25 @@ export default function SubstackLayout({ children, podcast, onSubscribeClick }: 
                 </main>
 
                 {/* Minimal Footer */}
-                <footer className="border-t border-zinc-100 py-20">
+                <footer className="border-t border-zinc-100 py-32 bg-white">
                     <div className="mx-auto max-w-3xl px-6 text-center">
-                        <div className="mb-8 flex justify-center gap-6 grayscale opacity-50">
-                            {/* Social Placeholders */}
-                            <span className="text-xl">𝕏</span>
-                            <span className="text-xl">in</span>
-                            <span className="text-xl">📻</span>
+                        <div className="mb-12 flex flex-col items-center gap-8">
+                            <div className="flex gap-4">
+                                <a href={podcast.twitterUrl || '#'} className="h-12 w-12 rounded-full border border-zinc-100 flex items-center justify-center text-black hover:bg-black hover:text-white transition-all">
+                                    <span className="text-xl font-black italic">𝕏</span>
+                                </a>
+                                <a href={podcast.linkedInUrl || '#'} className="h-12 w-12 rounded-full border border-zinc-100 flex items-center justify-center text-black hover:bg-black hover:text-white transition-all">
+                                    <span className="text-lg font-black italic">in</span>
+                                </a>
+                            </div>
+                            <button 
+                                onClick={onSubscribeClick}
+                                className="rounded-full bg-black px-12 py-4 text-sm font-black uppercase tracking-[0.2em] text-white hover:bg-[var(--primary)] transition-all shadow-xl active:scale-95"
+                            >
+                                Subscribe Now
+                            </button>
                         </div>
-                        <p className="text-xs font-bold uppercase tracking-[0.3em] text-zinc-400">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">
                             © {new Date().getFullYear()} {podcast.title}.
                         </p>
                     </div>

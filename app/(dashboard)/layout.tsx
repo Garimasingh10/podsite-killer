@@ -83,44 +83,44 @@ export default async function DashboardLayout({
             </Link>
           </div>
 
-          <div className="flex flex-1 items-center justify-center px-8">
+          <div className="flex flex-1 items-center justify-center px-4">
             <SearchForm 
               initialQuery="" 
-              placeholder="Search your empire..." 
-              className="w-full max-w-md scale-90 opacity-80 transition-all focus-within:opacity-100 focus-within:scale-100" 
+              placeholder="Search..." 
+              className="w-full max-w-xs scale-90 opacity-60 transition-all focus-within:opacity-100 focus-within:scale-100" 
             />
           </div>
 
-          <nav className="flex items-center gap-4 text-[11px] font-black uppercase tracking-widest text-slate-400">
+          <nav className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
             <Link
               href="/dashboard"
-              className="group flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 py-2 transition-all hover:border-sky-500/50 hover:bg-sky-500/10 hover:text-sky-400"
+              className="group flex items-center gap-1.5 rounded-lg border border-white/5 bg-white/5 px-3 py-1.5 transition-all hover:border-sky-500/50 hover:bg-sky-500/10 hover:text-sky-400"
             >
-              <Layout size={14} />
-              <span className="hidden lg:inline">Dashboard</span>
-            </Link>
-            <Link
-              href="/dashboard?favorites=true"
-              className="group flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 py-2 transition-all hover:border-pink-500/50 hover:bg-pink-500/10 hover:text-pink-400"
-            >
-              <Heart size={14} className="fill-current" />
-              <span className="hidden lg:inline">Favorites</span>
+              <Layout size={10} />
+              <span>Dashboard</span>
             </Link>
             <Link
               href="/dashboard/products"
-              className="group flex items-center gap-2 rounded-xl border border-white/5 px-4 py-2 transition-all hover:text-slate-100"
+              className="group flex items-center gap-1.5 rounded-lg border border-white/5 bg-white/5 px-3 py-1.5 transition-all hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-indigo-400"
             >
-              <Zap size={14} />
-              <span className="hidden lg:inline">Products</span>
+              <Zap size={10} />
+              <span>Products</span>
             </Link>
             <Link
               href="/dashboard/domains"
-              className="group flex items-center gap-2 rounded-xl border border-white/5 px-4 py-2 transition-all hover:text-slate-100"
+              className="group flex items-center gap-1.5 rounded-lg border border-white/5 bg-white/5 px-3 py-1.5 transition-all hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-400"
             >
-              <Globe size={14} />
-              <span className="hidden lg:inline">Domains</span>
+              <Globe size={10} />
+              <span>Domains</span>
             </Link>
-            <div className="h-4 w-px bg-white/10 mx-2" />
+            <Link
+              href="/dashboard?favorites=true"
+              className="group flex items-center gap-1.5 rounded-lg border border-white/5 bg-white/5 px-3 py-1.5 transition-all hover:border-pink-500/50 hover:bg-pink-500/10 hover:text-pink-400"
+            >
+              <Heart size={10} className="fill-current" />
+              <span>Favorites</span>
+            </Link>
+            <div className="h-4 w-px bg-white/10 mx-1" />
             <SignOutButton />
           </nav>
         </div>

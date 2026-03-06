@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Headphones, Layout, Clock, Star, RefreshCcw, Search, PlusCircle } from 'lucide-react';
 import ThemeEngine from '@/components/ThemeEngine';
 import { NewPodcastForm } from '../_components/NewPodcastForm';
+import { ActivePodcastSync } from '../_components/ActivePodcastSync';
 
 interface ThemeConfig {
   primaryColor?: string;
@@ -77,7 +78,7 @@ export default function DashboardClient({
 
   const displayedPodcasts = showFavorites 
     ? allPodcasts.filter(p => favorites.includes(p.id))
-    : others;
+    : allPodcasts;
 
   const primaryColor = activePodcast?.theme_config?.primaryColor || '#6366f1';
   const accentColor = activePodcast?.theme_config?.accentColor || '#8b5cf6';
@@ -124,8 +125,8 @@ export default function DashboardClient({
             <h1 className="text-5xl font-black tracking-tighter text-white leading-none italic">
               Welcome back, <span className="text-[var(--podcast-primary)]">Creator</span>
             </h1>
-            <p className="max-w-md text-sm leading-relaxed text-zinc-300 font-bold uppercase tracking-widest opacity-80">
-              Your studio is live. Paste an RSS feed to launch a new universe.
+            <p className="max-w-md text-[10px] leading-relaxed text-zinc-500 font-black uppercase tracking-[0.3em] opacity-80">
+              Studio Live / Paste RSS Feed
             </p>
           </div>
           <div className="flex w-full flex-col gap-4 sm:w-auto">
@@ -262,33 +263,10 @@ export default function DashboardClient({
           </div>
 
           <div className="flex flex-col gap-8">
-            <div className="rounded-[2.5rem] bg-pink-500/10 p-8 border border-pink-500/20 transition-all group overflow-hidden relative shadow-2xl">
-              <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-pink-500/20 blur-2xl group-hover:scale-150 transition-transform duration-700" />
-              <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-pink-500 mb-2 italic">
-                Favorites
-              </h3>
-              <p className="text-xs text-zinc-500 leading-relaxed font-bold uppercase tracking-tighter">
-                Quick access to your top shows.
-              </p>
-              
-              <div className="mt-6 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-2xl bg-pink-500/20 flex items-center justify-center text-pink-500">
-                    <Star size={20} fill="currentColor" />
-                  </div>
-                  <div>
-                    <p className="text-xl font-black text-white leading-none">{favorites.length}</p>
-                    <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Starred Shows</p>
-                  </div>
-                </div>
-                <Link 
-                  href="/dashboard?favorites=true"
-                  className="p-2 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:text-pink-400 hover:border-pink-500/50 transition-all"
-                >
-                  <PlusCircle size={20} />
-                </Link>
-              </div>
-            </div>
+            <ActivePodcastSync
+              podcastId={activePodcast.id}
+              youtubeChannelId={activePodcast.youtube_channel_id}
+            />
 
             <div className="rounded-[2.5rem] bg-[var(--podcast-primary)]/10 p-8 border border-[var(--podcast-primary)]/20 transition-all group overflow-hidden relative">
               <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-[var(--podcast-primary)]/20 blur-2xl group-hover:scale-150 transition-transform duration-700" />

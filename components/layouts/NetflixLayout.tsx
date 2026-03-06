@@ -76,35 +76,12 @@ export default function NetflixLayout({ children, podcast, onSubscribeClick }: N
                             <div className="hidden md:flex items-center gap-4">
                                 <PublicSearch podcastId={podcast.id} />
                                 
-                                {/* Favorites Heart */}
+                                {/* Favorites Heart (Move Socials/Subscribe to footer) */}
                                 <button 
                                     onClick={toggleFavorite}
                                     className={`p-2 rounded-full transition-all ${isFavorited ? 'text-red-500 fill-red-500 bg-red-500/10' : 'text-zinc-400 hover:text-white bg-white/5'}`}
                                 >
                                     <Heart size={20} />
-                                </button>
-
-                                {/* Socials Mini */}
-                                <div className="flex items-center gap-2">
-                                    <a href={podcast.twitterUrl || '#'} className="relative group">
-                                        <div className="absolute -inset-1 bg-white opacity-0 group-hover:opacity-10 blur-sm rounded-sm transition-opacity" />
-                                        <div className="h-9 w-9 bg-black border border-white/10 flex items-center justify-center text-white shadow-[2px_2px_0px_rgba(255,255,255,0.1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all">
-                                            <span className="text-xs font-black italic">𝕏</span>
-                                        </div>
-                                    </a>
-                                    <a href={podcast.linkedInUrl || '#'} className="relative group">
-                                        <div className="absolute -inset-1 bg-white opacity-0 group-hover:opacity-10 blur-sm rounded-sm transition-opacity" />
-                                        <div className="h-9 w-9 bg-black border border-white/10 flex items-center justify-center text-white shadow-[2px_2px_0px_rgba(255,255,255,0.1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all">
-                                            <span className="text-[10px] font-black italic">in</span>
-                                        </div>
-                                    </a>
-                                </div>
-
-                                <button 
-                                    onClick={onSubscribeClick}
-                                    className="hidden lg:block h-11 px-6 rounded-sm bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-[var(--primary)] transition-all active:scale-95 shadow-[4px_4px_0px_rgba(255,255,255,0.1)]"
-                                >
-                                    Subscribe Now
                                 </button>
                             </div>
                             <button
@@ -129,9 +106,35 @@ export default function NetflixLayout({ children, podcast, onSubscribeClick }: N
                     )}
                 </header>
 
-                <main className="relative z-10 pt-24 pb-24">
+                <main className="relative z-10 pt-24 pb-12">
                     {children}
                 </main>
+
+                <footer className="relative z-10 border-t border-white/5 bg-black px-8 py-20 md:px-16">
+                    <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-10 md:flex-row">
+                        <div className="space-y-4 text-center md:text-left">
+                            <h2 className="text-4xl font-black tracking-tighter uppercase">{podcast.title}</h2>
+                            <p className="text-xs font-bold uppercase tracking-[0.3em] text-zinc-600 italic">© {new Date().getFullYear()} All Rights Reserved</p>
+                        </div>
+                        
+                        <div className="flex items-center gap-8">
+                            <div className="flex items-center gap-4">
+                                <a href={podcast.twitterUrl || '#'} className="h-12 w-12 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
+                                    <span className="text-lg font-black italic">𝕏</span>
+                                </a>
+                                <a href={podcast.linkedInUrl || '#'} className="h-12 w-12 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
+                                    <span className="text-base font-black italic">in</span>
+                                </a>
+                            </div>
+                            <button 
+                                onClick={onSubscribeClick}
+                                className="h-14 px-10 rounded-sm bg-white text-black font-black uppercase tracking-[0.2em] text-sm hover:bg-[var(--primary)] transition-all shadow-2xl active:scale-95"
+                            >
+                                Subscribe Now
+                            </button>
+                        </div>
+                    </div>
+                </footer>
             </div>
         </LayoutProvider>
     );

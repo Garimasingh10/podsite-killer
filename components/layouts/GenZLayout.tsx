@@ -86,7 +86,8 @@ export default function GenZLayout({ children, podcast, onSubscribeClick }: GenZ
                             <div className="hidden md:flex items-center gap-4">
                                 <PublicSearch podcastId={podcast.id} />
                                 
-                                <button 
+                                {/* Moved to footer */}
+                                {/* <button 
                                     onClick={toggleFavorite}
                                     className={`transition-all ${isFavorited ? 'text-red-500 fill-red-500 group' : 'text-zinc-600 hover:text-black'}`}
                                 >
@@ -107,7 +108,7 @@ export default function GenZLayout({ children, podcast, onSubscribeClick }: GenZ
                                     className="border-4 border-black bg-[var(--primary)] px-6 py-2 text-sm font-black uppercase italic shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
                                 >
                                     Subscribe
-                                </button>
+                                </button> */}
                             </div>
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -152,10 +153,18 @@ export default function GenZLayout({ children, podcast, onSubscribeClick }: GenZ
                                     © {new Date().getFullYear()} {podcast.title}. All rights reserved.
                                 </p>
                             </div>
-                            <div className="flex gap-4">
+                            <div className="flex items-center gap-6">
+                                <div className="flex gap-3">
+                                    <a href={podcast.twitterUrl || '#'} className="h-14 w-14 border-4 border-black bg-black text-white flex items-center justify-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
+                                        <span className="text-2xl font-black italic">𝕏</span>
+                                    </a>
+                                    <a href={podcast.linkedInUrl || '#'} className="h-14 w-14 border-4 border-black bg-black text-white flex items-center justify-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
+                                        <span className="text-xl font-black italic">in</span>
+                                    </a>
+                                </div>
                                 <button 
                                     onClick={onSubscribeClick}
-                                    className="border-4 border-black bg-black text-white px-8 py-4 text-xl font-black uppercase italic shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:bg-[var(--primary)] hover:text-black hover:scale-105 active:scale-90 transition-all duration-200"
+                                    className="border-4 border-black bg-black text-white px-12 py-5 text-2xl font-black uppercase italic shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:bg-[var(--primary)] hover:text-black hover:scale-105 active:scale-90 transition-all duration-200"
                                 >
                                     Subscribe Now
                                 </button>
