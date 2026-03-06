@@ -147,6 +147,7 @@ export async function POST(req: Request) {
         image_url: ep.episode_image_url,
         published_at: ep.publish_date,
         duration_seconds: ep.duration_seconds,
+        video_sync_status: 'pending'
       },
       { onConflict: 'podcast_id,guid' },
     );

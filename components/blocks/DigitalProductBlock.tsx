@@ -12,13 +12,22 @@ export default function DigitalProductBlock({ product }: { product: any }) {
     const handleBuy = async () => {
         setIsLoading(true);
         try {
-            // Using our mock checkout function
-            const { url } = await createStripeCheckout(
-                product.id, 
-                product.podcast_id, 
-                window.location.href
-            );
-            window.location.href = url;
+            const res = await fetch('/api/stripe/create-checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    productId: product.id,
+                    podcastId: product.podcast_id,
+                    returnUrl: window.location.href,
+                }),
+            });
+
+            const data = await res.json();
+            if (data.url) {
+                window.location.href = data.url;
+            } else {
+                alert(data.error || 'Checkout failed');
+            }
         } catch (error) {
             console.error('Checkout error:', error);
             alert('Something went wrong. Please try again.');

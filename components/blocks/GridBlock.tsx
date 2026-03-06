@@ -6,7 +6,24 @@ import Image from 'next/image';
 import { useLayout } from '../LayoutContext';
 
 export default function GridBlock({ podcast, episodes }: { podcast: any, episodes: any[] }) {
+    const [limit, setLimit] = React.useState(8);
     const layout = useLayout();
+    
+    const displayedEpisodes = episodes.slice(0, limit);
+    const hasMore = episodes.length > limit;
+
+    const ExploreButton = () => (
+        <div className="flex justify-center mt-12 mb-20">
+            <button 
+                onClick={() => setLimit(prev => prev + 12)}
+                className="group relative inline-flex items-center gap-4 rounded-full border-4 border-current px-12 py-5 text-xl font-black uppercase italic tracking-tighter transition-all hover:bg-white hover:text-black hover:scale-105 active:scale-95"
+            >
+                <span>Explore More</span>
+                <span className="transition-transform group-hover:translate-x-2">↓</span>
+            </button>
+        </div>
+    );
+
     if (layout === 'substack') {
         return (
             <section className="mb-20">
@@ -15,7 +32,7 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                     <div className="h-px flex-1 bg-zinc-100" />
                 </div>
                 <div className="space-y-4 md:space-y-8">
-                    {episodes.map((ep) => (
+                    {displayedEpisodes.map((ep) => (
                         <Link
                             key={ep.id}
                             href={`/${podcast.id}/episodes/${ep.slug}`}
@@ -40,6 +57,7 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                         </Link>
                     ))}
                 </div>
+                {hasMore && <ExploreButton />}
             </section>
         );
     }
@@ -49,7 +67,7 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
             <section className="mb-32">
                 <h3 className="mb-12 text-6xl font-black italic uppercase tracking-tighter rotate-[-1deg] inline-block bg-[var(--primary)] text-black px-6 py-2 border-4 border-black">The Vault</h3>
                 <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
-                    {episodes.map((ep) => (
+                    {displayedEpisodes.map((ep) => (
                         <Link
                             key={ep.id}
                             href={`/${podcast.id}/episodes/${ep.slug}`}
@@ -74,6 +92,7 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                         </Link>
                     ))}
                 </div>
+                {hasMore && <ExploreButton />}
             </section>
         );
     }
@@ -86,7 +105,7 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                 Popular on {podcast.title}
             </h3>
             <div className="grid grid-cols-2 gap-x-2 gap-y-12 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-                {episodes.map((ep) => (
+                {displayedEpisodes.map((ep) => (
                     <Link
                         key={ep.id}
                         href={`/${podcast.id}/episodes/${ep.slug}`}
@@ -113,6 +132,7 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                     </Link>
                 ))}
             </div>
+            {hasMore && <ExploreButton />}
         </section>
     );
 }

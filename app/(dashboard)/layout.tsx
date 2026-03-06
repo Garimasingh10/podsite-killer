@@ -71,8 +71,9 @@ export default async function DashboardLayout({
                 PodSite‑Killer
               </p>
               <p className="text-xs text-slate-300">
-                Hello <span className="font-medium text-slate-100">{displayName}</span>, your podcast site studio.
+                Hello <span className="font-medium text-slate-100">{displayName}</span>
               </p>
+              <p className="text-[10px] text-slate-500 font-mono">{user.email}</p>
             </div>
           </div>
 

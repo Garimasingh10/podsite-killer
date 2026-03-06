@@ -39,7 +39,7 @@ export function NewPodcastForm({ initialRss = '' }: { initialRss?: string }) {
     setTimeout(() => {
       router.refresh();
       if (json.podcastId) {
-        router.push(`/dashboard`);
+        router.push(`/dashboard/customize?siteId=${json.podcastId}`);
       }
       setMessage(null);
     }, 1000);

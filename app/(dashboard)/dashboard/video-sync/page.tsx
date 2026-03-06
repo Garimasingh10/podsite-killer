@@ -197,6 +197,36 @@ export default function VideoSyncPage() {
                 )}
             </section>
 
+            {/* Unmatched Episodes Section */}
+            <section className="space-y-6 pt-12 border-t border-white/5">
+                <div className="flex items-center gap-3">
+                    <h2 className="text-sm font-black uppercase tracking-[0.3em] text-slate-500">Unmatched Episodes</h2>
+                    <div className="h-px flex-1 bg-white/5" />
+                </div>
+                
+                <p className="text-xs text-slate-500 italic">These episodes don't have a video link yet. Paste a YouTube ID or URL below to connect them.</p>
+
+                <div className="grid gap-4">
+                    {/* This would normally be filtered episodes where youtube_video_id is null and no suggest_match exists */}
+                    <div className="bg-slate-900/20 border border-white/5 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className="flex-1">
+                            <h4 className="text-sm font-bold text-white">Manual Connection Example</h4>
+                            <p className="text-[10px] text-slate-500 uppercase font-black mt-1 tracking-widest">Paste ID to link</p>
+                        </div>
+                        <div className="flex items-center gap-3 w-full md:w-auto">
+                            <input 
+                                type="text"
+                                placeholder="YouTube Video ID (e.g. dQw4w9WgXcQ)"
+                                className="flex-1 md:w-64 bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-primary/50"
+                            />
+                            <button className="bg-primary text-black px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:scale-105 transition-all">
+                                Link
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* Manual Search Section */}
             <section className="pt-20 border-t border-white/5">
                 <div className="max-w-xl mx-auto text-center space-y-6">

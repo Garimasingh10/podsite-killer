@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Play, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
-export default function ShortsBlock({ shorts }: { shorts: any[] }) {
+export default function ShortsBlock({ shorts, podcast }: { shorts: any[], podcast: any }) {
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
     if (!shorts || shorts.length === 0) return null;
@@ -19,6 +19,18 @@ export default function ShortsBlock({ shorts }: { shorts: any[] }) {
                         <h2 className="text-4xl font-black text-white tracking-tighter uppercase italic">
                             Watch Shorts
                         </h2>
+                        {podcast && (
+                            <div className="flex items-center gap-2 mt-2">
+                                {podcast.image && (
+                                    <div className="w-6 h-6 rounded-full overflow-hidden border border-white/10 shrink-0">
+                                        <img src={podcast.image} alt="" className="w-full h-full object-cover" />
+                                    </div>
+                                )}
+                                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                    From: {podcast.title || 'The Studio'}
+                                </span>
+                            </div>
+                        )}
                     </div>
                     
                     <div className="hidden sm:flex items-center gap-3">
@@ -37,14 +49,22 @@ export default function ShortsBlock({ shorts }: { shorts: any[] }) {
                         <div 
                             key={short.youtube_video_id}
                             onClick={() => setSelectedVideo(short.youtube_video_id)}
-                            className="flex-none w-[280px] aspect-[9/16] relative rounded-[2rem] overflow-hidden group cursor-pointer snap-start bg-zinc-900 border border-white/5"
+                            className="flex-none w-[280px] aspect-[9/16] relative rounded-[2rem] overflow-hidden group cursor-pointer snap-start bg-zinc-900 border border-white/5 transition-all duration-300 hover:scale-105 hover:z-20 hover:shadow-[0_0_50px_rgba(0,0,0,0.5)]"
                         >
                             <img 
                                 src={short.thumbnail} 
                                 alt={short.title}
-                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                className="absolute inset-0 w-full h-full object-cover"
                             />
                             
+                            {/* Duration Badge */}
+                            {short.duration && (
+                                <div className="absolute top-4 left-4 z-20 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg border border-white/10 text-[10px] font-black text-white flex items-center gap-1">
+                                    <span className="w-1 h-1 rounded-full bg-red-500" />
+                                    {short.duration}
+                                </div>
+                            ) }
+
                             {/* Overlay */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
                             

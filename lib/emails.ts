@@ -3,7 +3,7 @@
  * Used for: welcome, new episode, commerce (buyer + creator), domain live.
  */
 
-const FROM = process.env.RESEND_FROM || 'PodSite <onboarding@resend.dev>';
+const FROM = process.env.RESEND_FROM || 'PodSite <support@makemypodcastsite.com>';
 
 function baseStyles() {
   return `
@@ -203,7 +203,13 @@ export async function sendResend(to: string, subject: string, html: string): Pro
       }),
     });
     const data = await res.json();
-    if (!res.ok) return { ok: false, error: (data as any)?.message || res.statusText };
+    if (!res.ok) {
+      const msg = (data as any)?.message || res.statusText;
+      if (msg.includes('testing emails')) {
+        return { ok: false, error: 'Resend Test Mode: You can only send emails to your own email address (pantechsoft26@gmail.com) until you verify a domain.' };
+      }
+      return { ok: false, error: msg };
+    }
     return { ok: true };
   } catch (e: any) {
     console.error('Resend send error', e);

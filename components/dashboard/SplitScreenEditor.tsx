@@ -75,7 +75,7 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
     return (
         <div className="flex h-full w-full flex-col md:flex-row bg-slate-950 overflow-hidden">
             {/* Left Panel: Settings (30%) */}
-            <div className="w-full md:w-[35%] flex flex-col border-r border-white/10 bg-slate-950 shadow-2xl z-10">
+            <div className="w-full md:w-[30%] flex flex-col border-r border-white/10 bg-slate-950 shadow-2xl z-10">
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-white/5">
                     <Link href="/dashboard" className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
@@ -249,7 +249,7 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
                 </div>
 
                 {/* Save Bar */}
-                <div className="fixed bottom-6 left-0 md:w-[35%] w-full px-6 bg-transparent pointer-events-none z-50">
+                <div className="fixed bottom-6 left-0 md:w-[30%] w-full px-6 bg-transparent pointer-events-none z-50">
                     <div className="max-w-md mx-auto pointer-events-auto">
                         <button
                             onClick={handleSave}

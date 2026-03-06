@@ -227,7 +227,15 @@ export default function ThemeCustomizer({
                                         className="flex-1 bg-transparent text-[10px] text-white focus:outline-none placeholder:text-slate-700 font-mono"
                                     />
                                     <button
-                                        onClick={() => updateConfig({ customFontUrl: localFontUrl })}
+                                        onClick={() => {
+                                            let finalUrl = localFontUrl;
+                                            if (finalUrl && !finalUrl.startsWith('http')) {
+                                                // It's likely just a font name
+                                                const fontName = finalUrl.replace(/\s+/g, '+');
+                                                finalUrl = `https://fonts.googleapis.com/css2?family=${fontName}:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap`;
+                                            }
+                                            updateConfig({ customFontUrl: finalUrl });
+                                        }}
                                         className="rounded-lg bg-primary px-3 py-1 text-[8px] font-black uppercase tracking-widest text-black hover:scale-105 transition-all"
                                     >
                                         Apply

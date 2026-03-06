@@ -38,12 +38,20 @@ export async function fetchShorts(channelId: string) {
 
     const shorts = detailsData.items
       .filter((item: any) => parseDuration(item.contentDetails.duration) <= 61) // Allowing 1s buffer
-      .map((item: any) => ({
-        youtube_video_id: item.id,
-        title: item.snippet.title,
-        thumbnail: item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default?.url,
-        published_at: item.snippet.publishedAt
-      }));
+      .map((item: any) => {
+        const durationSeconds = parseDuration(item.contentDetails.duration);
+        const mins = Math.floor(durationSeconds / 60);
+        const secs = durationSeconds % 60;
+        const formattedDuration = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+        return {
+          youtube_video_id: item.id,
+          title: item.snippet.title,
+          thumbnail: item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default?.url,
+          published_at: item.snippet.publishedAt,
+          duration: formattedDuration
+        };
+      });
 
     return shorts;
   } catch (error) {

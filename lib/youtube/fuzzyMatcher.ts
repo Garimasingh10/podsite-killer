@@ -64,42 +64,19 @@ export function fuzzyMatchEpisodesToVideos(
             const vidDate = new Date(vid.publishedAt).getTime();
             const dateDiffHours = Math.abs(epDate - vidDate) / (1000 * 60 * 60);
 
-            // Logic 1: Date Check (Within 72 hours - slightly wider window for flexibility)
-            if (dateDiffHours <= 72) {
+            // Logic 1: Date Check (Within 48 hours as per phase 3 req)
+            if (dateDiffHours <= 48) {
                 const vidWords = getSignificantWords(vid.title);
                 if (epWords.length === 0 || vidWords.length === 0) continue;
 
-                // Logic 2: Episode Number Match (High Priority)
-                if (epNumber) {
-                    const vidNumberMatch = vid.title.match(/(?:ep|episode|#)\s*(\d+)/i);
-                    const vidNumber = vidNumberMatch ? vidNumberMatch[1] : null;
-
-                    // If both have numbers and they DON'T match, skip this video entirely
-                    if (vidNumber && vidNumber !== epNumber) continue;
+                // Logic 2: Title Similarity (> 60% of significant words)
+                let matchCount = 0;
+                for (const word of epWords) {
+                    if (vidWords.includes(word)) matchCount++;
                 }
+                const score = matchCount / Math.max(1, epWords.length);
 
-                // Logic 3: Title Similarity (100% Related Requirement)
-                const cleanVidTitle = vid.title.toLowerCase().replace(/[^\w\s]/g, '').trim();
-                const cleanEpTitle = ep.title.toLowerCase().replace(/[^\w\s]/g, '').trim();
-                
-                let score = 0;
-                let reason = 'Title similarity';
-
-                // Check for pure substring match first (strongest indicator)
-                if (cleanVidTitle.includes(cleanEpTitle) || cleanEpTitle.includes(cleanVidTitle)) {
-                    score = 1.0;
-                    reason = 'Exact title match (100%)';
-                } else {
-                    // Fallback to strict word array checking
-                    let matchCount = 0;
-                    for (const word of epWords) {
-                        if (vidWords.includes(word)) matchCount++;
-                    }
-                    score = matchCount / Math.max(1, epWords.length);
-                }
-
-                // ACCURACY UPGRADE: Enforce Near 100% threshold as requested by user
-                if (score >= 0.95) {
+                if (score > 0.6) {
                     if (!bestMatch || score > bestMatch.score) {
                         bestMatch = {
                             videoId: vid.id,
@@ -107,7 +84,8 @@ export function fuzzyMatchEpisodesToVideos(
                             score,
                             reasons: [
                                 `Confidence: ${Math.round(score * 100)}%`,
-                                epNumber ? `Episode #${epNumber} verification` : reason
+                                `Date within 48h`,
+                                `Title similarity > 60%`
                             ]
                         };
                     }

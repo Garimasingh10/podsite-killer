@@ -329,7 +329,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     // Create dictionary of blocks for LiveLayoutController
     const blockDict: Record<string, React.ReactNode> = {
         hero: <HeroBlock podcast={podcastWithImage} latestEpisode={latest} />,
-        shorts: <ShortsBlock shorts={shorts} />,
+        shorts: <ShortsBlock shorts={shorts} podcast={podcastWithImage} />,
         grid: (
             <div className="space-y-12">
                 <GridBlock podcast={podcastWithImage} episodes={finalEpisodes || []} />
