@@ -42,26 +42,41 @@ export default async function VideoSyncPage() {
         );
     }
 
-    // Fetch episodes that don't have a youtube_video_id linked yet
+    // Fetch ALL episodes for this podcast
     const { data: episodes } = await supabase
         .from('episodes')
-        .select('id, title, published_at, youtube_video_id')
+        .select('id, title, published_at, youtube_video_id, video_sync_status')
         .eq('podcast_id', activePodcast.id)
-        .is('youtube_video_id', null)
         .order('published_at', { ascending: false });
 
-    // Fetch recent YouTube videos
-    const apiKey = process.env.YOUTUBE_API_KEY || ''; // Adjust to available .env variable name
+    // Fetch recent YouTube videos to get titles for matches
+    const apiKey = process.env.YOUTUBE_API_KEY || '';
     let videos: any[] = [];
     try {
         if (apiKey) {
-            videos = await fetchChannelUploads(apiKey, activePodcast.youtube_channel_id, 50);
+            videos = await fetchChannelUploads(apiKey, activePodcast.youtube_channel_id, 100);
         }
     } catch (e) {
         console.error('Failed to fetch videos from YouTube', e);
     }
 
-    const pendingMatches = fuzzyMatchEpisodesToVideos(episodes || [], videos);
+    // Now, let's map DB pending status to the UI MatchResult format
+    const dbPendingEpisodes = (episodes || []).filter(ep => ep.video_sync_status === 'pending' && ep.youtube_video_id);
+    const pendingMatches = dbPendingEpisodes.map(ep => {
+        const matchingVideo = videos.find(v => v.id === ep.youtube_video_id);
+        return {
+            episodeId: ep.id as string,
+            videoId: ep.youtube_video_id as string,
+            episodeTitle: ep.title as string,
+            videoTitle: matchingVideo?.title || 'Unknown Video Title',
+            confidence: 1.0, // Existing match in DB means it was algorithmically chosen before
+            matchReasons: ['Matched by sync algorithm']
+        };
+    });
+
+    // Unmatched episodes are anything that is NOT approved and NOT pending.
+    // Rejected counts as unmatched, meaning you can manually link it now.
+    const unmatchedEpisodes = (episodes || []).filter(ep => ep.video_sync_status !== 'approved' && ep.video_sync_status !== 'pending');
 
     return (
         <div className="max-w-4xl mx-auto py-12 px-4 space-y-12">

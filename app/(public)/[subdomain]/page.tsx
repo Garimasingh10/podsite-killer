@@ -220,7 +220,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
 
   let episodesQuery = supabase
     .from('episodes')
-    .select('id, title, slug, published_at, image_url, youtube_video_id')
+    .select('id, title, slug, published_at, image_url, youtube_video_id, video_sync_status')
     .eq('podcast_id', podcast.id)
     .order('published_at', { ascending: false });
 
@@ -234,9 +234,14 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     console.error('episodesError', episodesError);
   }
 
-  // For demo podcast, provide sample episodes if none in DB
-  let finalEpisodes = episodes;
-  if (isDemoPodcast && (!episodes || episodes.length === 0)) {
+  // Filter out pending/rejected youtube videos
+  const safeEpisodes = (episodes || []).map((ep: any) => ({
+    ...ep,
+    youtube_video_id: (ep.video_sync_status === 'pending' || ep.video_sync_status === 'rejected') ? null : ep.youtube_video_id
+  }));
+
+  let finalEpisodes = safeEpisodes;
+  if (isDemoPodcast && (!safeEpisodes || safeEpisodes.length === 0)) {
     finalEpisodes = [
       {
         id: 'demo-1',
@@ -300,8 +305,8 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   const blockDict: Record<string, React.ReactNode> = {
     hero: <HeroBlock podcast={podcastWithImage} latestEpisode={latest} />,
     shorts: <ShortsBlock podcast={podcastWithImage} />,
-    grid: <GridBlock podcast={podcastWithImage} episodes={episodes || []} />,
-    episodes: <GridBlock podcast={podcastWithImage} episodes={episodes || []} />,
+    grid: <GridBlock podcast={podcastWithImage} episodes={finalEpisodes || []} />,
+    episodes: <GridBlock podcast={podcastWithImage} episodes={finalEpisodes || []} />,
     subscribe: <SubscribeBlock podcast={podcastWithImage} />,
     product: (podcast as any).products?.[0] ? <ProductBlock product={(podcast as any).products[0]} /> : null,
     host: <HostBlock podcast={podcastWithImage} />

@@ -1,7 +1,8 @@
-﻿'use client';
+'use client';
 // components/layouts/SubstackLayout.tsx
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Mail, Search, Menu, X } from 'lucide-react';
 import { LayoutProvider } from '../LayoutContext';
 import PublicSearch from '../PublicSearch';
@@ -80,11 +81,15 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
                     {/* Simplified Podcast Info for Substack */}
                     <div className="mb-24 text-center">
                         {podcast.image && (
-                            <img
-                                src={podcast.image}
-                                alt={podcast.title}
-                                className="mx-auto mb-8 h-32 w-32 rounded-2xl border border-zinc-100 shadow-sm"
-                            />
+                            <div className="mx-auto mb-8 h-32 w-32 relative rounded-2xl overflow-hidden border border-zinc-100 shadow-sm">
+                                <Image
+                                    src={podcast.image}
+                                    alt={podcast.title}
+                                    fill
+                                    sizes="128px"
+                                    className="object-cover"
+                                />
+                            </div>
                         )}
                         <h1 className="mb-2 text-5xl font-black italic tracking-tighter text-[var(--foreground)]">{podcast.title}</h1>
                         {podcast.tagline && (

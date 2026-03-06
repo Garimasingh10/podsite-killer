@@ -1,5 +1,6 @@
 // components/blocks/ShortsBlock.tsx
 import React from 'react';
+import Image from 'next/image';
 import { fetchChannelUploads } from '@/lib/youtube/fetchUploads';
 import { Headphones } from 'lucide-react';
 
@@ -59,13 +60,12 @@ export default async function ShortsBlock({ podcast }: { podcast: any }) {
                         rel="noreferrer"
                         className="group relative h-[420px] w-[240px] flex-shrink-0 cursor-pointer overflow-hidden rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-zinc-950 snap-start block shadow-xl transition-all hover:-translate-y-3 hover:shadow-2xl hover:border-[var(--primary)]/50"
                     >
-                        <img
-                            src={`https://i.ytimg.com/vi/${video.id}/maxresdefault.jpg`}
-                            onError={(e) => {
-                                (e.target as HTMLImageElement).src = `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`;
-                            }}
-                            alt={video.title}
-                            className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-90 group-hover:opacity-100"
+                        <Image
+                            src={`https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`}
+                            alt={video.title || 'Short'}
+                            fill
+                            sizes="240px"
+                            className="object-cover transition-transform duration-1000 group-hover:scale-110 opacity-90 group-hover:opacity-100"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
 

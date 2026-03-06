@@ -36,11 +36,14 @@ export function NewPodcastForm({ initialRss = '' }: { initialRss?: string }) {
     setRssUrl('');
     
     // Refresh immediately to show newly imported podcast as active
-    // (it will be the most recent and become the primary workspace)
+    // and seamlessly redirect to the customization screen to fulfill onboarding
     setTimeout(() => {
       router.refresh();
+      if (json.podcastId) {
+        router.push(`/dashboard/customize?siteId=${json.podcastId}`);
+      }
       setMessage(null);
-    }, 2000);
+    }, 1000);
   };
 
   return (

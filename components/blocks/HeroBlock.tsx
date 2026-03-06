@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useLayout } from '../LayoutContext';
 
 export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, latestEpisode: any }) {
@@ -19,10 +20,13 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
                             allow="autoplay"
                         />
                     ) : (
-                        <img
-                            src={latestEpisode?.image_url || podcast.image}
+                        <Image
+                            src={latestEpisode?.image_url || podcast.image || 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618'}
                             alt=""
-                            className="h-full w-full object-cover opacity-90 brightness-75"
+                            fill
+                            priority
+                            sizes="100vw"
+                            className="object-cover opacity-90 brightness-75"
                         />
                     )}
                     {/* Netflix-style Overlays */}
@@ -72,12 +76,14 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
                 <div className="max-w-4xl mx-auto px-4">
                     <div className="flex flex-col md:flex-row gap-12 items-center">
                         {latestEpisode?.image_url && (
-                            <div className="w-full md:w-1/3 shrink-0">
-                                <Link href={`/${podcast.id}/episodes/${latestEpisode?.slug}`} className="block">
-                                    <img
+                            <div className="relative w-full md:w-1/3 shrink-0 aspect-square">
+                                <Link href={`/${podcast.id}/episodes/${latestEpisode?.slug}`} className="block h-full w-full relative">
+                                    <Image
                                         src={latestEpisode.image_url}
                                         alt={latestEpisode.title || ''}
-                                        className="w-full aspect-square object-cover rounded shadow-lg transition-all duration-500 group-hover/hero:scale-102 group-hover/hero:shadow-2xl brightness-95 group-hover/hero:brightness-100"
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, 33vw"
+                                        className="object-cover rounded shadow-lg transition-all duration-500 group-hover/hero:scale-102 group-hover/hero:shadow-2xl brightness-95 group-hover/hero:brightness-100"
                                     />
                                 </Link>
                             </div>
@@ -117,11 +123,13 @@ export default function HeroBlock({ podcast, latestEpisode }: { podcast: any, la
                     <div className="flex flex-col md:flex-row gap-12 items-center relative z-10">
                         {/* Image Box on Left */}
                         <div className="w-full md:w-1/2 shrink-0">
-                            <div className="aspect-square border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] overflow-hidden bg-white group-hover:shadow-none group-hover:translate-x-2 group-hover:translate-y-2 transition-all">
-                                <img
-                                    src={latestEpisode?.image_url || podcast.image}
-                                    alt={latestEpisode?.title}
-                                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-500"
+                            <div className="relative aspect-square border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] overflow-hidden bg-white group-hover:shadow-none group-hover:translate-x-2 group-hover:translate-y-2 transition-all">
+                                <Image
+                                    src={latestEpisode?.image_url || podcast.image || 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618'}
+                                    alt={latestEpisode?.title || 'Episode'}
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                    className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-500"
                                 />
                             </div>
                         </div>

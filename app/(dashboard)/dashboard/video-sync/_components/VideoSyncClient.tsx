@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { MatchResult } from '@/lib/youtube/fuzzyMatcher';
-import { approveMatch } from '../actions';
+import { approveMatch, rejectMatch } from '../actions';
 import { Check, X, Link as LinkIcon, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -31,8 +31,17 @@ export default function VideoSyncClient({
         }
     };
 
-    const handleReject = (match: MatchResult) => {
-        setPendingMatches(prev => prev.filter(m => m.episodeId !== match.episodeId));
+    const handleReject = async (match: MatchResult) => {
+        setIsProcessing(true);
+        try {
+            await rejectMatch(match.episodeId);
+            setPendingMatches(prev => prev.filter(m => m.episodeId !== match.episodeId));
+            router.refresh(); // Reflect changes in DB
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     const handleApproveAll = async () => {

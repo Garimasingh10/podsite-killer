@@ -1,7 +1,8 @@
-﻿// components/blocks/GridBlock.tsx
+// components/blocks/GridBlock.tsx
 'use client';
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useLayout } from '../LayoutContext';
 
 export default function GridBlock({ podcast, episodes }: { podcast: any, episodes: any[] }) {
@@ -56,10 +57,12 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                         >
                             <div className="aspect-video w-full border-4 border-black overflow-hidden mb-6 relative">
                                 <div className="absolute inset-0 bg-[var(--primary)] mix-blend-multiply opacity-0 group-hover:opacity-30 transition-opacity z-10" />
-                                <img
-                                    src={ep.image_url || podcast.image}
-                                    alt={ep.title}
-                                    className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all scale-100 group-hover:scale-115 duration-500"
+                                <Image
+                                    src={ep.image_url || podcast.image || 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618'}
+                                    alt={ep.title || 'Episode'}
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                    className="object-cover grayscale group-hover:grayscale-0 transition-all scale-100 group-hover:scale-115 duration-500"
                                 />
                             </div>
                             <span className="text-xs font-black uppercase tracking-widest block mb-2 bg-black text-white px-2 py-1 inline-block group-hover:bg-[var(--primary)] group-hover:text-black transition-colors">
@@ -89,11 +92,13 @@ export default function GridBlock({ podcast, episodes }: { podcast: any, episode
                         href={`/${podcast.id}/episodes/${ep.slug}`}
                         className="group relative aspect-video overflow-visible rounded-sm transition-transform duration-500 ease-out hover:z-50 hover:scale-115 no-underline"
                     >
-                        <div className="h-full w-full overflow-hidden rounded-sm ring-1 ring-white/10 shadow-2xl transition-all group-hover:ring-[var(--primary)]/50">
-                            <img
-                                src={ep.image_url || podcast.image}
-                                alt={ep.title}
-                                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        <div className="relative h-full w-full overflow-hidden rounded-sm ring-1 ring-white/10 shadow-2xl transition-all group-hover:ring-[var(--primary)]/50">
+                            <Image
+                                src={ep.image_url || podcast.image || 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618'}
+                                alt={ep.title || 'Episode'}
+                                fill
+                                sizes="(max-width: 768px) 50vw, 25vw"
+                                className="object-cover transition-transform duration-700 group-hover:scale-110"
                             />
                         </div>
 

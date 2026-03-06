@@ -114,7 +114,7 @@ export async function POST(req: Request) {
   for (const { episodeId, videoId } of pairings) {
     await supabase
       .from('episodes')
-      .update({ youtube_video_id: videoId })
+      .update({ youtube_video_id: videoId, video_sync_status: 'pending' })
       .eq('id', episodeId);
   }
 
