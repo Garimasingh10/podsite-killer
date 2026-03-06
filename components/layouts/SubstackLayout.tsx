@@ -3,9 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Mail, Search, Menu, X } from 'lucide-react';
+import { Mail, Search, Menu, X, Heart, Twitter, Linkedin } from 'lucide-react';
 import { LayoutProvider } from '../LayoutContext';
 import PublicSearch from '../PublicSearch';
+import { useState, useEffect } from 'react';
 
 interface SubstackLayoutProps {
     children: React.ReactNode;
@@ -15,18 +16,40 @@ interface SubstackLayoutProps {
         tagline?: string;
         image?: string;
         description?: string;
+        twitterUrl?: string;
+        linkedInUrl?: string;
     };
+    onSubscribeClick?: () => void;
 }
 
-export default function SubstackLayout({ children, podcast }: SubstackLayoutProps) {
+export default function SubstackLayout({ children, podcast, onSubscribeClick }: SubstackLayoutProps) {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const [isFavorited, setIsFavorited] = useState(false);
+
+    useEffect(() => {
+        const favorites = JSON.parse(localStorage.getItem('podsite_favorites') || '[]');
+        setIsFavorited(favorites.includes(podcast.id));
+    }, [podcast.id]);
+
+    const toggleFavorite = () => {
+        const favorites = JSON.parse(localStorage.getItem('podsite_favorites') || '[]');
+        let newFavorites;
+        if (favorites.includes(podcast.id)) {
+            newFavorites = favorites.filter((id: string) => id !== podcast.id);
+            setIsFavorited(false);
+        } else {
+            newFavorites = [...favorites, podcast.id];
+            setIsFavorited(true);
+        }
+        localStorage.setItem('podsite_favorites', JSON.stringify(newFavorites));
+    };
 
     return (
         <LayoutProvider value="substack">
             <div className="relative min-h-screen bg-[var(--background)] text-[var(--foreground)] font-serif selection:bg-[var(--primary)]/30 overflow-x-hidden">
                 {/* Subtle Background */}
-                <div className="fixed inset-0 z-0 mesh-gradient opacity-10" />
-                <div className="fixed inset-0 z-0 grid-pattern opacity-[0.02]" />
+                <div className="fixed inset-0 z-0 mesh-gradient opacity-10 pointer-events-none" />
+                <div className="fixed inset-0 z-0 grid-pattern opacity-[0.02] pointer-events-none" />
 
                 {/* Minimal Header */}
                 <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/80 backdrop-blur-md">
@@ -50,8 +73,31 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
                             </nav>
                         </div>
                         <div className="flex items-center gap-4">
-                            <div className="hidden md:block">
+                            <div className="hidden md:flex items-center gap-6">
                                 <PublicSearch podcastId={podcast.id} />
+                                
+                                <div className="flex items-center gap-3 border-l border-zinc-100 pl-6">
+                                    <button 
+                                        onClick={toggleFavorite}
+                                        className={`transition-colors ${isFavorited ? 'text-red-500 fill-red-500' : 'text-zinc-400 hover:text-black'}`}
+                                    >
+                                        <Heart size={18} />
+                                    </button>
+                                    
+                                    <a href={podcast.twitterUrl || '#'} className="h-8 w-8 bg-black flex items-center justify-center text-white shadow-[2px_2px_0px_rgba(0,0,0,0.1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all">
+                                        <span className="text-[10px] font-black italic">𝕏</span>
+                                    </a>
+                                    <a href={podcast.linkedInUrl || '#'} className="h-8 w-8 bg-black flex items-center justify-center text-white shadow-[2px_2px_0px_rgba(0,0,0,0.1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all">
+                                        <span className="text-[9px] font-black italic">in</span>
+                                    </a>
+                                </div>
+
+                                <button 
+                                    onClick={onSubscribeClick}
+                                    className="rounded-full bg-black px-6 py-2 text-[10px] font-black uppercase tracking-widest text-white hover:bg-[var(--primary)] transition-all"
+                                >
+                                    Subscribe
+                                </button>
                             </div>
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -70,7 +116,10 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
                                 <Link href={`/${podcast.id}/episodes`} onClick={() => setIsMenuOpen(false)} className="uppercase">Archive</Link>
                                 <Link href={`/${podcast.id}#product`} onClick={() => setIsMenuOpen(false)} className="uppercase">Shop</Link>
                                 <Link href={`/${podcast.id}#host`} onClick={() => setIsMenuOpen(false)} className="uppercase">About</Link>
-                                <button className="mt-4 w-full rounded-full bg-black py-4 text-sm font-black uppercase tracking-widest text-white">
+                                <button 
+                                    onClick={() => { onSubscribeClick?.(); setIsMenuOpen(false); }}
+                                    className="mt-4 w-full rounded-full bg-black py-4 text-sm font-black uppercase tracking-widest text-white"
+                                >
                                     Subscribe
                                 </button>
                             </nav>

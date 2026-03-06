@@ -2,9 +2,10 @@
 // components/layouts/NetflixLayout.tsx
 import React from 'react';
 import Link from 'next/link';
-import { Menu, Search, Headphones, X } from 'lucide-react';
+import { Menu, Search, Headphones, X, Heart, Twitter, Linkedin } from 'lucide-react';
 import PublicSearch from '../PublicSearch';
 import { LayoutProvider } from '../LayoutContext';
+import { useState, useEffect } from 'react';
 
 interface NetflixLayoutProps {
     children: React.ReactNode;
@@ -15,18 +16,40 @@ interface NetflixLayoutProps {
         image?: string;
         description?: string;
         latest_video_id?: string;
+        twitterUrl?: string;
+        linkedInUrl?: string;
     };
+    onSubscribeClick?: () => void;
 }
 
-export default function NetflixLayout({ children, podcast }: NetflixLayoutProps) {
+export default function NetflixLayout({ children, podcast, onSubscribeClick }: NetflixLayoutProps) {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const [isFavorited, setIsFavorited] = useState(false);
+
+    useEffect(() => {
+        const favorites = JSON.parse(localStorage.getItem('podsite_favorites') || '[]');
+        setIsFavorited(favorites.includes(podcast.id));
+    }, [podcast.id]);
+
+    const toggleFavorite = () => {
+        const favorites = JSON.parse(localStorage.getItem('podsite_favorites') || '[]');
+        let newFavorites;
+        if (favorites.includes(podcast.id)) {
+            newFavorites = favorites.filter((id: string) => id !== podcast.id);
+            setIsFavorited(false);
+        } else {
+            newFavorites = [...favorites, podcast.id];
+            setIsFavorited(true);
+        }
+        localStorage.setItem('podsite_favorites', JSON.stringify(newFavorites));
+    };
 
     return (
         <LayoutProvider value="netflix">
             <div className="relative min-h-screen bg-black text-white selection:bg-[var(--primary)]/30 overflow-x-hidden">
                 {/* Dynamic Background */}
-                <div className="fixed inset-0 z-0 mesh-gradient opacity-20" />
-                <div className="fixed inset-0 z-0 grid-pattern opacity-[0.03]" />
+                <div className="fixed inset-0 z-0 mesh-gradient opacity-20 pointer-events-none" />
+                <div className="fixed inset-0 z-0 grid-pattern opacity-[0.03] pointer-events-none" />
 
                 {/* Nav Bar */}
                 <header className="fixed top-0 z-50 w-full bg-gradient-to-b from-black via-black/80 to-transparent px-8 py-4 transition-colors hover:bg-black md:px-16 border-b border-white/5 backdrop-blur-sm">
@@ -50,8 +73,39 @@ export default function NetflixLayout({ children, podcast }: NetflixLayoutProps)
                             </nav>
                         </div>
                         <div className="flex items-center gap-4">
-                            <div className="hidden md:block">
+                            <div className="hidden md:flex items-center gap-4">
                                 <PublicSearch podcastId={podcast.id} />
+                                
+                                {/* Favorites Heart */}
+                                <button 
+                                    onClick={toggleFavorite}
+                                    className={`p-2 rounded-full transition-all ${isFavorited ? 'text-red-500 fill-red-500 bg-red-500/10' : 'text-zinc-400 hover:text-white bg-white/5'}`}
+                                >
+                                    <Heart size={20} />
+                                </button>
+
+                                {/* Socials Mini */}
+                                <div className="flex items-center gap-2">
+                                    <a href={podcast.twitterUrl || '#'} className="relative group">
+                                        <div className="absolute -inset-1 bg-white opacity-0 group-hover:opacity-10 blur-sm rounded-sm transition-opacity" />
+                                        <div className="h-9 w-9 bg-black border border-white/10 flex items-center justify-center text-white shadow-[2px_2px_0px_rgba(255,255,255,0.1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all">
+                                            <span className="text-xs font-black italic">𝕏</span>
+                                        </div>
+                                    </a>
+                                    <a href={podcast.linkedInUrl || '#'} className="relative group">
+                                        <div className="absolute -inset-1 bg-white opacity-0 group-hover:opacity-10 blur-sm rounded-sm transition-opacity" />
+                                        <div className="h-9 w-9 bg-black border border-white/10 flex items-center justify-center text-white shadow-[2px_2px_0px_rgba(255,255,255,0.1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all">
+                                            <span className="text-[10px] font-black italic">in</span>
+                                        </div>
+                                    </a>
+                                </div>
+
+                                <button 
+                                    onClick={onSubscribeClick}
+                                    className="hidden lg:block h-11 px-6 rounded-sm bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-[var(--primary)] transition-all active:scale-95 shadow-[4px_4px_0px_rgba(255,255,255,0.1)]"
+                                >
+                                    Subscribe Now
+                                </button>
                             </div>
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}

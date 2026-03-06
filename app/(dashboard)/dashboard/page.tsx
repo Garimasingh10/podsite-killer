@@ -7,7 +7,6 @@ import { SearchForm } from '../_components/SearchForm';
 import { Headphones, Layout, ExternalLink, Settings, Clock } from 'lucide-react';
 import ThemeEngine, { ThemeConfig } from '@/components/ThemeEngine';
 import { ActivePodcastSync } from '../_components/ActivePodcastSync';
-import { EmailTestButton } from '../_components/EmailTestButton';
 
 type PageProps = {
   searchParams: Promise<{ q?: string; active?: string }>;
@@ -227,7 +226,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                 </div>
               </div>
 
-              <EmailTestButton userEmail={user.email || ''} />
+              {/* EmailTestButton Removed */}
             </div>
           </section>
         )}

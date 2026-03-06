@@ -13,6 +13,9 @@ import HostBlock from '@/components/blocks/HostBlock';
 import ShortsBlock from '@/components/blocks/ShortsBlock';
 import DigitalProductBlock from '@/components/blocks/DigitalProductBlock';
 import LiveLayoutController from '@/components/dashboard/LiveLayoutController';
+import LivePodcastManager from '@/components/public/LivePodcastManager';
+import SubscribeModal from '@/components/public/SubscribeModal';
+import { useState } from 'react';
 
 const PAGE_SIZE = 20;
 
@@ -83,6 +86,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function PodcastHome({ params, searchParams }: PageProps) {
+  return <PodcastHomeClient params={params} searchParams={searchParams} />;
+}
+
+async function PodcastHomeClient({ params, searchParams }: PageProps) {
   const { subdomain } = await params;
   const { page: pageParam, q: qParam } = await searchParams;
   const q = qParam?.trim();
@@ -353,11 +360,37 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     };
 
   return (
-    <>
-      <ThemeEngine config={themeConfig} />
-      <LayoutComponent podcast={layoutPodcast}>
-        <LiveLayoutController initialLayout={pageLayout} blocks={blockDict} />
-      </LayoutComponent>
-    </>
+    <PodcastPageWrapper
+      podcast={podcastWithImage}
+      themeConfig={themeConfig}
+      layoutComponent={LayoutComponent}
+      pageLayout={pageLayout}
+      blockDict={blockDict}
+    />
+  );
+}
+
+function PodcastPageWrapper({ podcast, themeConfig, layoutComponent: LayoutComponent, pageLayout, blockDict }: any) {
+  const [isSubscribeOpen, setIsSubscribeOpen] = useState(false);
+
+  return (
+    <LivePodcastManager initialPodcast={podcast}>
+      {(livePodcast: any) => (
+        <>
+          <ThemeEngine config={themeConfig} />
+          <LayoutComponent 
+            podcast={livePodcast} 
+            onSubscribeClick={() => setIsSubscribeOpen(true)}
+          >
+            <LiveLayoutController initialLayout={pageLayout} blocks={blockDict} />
+          </LayoutComponent>
+          <SubscribeModal 
+            isOpen={isSubscribeOpen} 
+            onClose={() => setIsSubscribeOpen(false)} 
+            podcastTitle={livePodcast.title} 
+          />
+        </>
+      )}
+    </LivePodcastManager>
   );
 }

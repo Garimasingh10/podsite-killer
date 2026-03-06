@@ -29,6 +29,21 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
         setIsSaved(false);
         if (iframeRef.current?.contentWindow) {
             iframeRef.current.contentWindow.postMessage({ type: 'UPDATE_THEME', payload: newConfig }, '*');
+            // If tagline changed, sync it as well
+            if (newConfig.tagline !== tagline) {
+                iframeRef.current.contentWindow.postMessage({ 
+                    type: 'UPDATE_PODCAST', 
+                    payload: { tagline: newConfig.tagline } 
+                }, '*');
+            }
+        }
+    };
+
+    const handleMetadataChange = (updates: any) => {
+        setHasUnsavedChanges(true);
+        setIsSaved(false);
+        if (iframeRef.current?.contentWindow) {
+            iframeRef.current.contentWindow.postMessage({ type: 'UPDATE_PODCAST', payload: updates }, '*');
         }
     };
 
@@ -131,7 +146,10 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
                                 <label className="text-[10px] font-bold text-slate-500 uppercase">Podcast Title</label>
                                 <input
                                     value={title}
-                                    onChange={(e) => { setTitle(e.target.value); setHasUnsavedChanges(true); }}
+                                    onChange={(e) => { 
+                                        setTitle(e.target.value); 
+                                        handleMetadataChange({ title: e.target.value }); 
+                                    }}
                                     className="w-full bg-slate-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-bold"
                                 />
                             </div>
@@ -140,7 +158,10 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
                                 <input
                                     value={tagline}
                                     placeholder="Your podcast's catchy hook..."
-                                    onChange={(e) => { setTagline(e.target.value); setHasUnsavedChanges(true); }}
+                                    onChange={(e) => { 
+                                        setTagline(e.target.value); 
+                                        handleMetadataChange({ tagline: e.target.value }); 
+                                    }}
                                     className="w-full bg-slate-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50 transition-all"
                                 />
                             </div>
@@ -148,7 +169,10 @@ export default function SplitScreenEditor({ podcast }: { podcast: any }) {
                                 <label className="text-[10px] font-bold text-slate-500 uppercase">Description</label>
                                 <textarea
                                     value={description}
-                                    onChange={(e) => { setDescription(e.target.value); setHasUnsavedChanges(true); }}
+                                    onChange={(e) => { 
+                                        setDescription(e.target.value); 
+                                        handleMetadataChange({ description: e.target.value }); 
+                                    }}
                                     rows={3}
                                     className="w-full bg-slate-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50 transition-all resize-none"
                                 />

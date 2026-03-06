@@ -2,9 +2,10 @@
 // components/layouts/GenZLayout.tsx
 import React from 'react';
 import Link from 'next/link';
-import { Menu, X, Share2, Zap } from 'lucide-react';
+import { Menu, X, Share2, Zap, Heart, Twitter, Linkedin } from 'lucide-react';
 import { LayoutProvider } from '../LayoutContext';
 import PublicSearch from '../PublicSearch';
+import { useState, useEffect } from 'react';
 
 interface GenZLayoutProps {
     children: React.ReactNode;
@@ -14,18 +15,40 @@ interface GenZLayoutProps {
         tagline?: string;
         image?: string;
         description?: string;
+        twitterUrl?: string;
+        linkedInUrl?: string;
     };
+    onSubscribeClick?: () => void;
 }
 
-export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
+export default function GenZLayout({ children, podcast, onSubscribeClick }: GenZLayoutProps) {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const [isFavorited, setIsFavorited] = useState(false);
+
+    useEffect(() => {
+        const favorites = JSON.parse(localStorage.getItem('podsite_favorites') || '[]');
+        setIsFavorited(favorites.includes(podcast.id));
+    }, [podcast.id]);
+
+    const toggleFavorite = () => {
+        const favorites = JSON.parse(localStorage.getItem('podsite_favorites') || '[]');
+        let newFavorites;
+        if (favorites.includes(podcast.id)) {
+            newFavorites = favorites.filter((id: string) => id !== podcast.id);
+            setIsFavorited(false);
+        } else {
+            newFavorites = [...favorites, podcast.id];
+            setIsFavorited(true);
+        }
+        localStorage.setItem('podsite_favorites', JSON.stringify(newFavorites));
+    };
 
     return (
         <LayoutProvider value="genz">
             <div className="relative min-h-screen bg-[var(--background)] text-[var(--foreground)] selection:bg-[var(--primary)]/30 overflow-x-hidden">
                 {/* Dynamic Background */}
-                <div className="fixed inset-0 z-0 mesh-gradient opacity-15" />
-                <div className="fixed inset-0 z-0 grid-pattern opacity-[0.04]" />
+                <div className="fixed inset-0 z-0 mesh-gradient opacity-15 pointer-events-none" />
+                <div className="fixed inset-0 z-0 grid-pattern opacity-[0.04] pointer-events-none" />
 
                 {/* Aggressive Brutalist Header */}
                 <header className="sticky top-0 z-50 border-b-8 border-black bg-white">
@@ -60,10 +83,38 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
                                     </Link>
                                 ))}
                             </nav>
-                            <div className="hidden md:block">
+                            <div className="hidden md:flex items-center gap-4">
                                 <PublicSearch podcastId={podcast.id} />
+                                
+                                <button 
+                                    onClick={toggleFavorite}
+                                    className={`transition-all ${isFavorited ? 'text-red-500 fill-red-500 group' : 'text-zinc-600 hover:text-black'}`}
+                                >
+                                    <Heart size={28} strokeWidth={3} className={isFavorited ? 'animate-bounce' : ''} />
+                                </button>
+
+                                <div className="flex gap-2">
+                                    <a href={podcast.twitterUrl || '#'} className="h-10 w-10 border-4 border-black bg-black text-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
+                                        <span className="text-sm font-black italic">𝕏</span>
+                                    </a>
+                                    <a href={podcast.linkedInUrl || '#'} className="h-10 w-10 border-4 border-black bg-black text-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
+                                        <span className="text-xs font-black italic">in</span>
+                                    </a>
+                                </div>
+
+                                <button 
+                                    onClick={onSubscribeClick}
+                                    className="border-4 border-black bg-[var(--primary)] px-6 py-2 text-sm font-black uppercase italic shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
+                                >
+                                    Subscribe
+                                </button>
                             </div>
-                            {/* ... buttons ... */}
+                            <button
+                                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                className="flex h-12 w-12 items-center justify-center border-4 border-black md:hidden"
+                            >
+                                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                            </button>
                         </div>
                     </div>
 
@@ -102,7 +153,10 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
                                 </p>
                             </div>
                             <div className="flex gap-4">
-                                <button className="border-4 border-black bg-black text-white px-8 py-4 text-xl font-black uppercase italic shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:bg-[var(--primary)] hover:text-black hover:scale-105 active:scale-90 transition-all duration-200">
+                                <button 
+                                    onClick={onSubscribeClick}
+                                    className="border-4 border-black bg-black text-white px-8 py-4 text-xl font-black uppercase italic shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:bg-[var(--primary)] hover:text-black hover:scale-105 active:scale-90 transition-all duration-200"
+                                >
                                     Subscribe Now
                                 </button>
                             </div>

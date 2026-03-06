@@ -24,6 +24,8 @@ export interface ThemeConfig {
     applePodcastsUrl?: string;
     spotifyUrl?: string;
     youtubeUrl?: string;
+    twitterUrl?: string;
+    linkedInUrl?: string;
     rssUrlOverride?: string;
 }
 

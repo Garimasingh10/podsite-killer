@@ -37,7 +37,7 @@ export default function DigitalProductBlock({ product }: { product: any }) {
     };
 
     return (
-        <div className="w-full py-16 animate-in slide-in-from-bottom-[50px] duration-1000 fade-in zoom-in-95">
+        <div id="product" className="w-full py-16 animate-in slide-in-from-bottom-[50px] duration-1000 fade-in zoom-in-95 scroll-mt-24">
             <div className="mx-auto max-w-4xl relative group px-4">
                 {/* Glow Effect */}
                 <div className="absolute -inset-1 bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] rounded-[2.5rem] blur opacity-10 group-hover:opacity-30 transition duration-1000 group-hover:duration-200"></div>
