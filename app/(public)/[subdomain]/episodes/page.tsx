@@ -61,7 +61,13 @@ export default async function EpisodesIndex({ params, searchParams }: EpisodesIn
   }
 
   const themeConfig = (podcast.theme_config as unknown as ThemeConfig) || {};
-  const podcastWithImage = { ...podcast, image: themeConfig.imageUrl };
+  const podcastWithImage = {
+    id: podcast.id,
+    title: (podcast.title as string) ?? '',
+    tagline: (podcast.tagline as string | undefined),
+    description: (podcast.description as string | undefined),
+    image: themeConfig.imageUrl,
+  };
   const layout = themeConfig.layout || 'netflix';
 
   const LayoutComponent =
