@@ -92,21 +92,21 @@ export function getVerificationEmailHtml(verificationUrl: string): string {
   const html = `
     <div style="text-align:center;">
       <div style="margin-bottom:32px;">
-        <span style="background:rgba(52,211,153,0.1);color:#34d399;padding:8px 16px;border-radius:99px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;display:inline-block;border:1px solid rgba(52,211,153,0.2);">Verification Required</span>
+        <span style="background:rgba(52,211,153,0.1);color:#34d399;padding:8px 16px;border-radius:99px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;display:inline-block;border:1px solid rgba(52,211,153,0.2);">Action Required</span>
       </div>
-      <h1 style="color:#f8fafc;font-size:36px;font-weight:700;margin:0 0 16px;font-family:'Space Grotesk',sans-serif;letter-spacing:-0.03em;">Verify Your Studio</h1>
-      <p style="color:#94a3b8;font-size:16px;line-height:1.6;margin:0 0 40px;font-weight:400;">You're one click away from launching your podcast universe. Verify your email to activate your account.</p>
+      <h1 style="color:#f8fafc;font-size:36px;font-weight:700;margin:0 0 16px;font-family:'Space Grotesk',sans-serif;letter-spacing:-0.03em;">Verify your email</h1>
+      <p style="color:#94a3b8;font-size:16px;line-height:1.6;margin:0 0 40px;font-weight:400;">Confirm your account. Click the link below to activate your premium podcast studio.</p>
       
-      <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:linear-gradient(90deg,#10b981 0%,#059669 100%);color:#fff;padding:16px 48px;border-radius:12px;font-size:15px;font-weight:600;font-family:'Space Grotesk',sans-serif;text-decoration:none;margin-bottom:40px;text-transform:uppercase;letter-spacing:0.05em;box-shadow:0 10px 25px -5px rgba(16,185,129,0.3);">Activate Account</a>
+      <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:linear-gradient(90deg,#34d399 0%,#059669 100%);color:#020617;padding:18px 48px;border-radius:12px;font-size:16px;font-weight:700;font-family:'Space Grotesk',sans-serif;text-decoration:none;margin-bottom:40px;text-transform:uppercase;letter-spacing:0.05em;box-shadow:0 10px 25px -5px rgba(52,211,153,0.4);border:2px solid #a7f3d0;">Click link to activate</a>
 
-      <p style="color:#64748b;font-size:13px;margin:0 0 16px;font-family:'Space Grotesk',sans-serif;text-transform:uppercase;letter-spacing:0.1em;">Or paste this link</p>
-      <div style="background:#1e293b;border-radius:12px;padding:16px;border:1px solid #334155;margin-bottom:40px;">
-        <p style="color:#34d399;font-size:12px;margin:0;word-break:break-all;font-family:monospace;">{{ .ConfirmationURL }}</p>
+      <p style="color:#64748b;font-size:13px;margin:0 0 16px;font-family:'Space Grotesk',sans-serif;text-transform:uppercase;letter-spacing:0.1em;">Or paste this link manually:</p>
+      <div style="background:#0f172a;border-radius:12px;padding:20px;border:1px solid #1e293b;margin-bottom:40px;box-shadow:inset 0 2px 4px 0 rgba(0,0,0,0.06);">
+        <p style="color:#6ee7b7;font-size:13px;margin:0;word-break:break-all;font-family:monospace;letter-spacing:0.05em;">{{ .ConfirmationURL }}</p>
       </div>
 
       <div style="background:rgba(245,158,11,0.05);border-radius:16px;padding:24px;border:1px solid rgba(245,158,11,0.1);text-align:left;">
-        <p style="margin:0 0 8px;color:#fbbf24;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.1em;font-family:'Space Grotesk',sans-serif;">⏳ Link expires in 24 hours</p>
-        <p style="margin:0;color:#94a3b8;font-size:13px;line-height:1.5;">If you didn't create this account, you can safely ignore this email.</p>
+        <p style="margin:0 0 8px;color:#fbbf24;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.1em;font-family:'Space Grotesk',sans-serif;">⏳ Link expires soon</p>
+        <p style="margin:0;color:#94a3b8;font-size:13px;line-height:1.5;">If you didn't create this account, you can safely ignore this automated email.</p>
       </div>
     </div>`;
   return baseWrap(html);

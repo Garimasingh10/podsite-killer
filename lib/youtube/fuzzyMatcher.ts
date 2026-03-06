@@ -78,24 +78,36 @@ export function fuzzyMatchEpisodesToVideos(
                     if (vidNumber && vidNumber !== epNumber) continue;
                 }
 
-                // Logic 3: Title Similarity
-                let matchCount = 0;
-                for (const word of epWords) {
-                    if (vidWords.includes(word)) matchCount++;
+                // Logic 3: Title Similarity (100% Related Requirement)
+                const cleanVidTitle = vid.title.toLowerCase().replace(/[^\w\s]/g, '').trim();
+                const cleanEpTitle = ep.title.toLowerCase().replace(/[^\w\s]/g, '').trim();
+                
+                let score = 0;
+                let reason = 'Title similarity';
+
+                // Check for pure substring match first (strongest indicator)
+                if (cleanVidTitle.includes(cleanEpTitle) || cleanEpTitle.includes(cleanVidTitle)) {
+                    score = 1.0;
+                    reason = 'Exact title match (100%)';
+                } else {
+                    // Fallback to strict word array checking
+                    let matchCount = 0;
+                    for (const word of epWords) {
+                        if (vidWords.includes(word)) matchCount++;
+                    }
+                    score = matchCount / Math.max(1, epWords.length);
                 }
 
-                const score = matchCount / Math.max(1, epWords.length);
-
-                // ACCURACY UPGRADE: Increased threshold from 0.6 to 0.85
-                if (score >= 0.85) {
+                // ACCURACY UPGRADE: Enforce Near 100% threshold as requested by user
+                if (score >= 0.95) {
                     if (!bestMatch || score > bestMatch.score) {
                         bestMatch = {
                             videoId: vid.id,
                             videoTitle: vid.title,
                             score,
                             reasons: [
-                                `High-Confidence (${Math.round(score * 100)}%)`,
-                                epNumber ? `Episode #${epNumber} verification` : 'Title similarity'
+                                `Confidence: ${Math.round(score * 100)}%`,
+                                epNumber ? `Episode #${epNumber} verification` : reason
                             ]
                         };
                     }

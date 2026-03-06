@@ -80,15 +80,8 @@ function LoginContent() {
           return;
         }
         
-        setMessage(
-          'Account created! Check your email (and spam folder) for a verification link to activate your studio.'
-        );
-        // Send welcome email (onboarding) — fire-and-forget
-        fetch('/api/emails/welcome', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email }),
-        }).catch(() => {});
+        // Removed fetch('/api/emails/welcome') here. It will be sent exactly once in the callback 
+        // after they click the verification link, guaranteeing true verification.
         setLoading(false);
         return;
       }

@@ -79,13 +79,19 @@ export async function GET(request: Request) {
     hasSession: !!data.session,
   });
 
-  // Send welcome email for Google OAuth signups (fire-and-forget)
-  if (data.user.email) {
+  // Send welcome email EXACTLY ONCE upon first verified login
+  if (data.user.email && !data.user.user_metadata?.welcome_email_sent) {
+    console.log('Auth Callback - First time verification/login! Sending Welcome Email...');
     fetch(`${url.origin}/api/emails/welcome`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: data.user.email }),
-    }).catch(() => {}); // Fire and forget, don't block redirect
+    }).catch(() => {}); // Fire and forget
+
+    // Mark user as having received the welcome blast
+    await supabase.auth.updateUser({
+      data: { welcome_email_sent: true }
+    });
   }
 
   // HTML Bridge: Sets cookies via JS and THEN redirects.
