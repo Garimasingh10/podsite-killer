@@ -50,10 +50,10 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
 
                         <div className="flex items-center gap-6">
                             <nav className="hidden items-center gap-8 md:flex">
-                                {['Home', 'Drops', 'About'].map((item) => (
+                                {['Home', 'Drops', 'Shop', 'About'].map((item) => (
                                     <Link
                                         key={item}
-                                        href={item === 'Home' ? `/${podcast.id}` : item === 'Drops' ? `/${podcast.id}/episodes` : `/${podcast.id}#host`}
+                                        href={item === 'Home' ? `/${podcast.id}` : item === 'Drops' ? `/${podcast.id}/episodes` : item === 'Shop' ? `/${podcast.id}#product` : `/${podcast.id}#host`}
                                         className="text-lg font-black uppercase italic transition-all hover:text-[var(--primary)]"
                                     >
                                         {item}

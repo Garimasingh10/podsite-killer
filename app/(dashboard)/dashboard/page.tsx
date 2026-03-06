@@ -7,6 +7,7 @@ import { SearchForm } from '../_components/SearchForm';
 import { Headphones, Layout, ExternalLink, Settings, Clock } from 'lucide-react';
 import ThemeEngine, { ThemeConfig } from '@/components/ThemeEngine';
 import { ActivePodcastSync } from '../_components/ActivePodcastSync';
+import { EmailTestButton } from '../_components/EmailTestButton';
 
 type PageProps = {
   searchParams: Promise<{ q?: string; active?: string }>;
@@ -197,11 +198,11 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                     Manage Show
                   </Link>
                   <Link
-                    href={`/dashboard/customize?siteId=${active.id}`}
+                    href={`/dashboard/products?podcastId=${active.id}`}
                     className="flex items-center justify-center gap-3 rounded-[1.5rem] bg-white/5 py-5 text-sm font-black uppercase tracking-widest text-white border-2 border-white/10 transition-all hover:bg-white/10 hover:border-[var(--podcast-primary)]/50 hover:scale-[1.02] active:scale-[0.98]"
                   >
-                    <Layout size={20} strokeWidth={3} />
-                    Customize Site
+                    <ExternalLink size={20} strokeWidth={3} />
+                    Products
                   </Link>
                 </div>
               </div>
@@ -225,6 +226,8 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--podcast-primary)] opacity-60">Analytics Soon</p>
                 </div>
               </div>
+
+              <EmailTestButton userEmail={user.email || ''} />
             </div>
           </section>
         )}

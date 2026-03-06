@@ -86,18 +86,22 @@ export async function GET(request: Request) {
     try {
       if (process.env.RESEND_API_KEY) {
         const { getWelcomeEmailHtml, sendResend } = await import('@/lib/emails');
-        const html = getWelcomeEmailHtml();
-        const emailResult = await sendResend(data.user.email, 'Welcome to PodSite 🚀', html);
-        
+        console.log('Sending welcome email to:', data.user.email);
+        const emailResult = await sendResend(
+          data.user.email,
+          'Welcome to PodSite! 🚀',
+          getWelcomeEmailHtml()
+        );
+
         if (emailResult.ok) {
-          // Mark user as having received the welcome blast
+          console.log('Welcome email sent successfully');
           const { error: updateError } = await supabase.auth.updateUser({
             data: { welcome_email_sent: true }
           });
-          if (updateError) console.error('Auth Callback - Failed to update user metadata:', updateError);
+          if (updateError) console.error('Error updating welcome_email_sent flag:', updateError);
           else console.log('Auth Callback - Welcome Email status saved to metadata.');
         } else {
-          console.error('Auth Callback - Welcome Email failed to send:', emailResult.error);
+          console.error('Failed to send welcome email:', emailResult.error);
         }
       } else {
         console.warn('Auth Callback - RESEND_API_KEY missing - skipping welcome email');

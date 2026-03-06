@@ -42,10 +42,11 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
                                     </span>
                                 )}
                             </Link>
-                            <nav className="hidden items-center gap-6 text-[13px] font-bold uppercase tracking-widest text-zinc-500 md:flex">
-                                <Link href={`/${podcast.id}`} className="hover:text-[var(--primary)] transition-colors duration-200">Home</Link>
-                                <Link href={`/${podcast.id}/episodes`} className="hover:text-[var(--primary)] transition-colors duration-200">Archive</Link>
-                                <Link href={`/${podcast.id}#host`} className="hover:text-[var(--primary)] transition-colors duration-200">About</Link>
+                            <nav className="hidden items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500 md:flex">
+                                <Link href={`/${podcast.id}`} className="hover:text-[var(--primary)] transition-all duration-300 hover:tracking-[0.25em]">Home</Link>
+                                <Link href={`/${podcast.id}/episodes`} className="hover:text-[var(--primary)] transition-all duration-300 hover:tracking-[0.25em]">Archive</Link>
+                                <Link href={`/${podcast.id}#product`} className="hover:text-[var(--primary)] transition-all duration-300 hover:tracking-[0.25em]">Shop</Link>
+                                <Link href={`/${podcast.id}#host`} className="hover:text-[var(--primary)] transition-all duration-300 hover:tracking-[0.25em]">About</Link>
                             </nav>
                         </div>
                         <div className="flex items-center gap-4">

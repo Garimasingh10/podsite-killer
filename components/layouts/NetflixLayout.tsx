@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 // components/layouts/NetflixLayout.tsx
 import React from 'react';
 import Link from 'next/link';
@@ -45,6 +45,7 @@ export default function NetflixLayout({ children, podcast }: NetflixLayoutProps)
                             <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
                                 <Link href={`/${podcast.id}`} className="text-white hover:text-white/70 transition-colors">Home</Link>
                                 <Link href={`/${podcast.id}/episodes`} className="text-white hover:text-white/70 transition-colors">Episodes</Link>
+                                <Link href={`/${podcast.id}#product`} className="text-white hover:text-white/70 transition-colors">Shop</Link>
                                 <Link href={`/${podcast.id}#host`} className="text-white hover:text-white/70 transition-colors">About</Link>
                             </nav>
                         </div>

@@ -83,6 +83,12 @@ export default async function DashboardLayout({
             >
               Dashboard
             </Link>
+            <Link
+              href="/dashboard/domains"
+              className="rounded-full border border-transparent px-3 py-1 hover:border-sky-500 hover:bg-slate-900/60 hover:text-sky-400"
+            >
+              Domains
+            </Link>
             <SignOutButton />
           </nav>
         </div>
