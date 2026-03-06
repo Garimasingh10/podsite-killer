@@ -1,7 +1,6 @@
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import Link from 'next/link';
 import { Metadata } from 'next';
-import { headers } from 'next/headers';
 import ThemeEngine, { ThemeConfig } from '@/components/ThemeEngine';
 import EpisodePlayer from '@/components/EpisodePlayer';
 import NetflixLayout from '@/components/layouts/NetflixLayout';
@@ -18,17 +17,38 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subdomain);
   let podcast: { id: string; title?: string; description?: string } | null = null;
+  let podcastError: any = null;
+  
   if (isUuid) {
+    // First try by ID
     const byId = await supabase.from('podcasts').select('id, title, description').eq('id', subdomain).maybeSingle();
     podcast = byId.data;
+    podcastError = byId.error;
+    
+    // Fallback to custom_domain
     if (!podcast) {
       const byDomain = await supabase.from('podcasts').select('id, title, description').eq('custom_domain', subdomain).maybeSingle();
       podcast = byDomain.data;
+      podcastError = byDomain.error;
     }
   } else {
+    // Try by custom_domain first
     const byDomain = await supabase.from('podcasts').select('id, title, description').eq('custom_domain', subdomain).maybeSingle();
     podcast = byDomain.data;
+    podcastError = byDomain.error;
+    
+    // Fallback to ID
+    if (!podcast) {
+      const byId = await supabase.from('podcasts').select('id, title, description').eq('id', subdomain).maybeSingle();
+      podcast = byId.data;
+      podcastError = byId.error;
+    }
   }
+  
+  if (podcastError) {
+    console.error('Episode generateMetadata - Podcast query error:', podcastError);
+  }
+  
   if (!podcast) return { title: 'Podcast Not Found' };
 
   const { data: episode } = await supabase
@@ -66,21 +86,55 @@ export default async function EpisodePage({ params }: PageProps) {
   const supabase = await createSupabaseServerClient();
 
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subdomain);
+  
+  // Debug log in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Episode page - Looking for podcast with subdomain:', subdomain, 'isUuid:', isUuid);
+  }
+  
   let podcast: { id: string; [k: string]: unknown } | null = null;
   let podcastError: unknown = null;
+  
   if (isUuid) {
+    // First try by ID
     const byId = await supabase.from('podcasts').select('*').eq('id', subdomain).maybeSingle();
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Episode page - Query by ID result:', byId);
+    }
     podcast = byId.data;
     podcastError = byId.error;
+    
+    // Fallback to custom_domain
     if (!podcast) {
       const byDomain = await supabase.from('podcasts').select('*').eq('custom_domain', subdomain).maybeSingle();
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Episode page - Query by custom_domain result:', byDomain);
+      }
       podcast = byDomain.data;
       podcastError = byDomain.error;
     }
   } else {
+    // Try by custom_domain first
     const byDomain = await supabase.from('podcasts').select('*').eq('custom_domain', subdomain).maybeSingle();
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Episode page - Query by custom_domain:', byDomain);
+    }
     podcast = byDomain.data;
     podcastError = byDomain.error;
+    
+    // Fallback to ID
+    if (!podcast) {
+      const byId = await supabase.from('podcasts').select('*').eq('id', subdomain).maybeSingle();
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Episode page - Fallback query by ID:', byId);
+      }
+      podcast = byId.data;
+      podcastError = byId.error;
+    }
+  }
+
+  if (podcastError) {
+    console.error('Episode page - Podcast query error:', podcastError);
   }
 
   if (podcastError || !podcast) {
@@ -201,3 +255,4 @@ export default async function EpisodePage({ params }: PageProps) {
     </>
   );
 }
+

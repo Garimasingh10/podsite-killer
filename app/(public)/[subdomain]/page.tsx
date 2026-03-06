@@ -25,30 +25,57 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { subdomain } = await params;
   const supabase = await createSupabaseServerClient();
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subdomain);
-  const { data: podcast } = isUuid
-    ? await supabase.from('podcasts').select('title, description').eq('id', subdomain).maybeSingle()
-    : await supabase.from('podcasts').select('title, description').eq('custom_domain', subdomain).maybeSingle();
-  const podcastFallback = !podcast && isUuid
-    ? await supabase.from('podcasts').select('title, description').eq('custom_domain', subdomain).maybeSingle()
-    : { data: null };
-  const meta = podcast ?? podcastFallback.data;
-  if (!meta) return { title: 'Podcast Not Found' };
+  
+  let podcast;
+  let podcastError;
+  
+  if (isUuid) {
+    // First try by ID
+    const byId = await supabase.from('podcasts').select('title, description').eq('id', subdomain).maybeSingle();
+    podcast = byId.data;
+    podcastError = byId.error;
+    
+    // Fallback to custom_domain
+    if (!podcast) {
+      const byDomain = await supabase.from('podcasts').select('title, description').eq('custom_domain', subdomain).maybeSingle();
+      podcast = byDomain.data;
+      podcastError = byDomain.error;
+    }
+  } else {
+    // Try by custom_domain first
+    const byDomain = await supabase.from('podcasts').select('title, description').eq('custom_domain', subdomain).maybeSingle();
+    podcast = byDomain.data;
+    podcastError = byDomain.error;
+    
+    // Fallback to ID
+    if (!podcast) {
+      const byId = await supabase.from('podcasts').select('title, description').eq('id', subdomain).maybeSingle();
+      podcast = byId.data;
+      podcastError = byId.error;
+    }
+  }
+  
+  if (podcastError) {
+    console.error('generateMetadata - Podcast query error:', podcastError);
+  }
+  
+  if (!podcast) return { title: 'Podcast Not Found' };
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://podsite-killer.vercel.app';
   const ogUrl = new URL(`${baseUrl}/api/og/${subdomain}`);
 
   return {
-    title: meta.title || 'Podcast',
-    description: meta.description,
+    title: podcast.title || 'Podcast',
+    description: podcast.description,
     openGraph: {
-      title: meta.title || 'Podcast',
-      description: meta.description || '',
+      title: podcast.title || 'Podcast',
+      description: podcast.description || '',
       images: [ogUrl.toString()],
     },
     twitter: {
       card: 'summary_large_image',
-      title: meta.title || 'Podcast',
-      description: meta.description || '',
+      title: podcast.title || 'Podcast',
+      description: podcast.description || '',
       images: [ogUrl.toString()],
     },
   };
@@ -67,22 +94,55 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
 
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subdomain);
 
+  // Debug log in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Looking for podcast with subdomain:', subdomain, 'isUuid:', isUuid);
+  }
+
   // Prefer id lookup when segment is UUID (View site from dashboard); else custom_domain
   let podcast: { id: string; [k: string]: unknown } | null = null;
   let podcastError: unknown = null;
+  
   if (isUuid) {
+    // First try to find by ID (UUID)
     const byId = await supabase.from('podcasts').select('*, products(*)').eq('id', subdomain).maybeSingle();
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Query by ID result:', byId);
+    }
     podcast = byId.data;
     podcastError = byId.error;
+    
+    // If not found by ID, try to find by custom_domain
     if (!podcast) {
       const byDomain = await supabase.from('podcasts').select('*, products(*)').eq('custom_domain', subdomain).maybeSingle();
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Query by custom_domain result:', byDomain);
+      }
       podcast = byDomain.data;
       podcastError = byDomain.error;
     }
   } else {
+    // If not a UUID, try by custom_domain
     const byDomain = await supabase.from('podcasts').select('*, products(*)').eq('custom_domain', subdomain).maybeSingle();
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Query by custom_domain (non-UUID):', byDomain);
+    }
     podcast = byDomain.data;
     podcastError = byDomain.error;
+    
+    // If still not found, try to find by ID (in case the subdomain looks like a domain but is actually a UUID)
+    if (!podcast) {
+      const byId = await supabase.from('podcasts').select('*, products(*)').eq('id', subdomain).maybeSingle();
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Fallback query by ID:', byId);
+      }
+      podcast = byId.data;
+      podcastError = byId.error;
+    }
+  }
+
+  if (podcastError) {
+    console.error('Podcast query error:', podcastError);
   }
 
   if (podcastError || !podcast) {

@@ -19,21 +19,55 @@ export default async function EpisodesIndex({ params, searchParams }: EpisodesIn
   const supabase = await createSupabaseServerClient();
 
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subdomain);
+
+  // Debug log in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Episodes page - Looking for podcast with subdomain:', subdomain, 'isUuid:', isUuid);
+  }
+
   let podcast: { id: string; [k: string]: unknown } | null = null;
   let podcastError: unknown = null;
+  
   if (isUuid) {
+    // First try by ID (UUID)
     const byId = await supabase.from('podcasts').select('*').eq('id', subdomain).maybeSingle();
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Episodes page - Query by ID result:', byId);
+    }
     podcast = byId.data;
     podcastError = byId.error;
+    
+    // Fallback to custom_domain
     if (!podcast) {
       const byDomain = await supabase.from('podcasts').select('*').eq('custom_domain', subdomain).maybeSingle();
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Episodes page - Query by custom_domain result:', byDomain);
+      }
       podcast = byDomain.data;
       podcastError = byDomain.error;
     }
   } else {
+    // Try by custom_domain first
     const byDomain = await supabase.from('podcasts').select('*').eq('custom_domain', subdomain).maybeSingle();
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Episodes page - Query by custom_domain:', byDomain);
+    }
     podcast = byDomain.data;
     podcastError = byDomain.error;
+    
+    // Fallback to ID
+    if (!podcast) {
+      const byId = await supabase.from('podcasts').select('*').eq('id', subdomain).maybeSingle();
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Episodes page - Fallback query by ID:', byId);
+      }
+      podcast = byId.data;
+      podcastError = byId.error;
+    }
+  }
+
+  if (podcastError) {
+    console.error('Episodes page - Podcast query error:', podcastError);
   }
 
   if (podcastError || !podcast) {
