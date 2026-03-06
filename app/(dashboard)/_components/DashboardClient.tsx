@@ -7,6 +7,7 @@ import { Headphones, Layout, Clock, Star, RefreshCcw, Search, PlusCircle } from 
 import ThemeEngine from '@/components/ThemeEngine';
 import { NewPodcastForm } from '../_components/NewPodcastForm';
 import { ActivePodcastSync } from '../_components/ActivePodcastSync';
+import { SearchForm } from '../_components/SearchForm';
 
 interface ThemeConfig {
   primaryColor?: string;
@@ -246,16 +247,14 @@ export default function DashboardClient({
               <div className="relative mt-12 grid grid-cols-2 gap-6">
                 <Link
                   href={`/podcasts/${activePodcast.id}/episodes`}
-                  className="flex flex-1 items-center justify-center gap-3 rounded-[1.5rem] bg-[var(--podcast-primary)] py-5 text-sm font-black uppercase tracking-widest text-black transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_var(--podcast-primary)] active:scale-[0.98]"
+                  className="flex flex-1 items-center justify-center gap-3 rounded-lg bg-[#0f172a] py-4 text-sm font-medium text-slate-300 transition-all hover:bg-[#1e293b]"
                 >
-                  <Headphones size={20} strokeWidth={3} />
                   Manage Show
                 </Link>
                 <Link
                   href={`/dashboard/customize?siteId=${activePodcast.id}`}
-                  className="flex flex-1 items-center justify-center gap-3 rounded-[1.5rem] bg-white text-black py-5 text-sm font-black uppercase tracking-widest transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] active:scale-[0.98]"
+                  className="flex flex-1 items-center justify-center gap-3 rounded-lg bg-[#0f172a] py-4 text-sm font-medium text-slate-300 transition-all hover:bg-[#1e293b]"
                 >
-                  <Layout size={20} strokeWidth={3} />
                   Customize Site
                 </Link>
               </div>
@@ -287,16 +286,19 @@ export default function DashboardClient({
       {/* Library Section (Clean Grid) */}
       {displayedPodcasts.length > 0 && (
         <section className="animate-fade-in-up [animation-delay:200ms] space-y-10 pt-8 pb-32">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between border-b border-zinc-200 dark:border-zinc-800 pb-10">
-            <div className="space-y-2">
-              <h3 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-                {showFavorites ? 'Favorite Podcasts' : (q ? `Results for "${q}"` : 'Your Studio Library')}
-              </h3>
-              <p className="text-sm font-medium text-zinc-500 uppercase tracking-widest opacity-80">
-                {showFavorites ? 'Quick Access' : 'Connected RSS Feeds'}
-              </p>
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-200 dark:border-zinc-800 pb-10">
+              <div className="space-y-2">
+                <h3 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+                  {showFavorites ? 'Favorite Podcasts' : (q ? `Results for "${q}"` : 'Your Studio Library')}
+                </h3>
+                <p className="text-sm font-medium text-zinc-500 uppercase tracking-widest opacity-80">
+                  {showFavorites ? 'Quick Access' : 'Connected RSS Feeds'}
+                </p>
+              </div>
+              <div className="w-full max-w-xs">
+                <SearchForm initialQuery={q} />
+              </div>
             </div>
-          </div>
 
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {displayedPodcasts.map((p) => {

@@ -83,41 +83,30 @@ export default async function DashboardLayout({
             </Link>
           </div>
 
-          <div className="flex flex-1 items-center justify-center px-4">
-            <SearchForm 
-              initialQuery="" 
-              placeholder="Search..." 
-              className="w-full max-w-xs scale-90 opacity-60 transition-all focus-within:opacity-100 focus-within:scale-100" 
-            />
-          </div>
 
           <nav className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
             <Link
               href="/dashboard"
-              className="group flex items-center gap-1.5 rounded-lg border border-white/5 bg-white/5 px-3 py-1.5 transition-all hover:border-sky-500/50 hover:bg-sky-500/10 hover:text-sky-400"
+              className="hover:text-white transition-colors"
             >
-              <Layout size={10} />
               <span>Dashboard</span>
             </Link>
             <Link
               href="/dashboard/products"
-              className="group flex items-center gap-1.5 rounded-lg border border-white/5 bg-white/5 px-3 py-1.5 transition-all hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-indigo-400"
+              className="hover:text-white transition-colors"
             >
-              <Zap size={10} />
               <span>Products</span>
             </Link>
             <Link
               href="/dashboard/domains"
-              className="group flex items-center gap-1.5 rounded-lg border border-white/5 bg-white/5 px-3 py-1.5 transition-all hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-400"
+              className="hover:text-white transition-colors"
             >
-              <Globe size={10} />
               <span>Domains</span>
             </Link>
             <Link
               href="/dashboard?favorites=true"
-              className="group flex items-center gap-1.5 rounded-lg border border-white/5 bg-white/5 px-3 py-1.5 transition-all hover:border-pink-500/50 hover:bg-pink-500/10 hover:text-pink-400"
+              className="hover:text-white transition-colors"
             >
-              <Heart size={10} className="fill-current" />
               <span>Favorites</span>
             </Link>
             <div className="h-4 w-px bg-white/10 mx-1" />

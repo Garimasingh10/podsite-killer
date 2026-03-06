@@ -30,14 +30,14 @@ export function SearchForm({
   };
 
   return (
-    <form onSubmit={onSubmit} className={`flex items-center bg-white/5 rounded-2xl border border-white/10 px-4 py-2 focus-within:border-sky-500/50 transition-all ${className}`}>
+    <form onSubmit={onSubmit} className={`flex items-center bg-white rounded-2xl border border-zinc-200 px-4 py-2 focus-within:border-sky-500/50 transition-all ${className}`}>
       <input
         type="text"
         name="q"
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder={placeholder}
-        className="flex-1 bg-transparent text-sm text-white focus:outline-none placeholder:text-slate-500 font-bold"
+        className="flex-1 bg-transparent text-sm text-black focus:outline-none placeholder:text-slate-400 font-bold"
       />
       <button
         type="submit"
