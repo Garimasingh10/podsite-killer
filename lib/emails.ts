@@ -111,6 +111,26 @@ export function getVerificationEmailHtml(verificationUrl: string): string {
     </div>`;
   return baseWrap(html);
 }
+
+export function getLoginSuccessEmailHtml(): string {
+  const dashboardUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://podsite-killer.vercel.app';
+  const html = `
+    <div style="text-align:center;">
+      <div style="margin-bottom:32px;">
+        <span style="background:rgba(52,211,153,0.1);color:#34d399;padding:8px 16px;border-radius:99px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;display:inline-block;border:1px solid rgba(52,211,153,0.2);">Security Alert</span>
+      </div>
+      <h1 style="color:#f8fafc;font-size:36px;font-weight:700;margin:0 0 16px;font-family:'Space Grotesk',sans-serif;letter-spacing:-0.03em;">Successful Login</h1>
+      <p style="color:#94a3b8;font-size:16px;line-height:1.6;margin:0 0 40px;font-weight:400;">We detected a new successful login to your PodSite Killer account.</p>
+      
+      <a href="${dashboardUrl}/dashboard" style="display:inline-block;background:linear-gradient(90deg,#38bdf8 0%,#818cf8 100%);color:#fff;padding:16px 40px;border-radius:12px;font-size:15px;font-weight:600;font-family:'Space Grotesk',sans-serif;text-decoration:none;margin-bottom:32px;text-transform:uppercase;letter-spacing:0.05em;box-shadow:0 10px 25px -5px rgba(56,189,248,0.4);">Go to Dashboard</a>
+
+      <div style="background:rgba(245,158,11,0.05);border-radius:16px;padding:24px;border:1px solid rgba(245,158,11,0.1);text-align:left;">
+        <p style="margin:0 0 8px;color:#fbbf24;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.1em;font-family:'Space Grotesk',sans-serif;">🛡 Didn't do this?</p>
+        <p style="margin:0;color:#94a3b8;font-size:13px;line-height:1.5;">If you did not authorize this login, please change your password immediately and contact support.</p>
+      </div>
+    </div>`;
+  return baseWrap(html);
+}
 export function getNewEpisodeEmailHtml(episodeTitle: string): string {
   const html = `
     <div style="text-align:center;">

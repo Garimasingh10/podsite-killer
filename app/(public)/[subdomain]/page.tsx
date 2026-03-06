@@ -12,6 +12,7 @@ import SubscribeBlock from '@/components/blocks/SubscribeBlock';
 import HostBlock from '@/components/blocks/HostBlock';
 import ShortsBlock from '@/components/blocks/ShortsBlock';
 import ProductBlock from '@/components/blocks/ProductBlock';
+import LiveLayoutController from '@/components/dashboard/LiveLayoutController';
 
 const PAGE_SIZE = 20;
 
@@ -295,32 +296,22 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     latest_video_id: latest?.youtube_video_id
   };
 
+  // Create dictionary of blocks for LiveLayoutController
+  const blockDict: Record<string, React.ReactNode> = {
+    hero: <HeroBlock podcast={podcastWithImage} latestEpisode={latest} />,
+    shorts: <ShortsBlock podcast={podcastWithImage} />,
+    grid: <GridBlock podcast={podcastWithImage} episodes={episodes || []} />,
+    episodes: <GridBlock podcast={podcastWithImage} episodes={episodes || []} />,
+    subscribe: <SubscribeBlock podcast={podcastWithImage} />,
+    product: (podcast as any).products?.[0] ? <ProductBlock product={(podcast as any).products[0]} /> : null,
+    host: <HostBlock podcast={podcastWithImage} />
+  };
+
   return (
     <>
       <ThemeEngine config={themeConfig} />
       <LayoutComponent podcast={layoutPodcast}>
-        <div className="flex flex-col">
-          {pageLayout.map((blockType) => {
-            switch (blockType) {
-              case 'hero':
-                return <HeroBlock key="hero" podcast={podcastWithImage} latestEpisode={latest} />;
-              case 'shorts':
-                return <ShortsBlock key="shorts" podcast={podcastWithImage} />;
-              case 'grid':
-              case 'episodes':
-                return <GridBlock key="grid" podcast={podcastWithImage} episodes={episodes || []} />;
-              case 'subscribe':
-                return <SubscribeBlock key="subscribe" podcast={podcastWithImage} />;
-              case 'product':
-                // Check if products exist in the data (we are not joining products currently to avoid schema errors)
-                return (podcast as any).products?.[0] ? <ProductBlock key="product" product={(podcast as any).products[0]} /> : null;
-              case 'host':
-                return <HostBlock key="host" podcast={podcastWithImage} />;
-              default:
-                return null;
-            }
-          })}
-        </div>
+        <LiveLayoutController initialLayout={pageLayout} blocks={blockDict} />
       </LayoutComponent>
     </>
   );
