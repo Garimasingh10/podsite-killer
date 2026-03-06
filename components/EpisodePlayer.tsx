@@ -276,9 +276,9 @@ export default function EpisodePlayer({
                             <div className="mx-auto flex max-w-4xl items-center gap-4">
                                 <button
                                     onClick={togglePlay}
-                                    className="flex h-14 w-14 flex-shrink-0 items-center justify-center border-4 border-black bg-primary text-primary-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-1 active:translate-x-1 active:translate-y-1 active:shadow-none"
+                                    className="flex h-14 w-14 flex-shrink-0 items-center justify-center border-4 border-black bg-black text-white shadow-[4px_4px_0px_0px_rgba(var(--podcast-primary-rgb),0.5)] transition-transform hover:-translate-y-1 active:translate-x-1 active:translate-y-1 active:shadow-none"
                                 >
-                                    {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
+                                    {isPlaying ? <Pause size={28} /> : <Play size={28} className="ml-1" />}
                                 </button>
                                 <div className="flex-1 min-w-0">
                                     <h4 className="truncate text-sm font-black uppercase tracking-tighter italic">{title}</h4>
@@ -297,9 +297,9 @@ export default function EpisodePlayer({
                                 </div>
                                 <button
                                     onClick={() => setIsSticky(false)}
-                                    className="h-10 w-10 flex items-center justify-center border-2 border-black hover:bg-slate-100"
+                                    className="h-10 w-10 flex items-center justify-center border-2 border-black hover:bg-slate-100 bg-white text-black"
                                 >
-                                    <X size={16} />
+                                    <X size={20} />
                                 </button>
                             </div>
                         </div>

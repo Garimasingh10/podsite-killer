@@ -26,12 +26,12 @@ export default function GenZLayout({ children, podcast, onSubscribeClick }: GenZ
     const [isFavorited, setIsFavorited] = useState(false);
 
     useEffect(() => {
-        const favorites = JSON.parse(localStorage.getItem('podsite_favorites') || '[]');
+        const favorites = JSON.parse(localStorage.getItem('pk_favorites') || '[]');
         setIsFavorited(favorites.includes(podcast.id));
     }, [podcast.id]);
 
     const toggleFavorite = () => {
-        const favorites = JSON.parse(localStorage.getItem('podsite_favorites') || '[]');
+        const favorites = JSON.parse(localStorage.getItem('pk_favorites') || '[]');
         let newFavorites;
         if (favorites.includes(podcast.id)) {
             newFavorites = favorites.filter((id: string) => id !== podcast.id);
@@ -40,7 +40,7 @@ export default function GenZLayout({ children, podcast, onSubscribeClick }: GenZ
             newFavorites = [...favorites, podcast.id];
             setIsFavorited(true);
         }
-        localStorage.setItem('podsite_favorites', JSON.stringify(newFavorites));
+        localStorage.setItem('pk_favorites', JSON.stringify(newFavorites));
     };
 
     return (
@@ -86,12 +86,11 @@ export default function GenZLayout({ children, podcast, onSubscribeClick }: GenZ
                             <div className="hidden md:flex items-center gap-4">
                                 <PublicSearch podcastId={podcast.id} />
                                 
-                                {/* Moved to footer */}
-                                {/* <button 
+                                <button 
                                     onClick={toggleFavorite}
-                                    className={`transition-all ${isFavorited ? 'text-red-500 fill-red-500 group' : 'text-zinc-600 hover:text-black'}`}
+                                    className={`transition-all p-3 rounded-xl border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 ${isFavorited ? 'text-red-500 fill-red-500 bg-red-100' : 'text-zinc-600 hover:text-black bg-white'}`}
                                 >
-                                    <Heart size={28} strokeWidth={3} className={isFavorited ? 'animate-bounce' : ''} />
+                                    <Heart size={24} strokeWidth={3} className={isFavorited ? 'animate-bounce' : ''} />
                                 </button>
 
                                 <div className="flex gap-2">
@@ -108,7 +107,7 @@ export default function GenZLayout({ children, podcast, onSubscribeClick }: GenZ
                                     className="border-4 border-black bg-[var(--primary)] px-6 py-2 text-sm font-black uppercase italic shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
                                 >
                                     Subscribe
-                                </button> */}
+                                </button>
                             </div>
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}

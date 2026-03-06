@@ -229,14 +229,16 @@ export default function DashboardClient({
                         <div className="absolute inset-0 rounded-2xl ring-inset ring-1 ring-white/20" />
                       </div>
                     )}
-                    <div className="space-y-2 text-left">
-                      <h2 className="text-5xl font-black tracking-tighter text-white italic leading-tight">
-                        {activePodcast.title}
-                      </h2>
-                      <p className="text-[10px] font-bold text-[var(--podcast-primary)] font-mono uppercase tracking-widest bg-[var(--podcast-primary)]/10 w-fit px-3 py-1 rounded">
-                        {activePodcast.rss_url}
-                      </p>
-                    </div>
+                      <div className="space-y-2 text-left">
+                        <h2 className="text-5xl font-black tracking-tighter text-white italic leading-tight">
+                          {activePodcast.title}
+                        </h2>
+                        {!showFavorites && (
+                          <p className="text-[10px] font-bold text-[var(--podcast-primary)] font-mono uppercase tracking-widest bg-[var(--podcast-primary)]/10 w-fit px-3 py-1 rounded">
+                            {activePodcast.rss_url}
+                          </p>
+                        )}
+                      </div>
                   </div>
 
                   <p className="text-lg leading-relaxed text-zinc-400 line-clamp-2 font-medium">
@@ -287,18 +289,20 @@ export default function DashboardClient({
       {/* Library Section (Clean Grid) */}
       {displayedPodcasts.length > 0 && (
         <section className="animate-fade-in-up [animation-delay:200ms] space-y-10 pt-8 pb-32">
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-200 dark:border-zinc-800 pb-10">
+            <div className={`flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-200 dark:border-zinc-800 pb-10 ${showFavorites ? 'bg-gradient-to-r from-[var(--podcast-primary)]/10 to-transparent p-8 rounded-[2rem] border-none shadow-2xl' : ''}`}>
               <div className="space-y-2">
-                <h3 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-                  {showFavorites ? 'Favorite Podcasts' : (q ? `Results for "${q}"` : 'Your Studio Library')}
+                <h3 className={`text-3xl font-bold tracking-tight ${showFavorites ? 'text-[var(--podcast-primary)] italic font-black' : 'text-zinc-900 dark:text-zinc-100'}`}>
+                  {showFavorites ? '✨ Favorite Podcasts' : (q ? `Results for "${q}"` : 'Your Studio Library')}
                 </h3>
                 <p className="text-sm font-medium text-zinc-500 uppercase tracking-widest opacity-80">
-                  {showFavorites ? 'Quick Access' : 'Connected RSS Feeds'}
+                  {showFavorites ? 'Your Handpicked Selection' : 'Connected RSS Feeds'}
                 </p>
               </div>
-              <div className="w-full max-w-xs">
-                <SearchForm initialQuery={q} />
-              </div>
+              {!showFavorites && (
+                <div className="w-full max-w-xs">
+                  <SearchForm initialQuery={q} />
+                </div>
+              )}
             </div>
 
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -339,9 +343,16 @@ export default function DashboardClient({
                         <div className="h-3 w-3 rounded-full bg-[var(--podcast-item-primary)] shadow-[0_0_10px_var(--podcast-item-primary)]" />
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Podcast Site</span>
                         </div>
-                        <span className="rounded-lg bg-white/5 px-2 py-1 text-[10px] font-mono text-zinc-500 border border-white/10">
-                        {p.id.slice(0, 8)}
-                        </span>
+                        {showFavorites ? (
+                          <div className="flex items-center gap-1 text-[var(--podcast-item-primary)] animate-pulse">
+                            <Star size={10} fill="currentColor" />
+                            <span className="text-[8px] font-black uppercase tracking-widest">Favorited</span>
+                          </div>
+                        ) : (
+                          <span className="rounded-lg bg-white/5 px-2 py-1 text-[10px] font-mono text-zinc-500 border border-white/10">
+                            {p.id.slice(0, 8)}
+                          </span>
+                        )}
                     </div>
                     </Link>
                     

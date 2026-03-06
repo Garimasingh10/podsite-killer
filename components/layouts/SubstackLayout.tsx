@@ -27,12 +27,12 @@ export default function SubstackLayout({ children, podcast, onSubscribeClick }: 
     const [isFavorited, setIsFavorited] = useState(false);
 
     useEffect(() => {
-        const favorites = JSON.parse(localStorage.getItem('podsite_favorites') || '[]');
+        const favorites = JSON.parse(localStorage.getItem('pk_favorites') || '[]');
         setIsFavorited(favorites.includes(podcast.id));
     }, [podcast.id]);
 
     const toggleFavorite = () => {
-        const favorites = JSON.parse(localStorage.getItem('podsite_favorites') || '[]');
+        const favorites = JSON.parse(localStorage.getItem('pk_favorites') || '[]');
         let newFavorites;
         if (favorites.includes(podcast.id)) {
             newFavorites = favorites.filter((id: string) => id !== podcast.id);
@@ -41,7 +41,7 @@ export default function SubstackLayout({ children, podcast, onSubscribeClick }: 
             newFavorites = [...favorites, podcast.id];
             setIsFavorited(true);
         }
-        localStorage.setItem('podsite_favorites', JSON.stringify(newFavorites));
+        localStorage.setItem('pk_favorites', JSON.stringify(newFavorites));
     };
 
     return (
