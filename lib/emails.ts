@@ -38,22 +38,73 @@ export type SendOptions = { to: string; subject: string; html: string };
 
 /** Welcome email after signup (trigger: user_created) */
 export function getWelcomeEmailHtml(): string {
+  const dashboardUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://podsite-killer.vercel.app';
   const html = `
     <div style="text-align:center;">
-      <p style="background:#eef2ff;color:#6366f1;padding:8px 16px;border-radius:99px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;display:inline-block;margin-bottom:24px;">Welcome</p>
-      <h1 style="color:#111827;font-size:32px;font-weight:800;margin:0 0 16px;letter-spacing:-0.02em;">Welcome to PodSite 🚀</h1>
-      <p style="color:#64748b;font-size:16px;line-height:1.6;margin:0 0 32px;">Get your podcast site live in three steps:</p>
-      <ol style="text-align:left;max-width:320px;margin:0 auto 32px;color:#374151;font-size:16px;line-height:2;">
-        <li><strong>Paste your RSS feed</strong> in the dashboard.</li>
-        <li><strong>Connect YouTube</strong> to match video to episodes.</li>
-        <li><strong>Launch your site</strong> and share your link.</li>
-      </ol>
-      <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://podsite-killer.vercel.app'}/dashboard" style="display:inline-block;background:#111827;color:#fff;padding:18px 40px;border-radius:16px;font-size:16px;font-weight:700;text-decoration:none;">Go to Dashboard</a>
+      <p style="background:#eef2ff;color:#6366f1;padding:8px 16px;border-radius:99px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;display:inline-block;margin-bottom:24px;">Welcome Aboard</p>
+      <h1 style="color:#111827;font-size:36px;font-weight:800;margin:0 0 24px;letter-spacing:-0.02em;">Welcome to PodSite Killer 🚀</h1>
+      <p style="color:#64748b;font-size:16px;line-height:1.6;margin:0 0 40px;">Your podcast empire starts here. Let's launch your show in three simple steps:</p>
+      
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:0 0 40px;">
+        <tr>
+          <td width="33.33%" style="padding:0 12px;">
+            <div style="background:#f1f5f9;border-radius:16px;padding:24px;border:1px solid #e2e8f0;">
+              <div style="background:#6366f1;color:#fff;width:40px;height:40px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;">1</div>
+              <p style="font-weight:700;color:#111827;margin:0 0 8px;font-size:14px;">Paste Your RSS</p>
+              <p style="font-size:12px;color:#64748b;margin:0;">Drop your podcast's RSS feed URL into the dashboard.</p>
+            </div>
+          </td>
+          <td width="33.33%" style="padding:0 12px;">
+            <div style="background:#f1f5f9;border-radius:16px;padding:24px;border:1px solid #e2e8f0;">
+              <div style="background:#6366f1;color:#fff;width:40px;height:40px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;">2</div>
+              <p style="font-weight:700;color:#111827;margin:0 0 8px;font-size:14px;">Connect YouTube</p>
+              <p style="font-size:12px;color:#64748b;margin:0;">Link your YouTube channel to auto-match videos to episodes.</p>
+            </div>
+          </td>
+          <td width="33.33%" style="padding:0 12px;">
+            <div style="background:#f1f5f9;border-radius:16px;padding:24px;border:1px solid #e2e8f0;">
+              <div style="background:#6366f1;color:#fff;width:40px;height:40px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;">3</div>
+              <p style="font-weight:700;color:#111827;margin:0 0 8px;font-size:14px;">Launch & Share</p>
+              <p style="font-size:12px;color:#64748b;margin:0;">Get a custom domain and share your beautiful podcast site.</p>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <a href="${dashboardUrl}/dashboard" style="display:inline-block;background:#111827;color:#fff;padding:18px 48px;border-radius:12px;font-size:16px;font-weight:700;text-decoration:none;margin-bottom:24px;box-shadow:0 4px 15px rgba(17,24,39,0.3);">Go to Dashboard</a>
+
+      <div style="background:#eef2ff;border-radius:16px;padding:24px;border-left:4px solid #6366f1;text-align:left;margin-top:32px;">
+        <p style="margin:0 0 12px;color:#111827;font-weight:700;font-size:14px;">Pro Tips:</p>
+        <ul style="margin:0;padding-left:20px;list-style-position:inside;">
+          <li style="color:#374151;font-size:13px;margin-bottom:8px;">Your first podcast becomes your primary show and appears on your dashboard.</li>
+          <li style="color:#374151;font-size:13px;margin-bottom:8px;">Episodes sync automatically whenever your RSS feed updates.</li>
+          <li style="color:#374151;font-size:13px;">Customize your site's theme and layout to match your brand.</li>
+        </ul>
+      </div>
     </div>`;
   return baseWrap(html);
 }
 
-/** New episode detected (trigger: new_episode_detected) */
+/** Verification email for email signups (trigger: email_signup) */
+export function getVerificationEmailHtml(verificationUrl: string): string {
+  const html = `
+    <div style="text-align:center;">
+      <p style="background:#dbeafe;color:#0284c7;padding:8px 16px;border-radius:99px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;display:inline-block;margin-bottom:24px;">Verify Your Email</p>
+      <h1 style="color:#111827;font-size:36px;font-weight:800;margin:0 0 24px;letter-spacing:-0.02em;">Verify Your Account</h1>
+      <p style="color:#64748b;font-size:16px;line-height:1.6;margin:0 0 32px;">Click the button below to verify your email and activate your PodSite Killer account.</p>
+      
+      <a href="${verificationUrl}" style="display:inline-block;background:#0284c7;color:#fff;padding:18px 48px;border-radius:12px;font-size:16px;font-weight:700;text-decoration:none;margin-bottom:32px;box-shadow:0 4px 15px rgba(2,132,199,0.3);">Verify Email Address</a>
+
+      <p style="color:#64748b;font-size:13px;margin:0 0 24px;line-height:1.6;">Or copy and paste this link in your browser:</p>
+      <p style="color:#0284c7;font-size:12px;margin:0 0 32px;word-break:break-all;font-family:monospace;background:#f0f9ff;padding:16px;border-radius:8px;">${verificationUrl}</p>
+
+      <div style="background:#fef3c7;border-radius:16px;padding:16px;border-left:4px solid #f59e0b;text-align:left;margin-top:32px;">
+        <p style="margin:0 0 8px;color:#92400e;font-weight:700;font-size:13px;">💡 This link expires in 24 hours</p>
+        <p style="margin:0;color:#b45309;font-size:12px;">If you didn't create this account, you can safely ignore this email.</p>
+      </div>
+    </div>`;
+  return baseWrap(html);
+}
 export function getNewEpisodeEmailHtml(episodeTitle: string): string {
   const html = `
     <div style="text-align:center;">

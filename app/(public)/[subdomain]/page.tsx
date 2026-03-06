@@ -169,8 +169,13 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     } as any;
   }
 
-  if (podcastError) {
-    console.error('Podcast query error:', podcastError);
+  if (podcastError || !podcast) {
+    console.error('Podcast query error:', {
+      subdomain,
+      isUuid,
+      error: podcastError,
+      found: !!podcast,
+    });
   }
 
   if (podcastError || !podcast) {
@@ -184,18 +189,28 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
 
           <div className="space-y-3">
             <h2 className="text-2xl font-bold text-white tracking-tight">Podcast not found</h2>
-            <p className="text-slate-400 leading-relaxed">
-              We couldn&apos;t find a podcast associated with <code className="bg-white/5 px-1.5 py-0.5 rounded text-primary border border-white/10">{String(subdomain)}</code>.
+            <p className="text-slate-400 leading-relaxed text-sm">
+              We couldn't find a podcast associated with:
+              <code className="block bg-white/5 px-3 py-2 rounded text-primary border border-white/10 mt-3 break-all font-mono text-xs">{String(subdomain)}</code>
+            </p>
+            <p className="text-slate-500 text-xs mt-4">
+              This could be because the podcast hasn't been created yet, or the incorrect URL was used. Check that you've imported the podcast in your dashboard first.
             </p>
           </div>
 
           <div className="pt-4 flex flex-col items-center gap-4">
-            <Link
+            <a
               href="https://podsitekiller.com"
               className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white text-black font-bold text-sm uppercase tracking-widest hover:bg-primary transition-all active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
             >
               Create Your Own
-            </Link>
+            </a>
+            <a
+              href="/login"
+              className="text-slate-400 hover:text-slate-300 text-sm transition-colors"
+            >
+              Back to Dashboard
+            </a>
           </div>
         </div>
       </main>

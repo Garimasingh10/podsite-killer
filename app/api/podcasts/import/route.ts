@@ -112,11 +112,21 @@ export async function POST(req: Request) {
   }
 
   if (podcastError || !podcast) {
+    console.error('Podcast upsert failed:', {
+      error: podcastError,
+      data: podcast,
+    });
     return NextResponse.json(
       { error: podcastError?.message ?? 'Error upserting podcast' },
       { status: 500 },
     );
   }
+
+  console.log('Podcast created/updated successfully:', {
+    id: podcast.id,
+    title: podcast.title,
+    owner_id: podcast.owner_id,
+  });
 
   let episodesProcessed = 0;
   // We limit to 150 episodes for performance
@@ -144,11 +154,20 @@ export async function POST(req: Request) {
     if (!error) episodesProcessed += 1;
   }
 
+  // Revalidate both dashboard and public routes
   revalidatePath('/dashboard');
+  revalidatePath(`/${podcast.id}`);
+
+  console.log('Import completed:', {
+    podcastId: podcast.id,
+    episodesProcessed,
+    totalEpisodes: parsed.episodes.length,
+  });
 
   return NextResponse.json({
     ok: true,
     podcastId: podcast.id,
+    title: podcast.title,
     episodesProcessed,
     totalItems: parsed.episodes.length,
     theme: themeConfig,
