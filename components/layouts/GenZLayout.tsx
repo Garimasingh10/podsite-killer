@@ -114,7 +114,7 @@ export default function GenZLayout({ children, podcast, episode, onSubscribeClic
                                 })}
                             </nav>
                             <div className="hidden md:flex items-center gap-4">
-                                <PublicSearch podcastId={podcast.id} />
+                                <PublicSearch podcastId={podcast.id} variant="light" />
                                 
                                 <button 
                                     onClick={toggleFavorite}
@@ -123,21 +123,6 @@ export default function GenZLayout({ children, podcast, episode, onSubscribeClic
                                     <Heart size={24} strokeWidth={3} className={isFavorited ? 'animate-bounce' : ''} />
                                 </button>
 
-                                <div className="flex gap-2">
-                                    <a href={podcast.twitterUrl || '#'} className="h-10 w-10 border-4 border-black bg-black text-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
-                                        <span className="text-sm font-black italic">𝕏</span>
-                                    </a>
-                                    <a href={podcast.linkedInUrl || '#'} className="h-10 w-10 border-4 border-black bg-black text-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
-                                        <span className="text-xs font-black italic">in</span>
-                                    </a>
-                                </div>
-
-                                <button 
-                                    onClick={onSubscribeClick}
-                                    className="border-4 border-black bg-[var(--primary)] px-6 py-2 text-sm font-black uppercase italic shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
-                                >
-                                    Subscribe
-                                </button>
                             </div>
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -156,10 +141,6 @@ export default function GenZLayout({ children, podcast, episode, onSubscribeClic
                                 <Link href={`/${podcast.id}/episodes`} onClick={() => setIsMenuOpen(false)} className="text-6xl font-black uppercase italic border-b-8 border-black pb-4">Archive</Link>
                                 <Link href={`/${podcast.id}#product`} onClick={() => setIsMenuOpen(false)} className="text-6xl font-black uppercase italic border-b-8 border-black pb-4">Shop</Link>
                                 <Link href={`/${podcast.id}#host`} onClick={() => setIsMenuOpen(false)} className="text-6xl font-black uppercase italic border-b-8 border-black pb-4">About</Link>
-                                <div className="mt-8 flex gap-6">
-                                    <div className="h-16 w-16 border-4 border-black flex items-center justify-center text-2xl font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">𝕏</div>
-                                    <div className="h-16 w-16 border-4 border-black flex items-center justify-center text-2xl font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">in</div>
-                                </div>
                             </nav>
                         </div>
                     )}

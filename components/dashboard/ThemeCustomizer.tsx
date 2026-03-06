@@ -130,7 +130,7 @@ export default function ThemeCustomizer({
                             Custom Colors
                         </h4>
                         <div className="space-y-3">
-                            <div className="flex items-center justify-between rounded-[2rem] border-2 border-slate-800 bg-slate-950 p-3 pl-6 transition-all hover:border-[var(--primary)] group">
+                            <div className="flex items-center justify-between rounded-2xl border-2 border-slate-800 bg-slate-950 p-3 pl-5 pr-3 transition-all hover:border-[var(--primary)] group">
                                 <span className="text-xs font-black uppercase tracking-widest text-slate-500 group-hover:text-white transition-colors">Primary</span>
                                 <div className="flex items-center gap-4">
                                     <input
@@ -139,7 +139,7 @@ export default function ThemeCustomizer({
                                         onChange={(e) => updateConfig({ primaryColor: e.target.value })}
                                         className="w-20 bg-transparent text-right font-mono text-xs text-slate-400 group-hover:text-white focus:outline-none transition-colors"
                                     />
-                                    <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-xl bg-slate-800 ring-2 ring-white/10 shadow-2xl transition-all group-hover:ring-[var(--primary)]/50">
+                                    <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg bg-slate-800 ring-2 ring-white/10 shadow-2xl transition-all group-hover:ring-[var(--primary)]/50">
                                         <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: config.primaryColor || '#0ea5e9' }} />
                                         <input
                                             type="color"
@@ -150,7 +150,7 @@ export default function ThemeCustomizer({
                                     </div>
                                 </div>
                             </div>
-                             <div className="flex items-center justify-between rounded-[2rem] border-2 border-slate-800 bg-slate-950 p-3 pl-6 transition-all hover:border-[var(--primary)] group">
+                             <div className="flex items-center justify-between rounded-2xl border-2 border-slate-800 bg-slate-950 p-3 pl-5 pr-3 transition-all hover:border-[var(--primary)] group">
                                 <span className="text-xs font-black uppercase tracking-widest text-slate-500 group-hover:text-white transition-colors">Background</span>
                                 <div className="flex items-center gap-4">
                                     <input
@@ -159,7 +159,7 @@ export default function ThemeCustomizer({
                                         onChange={(e) => updateConfig({ backgroundColor: e.target.value })}
                                         className="w-20 bg-transparent text-right font-mono text-xs text-slate-400 group-hover:text-white focus:outline-none transition-colors"
                                     />
-                                    <div className="relative flex-shrink-0 h-10 w-10 overflow-hidden rounded-xl bg-slate-800 ring-2 ring-white/10 shadow-2xl transition-all group-hover:ring-[var(--primary)]/50">
+                                    <div className="relative flex-shrink-0 h-10 w-10 overflow-hidden rounded-lg bg-slate-800 ring-2 ring-white/10 shadow-2xl transition-all group-hover:ring-[var(--primary)]/50">
                                         <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: config.backgroundColor || '#020617' }} />
                                         <input
                                             type="color"
@@ -170,7 +170,7 @@ export default function ThemeCustomizer({
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex items-center justify-between rounded-[2rem] border-2 border-slate-800 bg-slate-950 p-3 pl-6 transition-all hover:border-[var(--primary)] group">
+                            <div className="flex items-center justify-between rounded-2xl border-2 border-slate-800 bg-slate-950 p-3 pl-5 pr-3 transition-all hover:border-[var(--primary)] group">
                                 <span className="text-xs font-black uppercase tracking-widest text-slate-500 group-hover:text-white transition-colors">Accent</span>
                                 <div className="flex items-center gap-4">
                                     <input
@@ -179,7 +179,7 @@ export default function ThemeCustomizer({
                                         onChange={(e) => updateConfig({ accentColor: e.target.value })}
                                         className="w-20 bg-transparent text-right font-mono text-xs text-slate-400 group-hover:text-white focus:outline-none transition-colors"
                                     />
-                                    <div className="relative flex-shrink-0 h-10 w-10 overflow-hidden rounded-xl bg-slate-800 ring-2 ring-white/10 shadow-2xl transition-all group-hover:ring-[var(--primary)]/50">
+                                    <div className="relative flex-shrink-0 h-10 w-10 overflow-hidden rounded-lg bg-slate-800 ring-2 ring-white/10 shadow-2xl transition-all group-hover:ring-[var(--primary)]/50">
                                         <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: config.accentColor || '#f59e0b' }} />
                                         <input
                                             type="color"
@@ -225,15 +225,15 @@ export default function ThemeCustomizer({
                                 </button>
                             ))}
 
-                            <div className={`space-y-4 rounded-3xl border-2 p-6 transition-all ${config.customFontUrl ? 'border-[var(--primary)] bg-primary/5' : 'border-slate-800 bg-slate-950'}`}>
-                                <label className="block text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">Custom Google Font URL</label>
-                                <div className="flex items-center gap-3">
+                            <div className={`space-y-4 rounded-2xl border-2 p-5 transition-all ${config.customFontUrl ? 'border-[var(--primary)] bg-primary/5' : 'border-slate-800 bg-slate-950'}`}>
+                                <label className="block text-xs font-black uppercase tracking-widest text-slate-500">Custom Font URL</label>
+                                <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
                                     <input
                                         type="text"
-                                        placeholder="https://fonts.googleapis.com/css2?family=..."
+                                        placeholder="https://fonts.googleapis.com/css2?..."
                                         value={localFontUrl}
                                         onChange={(e) => setLocalFontUrl(e.target.value)}
-                                        className="flex-1 min-w-0 bg-slate-900/50 rounded-xl px-4 py-3 text-xs text-white focus:outline-none placeholder:text-slate-700 font-mono border border-white/5 focus:border-[var(--primary)]/50"
+                                        className="flex-1 w-full bg-slate-900/50 rounded-xl px-4 py-3 text-xs text-white focus:outline-none placeholder:text-slate-700 font-mono border border-white/5 focus:border-[var(--primary)]/50"
                                     />
                                     <button
                                         onClick={() => {
@@ -244,7 +244,7 @@ export default function ThemeCustomizer({
                                             }
                                             updateConfig({ customFontUrl: finalUrl });
                                         }}
-                                        className="shrink-0 rounded-xl bg-white px-6 py-3 text-[10px] font-black uppercase tracking-widest text-black transition-all shadow-[8px_8px_0px_0px_rgba(var(--podcast-primary-rgb,0,0,0),0.2)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 active:scale-95"
+                                        className="shrink-0 w-full xl:w-auto rounded-xl bg-white px-6 py-3 text-[10px] font-black uppercase tracking-widest text-black transition-all hover:bg-slate-200 active:scale-95"
                                     >
                                         Apply
                                     </button>
@@ -263,7 +263,7 @@ export default function ThemeCustomizer({
                                 <button
                                     key={r}
                                     onClick={() => updateConfig({ cornerRadius: r })}
-                                    className={`rounded-full border-2 py-4 px-2 text-[10px] font-black uppercase tracking-widest transition-all ${config.cornerRadius === r
+                                    className={`rounded-xl border-2 py-3 px-2 text-[10px] font-black uppercase tracking-widest transition-all ${config.cornerRadius === r
                                         ? 'border-[var(--primary)] bg-[var(--primary)] text-black shadow-[0_0_20px_-5px_var(--primary)] scale-105'
                                         : 'border-slate-800 bg-slate-950 text-slate-500 hover:border-slate-700 hover:text-slate-300'
                                         }`}
