@@ -109,40 +109,35 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   
   if (isUuid) {
     // First try to find by ID (UUID)
-    const byId = await supabase.from('podcasts').select('*, products(*)').eq('id', subdomain).maybeSingle();
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Query by ID result:', byId);
-    }
+    const byId = await supabase.from('podcasts').select('*').eq('id', subdomain).maybeSingle();
     podcast = byId.data;
     podcastError = byId.error;
     
     // If not found by ID, try to find by custom_domain
     if (!podcast) {
-      const byDomain = await supabase.from('podcasts').select('*, products(*)').eq('custom_domain', subdomain).maybeSingle();
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Query by custom_domain result:', byDomain);
-      }
+      const byDomain = await supabase.from('podcasts').select('*').eq('custom_domain', subdomain).maybeSingle();
       podcast = byDomain.data;
       podcastError = byDomain.error;
     }
   } else {
     // If not a UUID, try by custom_domain
-    const byDomain = await supabase.from('podcasts').select('*, products(*)').eq('custom_domain', subdomain).maybeSingle();
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Query by custom_domain (non-UUID):', byDomain);
-    }
+    const byDomain = await supabase.from('podcasts').select('*').eq('custom_domain', subdomain).maybeSingle();
     podcast = byDomain.data;
     podcastError = byDomain.error;
     
-    // If still not found, try to find by ID (in case the subdomain looks like a domain but is actually a UUID)
+    // If still not found, try to find by ID
     if (!podcast) {
-      const byId = await supabase.from('podcasts').select('*, products(*)').eq('id', subdomain).maybeSingle();
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Fallback query by ID:', byId);
-      }
+      const byId = await supabase.from('podcasts').select('*').eq('id', subdomain).maybeSingle();
       podcast = byId.data;
       podcastError = byId.error;
     }
+  }
+
+  // Separate query for products to avoid join failures
+  let products: any[] = [];
+  if (podcast) {
+    const { data: productsData } = await supabase.from('products').select('*').eq('podcast_id', podcast.id);
+    products = productsData || [];
   }
 
   // If demo podcast and not found, use demo data
@@ -308,7 +303,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     grid: <GridBlock podcast={podcastWithImage} episodes={finalEpisodes || []} />,
     episodes: <GridBlock podcast={podcastWithImage} episodes={finalEpisodes || []} />,
     subscribe: <SubscribeBlock podcast={podcastWithImage} />,
-    product: (podcast as any).products?.[0] ? <ProductBlock product={(podcast as any).products[0]} /> : null,
+    product: products[0] ? <ProductBlock product={products[0]} /> : null,
     host: <HostBlock podcast={podcastWithImage} />
   };
 
