@@ -159,8 +159,17 @@ export default function SubstackLayout({ children, podcast, onSubscribeClick }: 
                                 Subscribe Now
                             </button>
                         </div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">
-                            © {new Date().getFullYear()} {podcast.title}.
+                        <div className="mb-12 flex flex-col items-center gap-4">
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Legal</h4>
+                            <div className="flex gap-6 text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                                <Link href="#" className="hover:text-black transition-colors">Privacy Policy</Link>
+                                <Link href="#" className="hover:text-white bg-black px-2 py-0.5 text-white">Terms of Service</Link>
+                                <Link href="#" className="hover:text-black transition-colors">Cookie Policy</Link>
+                                <Link href="#" className="hover:text-black transition-colors underline decoration-dotted">Refund Policy</Link>
+                            </div>
+                        </div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-300">
+                            © {new Date().getFullYear()} {podcast.title}. All Rights Reserved.
                         </p>
                     </div>
                 </footer>

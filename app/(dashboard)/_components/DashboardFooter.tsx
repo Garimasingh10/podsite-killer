@@ -67,6 +67,16 @@ export function DashboardFooter() {
                 <ExternalLink size={14} className="opacity-50" /> Terms of Service
               </Link>
             </li>
+            <li>
+              <Link href="#" className="text-sm text-zinc-400 hover:text-white transition-colors flex items-center gap-2">
+                <Shield size={14} className="opacity-50" /> Cookie Policy
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="text-sm text-zinc-400 hover:text-white transition-colors flex items-center gap-2">
+                <ExternalLink size={14} className="opacity-50" /> Refund Policy
+              </Link>
+            </li>
           </ul>
         </div>
       </div>

@@ -164,9 +164,18 @@ export default function GenZLayout({ children, podcast, onSubscribeClick }: GenZ
                                         <span className="text-xl font-black italic">in</span>
                                     </a>
                                 </div>
+                                <div className="flex flex-col gap-2 text-right">
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-black/50">Legal</h4>
+                                    <div className="flex flex-col gap-1 items-end">
+                                        <Link href="#" className="text-xs font-black uppercase italic hover:underline">Privacy Policy</Link>
+                                        <Link href="#" className="text-xs font-black uppercase italic hover:underline">Terms of Service</Link>
+                                        <Link href="#" className="text-xs font-black uppercase italic hover:underline">Cookie Policy</Link>
+                                        <Link href="#" className="text-xs font-black uppercase italic hover:underline">Refund Policy</Link>
+                                    </div>
+                                </div>
                                 <button 
                                     onClick={onSubscribeClick}
-                                    className="border-4 border-black bg-black text-white px-12 py-5 text-2xl font-black uppercase italic shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:bg-[var(--primary)] hover:text-black hover:scale-105 active:scale-90 transition-all duration-200"
+                                    className="border-4 border-black bg-black text-white px-12 py-5 text-2xl font-black uppercase italic shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:bg-white hover:text-black hover:scale-105 active:scale-90 transition-all duration-200"
                                 >
                                     Subscribe Now
                                 </button>

@@ -126,6 +126,15 @@ export default function NetflixLayout({ children, podcast, onSubscribeClick }: N
                                     <span className="text-base font-black italic">in</span>
                                 </a>
                             </div>
+                            <div className="flex flex-col gap-1 items-end md:items-start">
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600">Legal</h4>
+                                <div className="flex flex-wrap gap-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                                    <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
+                                    <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
+                                    <Link href="#" className="hover:text-white transition-colors">Cookie Policy</Link>
+                                    <Link href="#" className="hover:text-white transition-colors">Refund Policy</Link>
+                                </div>
+                            </div>
                             <button 
                                 onClick={onSubscribeClick}
                                 className="h-14 px-10 rounded-sm bg-white text-black font-black uppercase tracking-[0.2em] text-sm hover:bg-[var(--primary)] transition-all shadow-2xl active:scale-95"
