@@ -7,7 +7,7 @@ const FROM = process.env.RESEND_FROM || 'PodSite <onboarding@resend.dev>';
 
 function baseStyles() {
   return `
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
   `;
 }
 
@@ -16,16 +16,16 @@ function baseWrap(html: string) {
 <!DOCTYPE html>
 <html>
 <head><style>${baseStyles()}</style></head>
-<body style="margin:0;padding:0;background-color:#f9fafb;font-family:'Inter',sans-serif;">
-  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background:#f9fafb;padding:48px 24px;">
+<body style="margin:0;padding:0;background-color:#020617;font-family:'Inter',sans-serif;color:#f8fafc;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background:#020617;padding:60px 24px;">
     <tr><td align="center">
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:600px;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.03);border:1px solid #f1f5f9;">
-        <tr><td style="height:8px;background:linear-gradient(90deg,#6366f1 0%,#a855f7 100%);"></td></tr>
-        <tr><td style="padding:48px;">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:600px;background:#0f172a;border-radius:24px;overflow:hidden;border:1px solid #1e293b;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+        <tr><td style="height:4px;background:linear-gradient(90deg,#38bdf8 0%,#818cf8 50%,#c084fc 100%);"></td></tr>
+        <tr><td style="padding:48px 40px;">
           ${html}
         </td></tr>
-        <tr><td style="padding:32px 48px;background:#f8fafc;border-top:1px solid #f1f5f9;text-align:center;">
-          <p style="color:#94a3b8;font-size:13px;margin:0;">&copy; ${new Date().getFullYear()} PodSite. All rights reserved.</p>
+        <tr><td style="padding:32px 40px;background:#020617;border-top:1px solid #1e293b;text-align:center;">
+          <p style="color:#64748b;font-size:12px;margin:0;font-family:'Space Grotesk',sans-serif;letter-spacing:0.05em;">&copy; ${new Date().getFullYear()} PODSITE-KILLER. ALL RIGHTS RESERVED.</p>
         </td></tr>
       </table>
     </td></tr>
@@ -41,44 +41,46 @@ export function getWelcomeEmailHtml(): string {
   const dashboardUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://podsite-killer.vercel.app';
   const html = `
     <div style="text-align:center;">
-      <p style="background:#eef2ff;color:#6366f1;padding:8px 16px;border-radius:99px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;display:inline-block;margin-bottom:24px;">Welcome Aboard</p>
-      <h1 style="color:#111827;font-size:36px;font-weight:800;margin:0 0 24px;letter-spacing:-0.02em;">Welcome to PodSite Killer 🚀</h1>
-      <p style="color:#64748b;font-size:16px;line-height:1.6;margin:0 0 40px;">Your podcast empire starts here. Let's launch your show in three simple steps:</p>
+      <div style="margin-bottom:32px;">
+        <span style="background:rgba(56,189,248,0.1);color:#38bdf8;padding:8px 16px;border-radius:99px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;display:inline-block;border:1px solid rgba(56,189,248,0.2);">Welcome Aboard</span>
+      </div>
+      <h1 style="color:#f8fafc;font-size:36px;font-weight:700;margin:0 0 16px;font-family:'Space Grotesk',sans-serif;letter-spacing:-0.03em;">Welcome to PodSite 🚀</h1>
+      <p style="color:#94a3b8;font-size:16px;line-height:1.6;margin:0 0 40px;font-weight:400;">Your high-performance podcast empire starts here. Let's launch your show in three simple steps.</p>
       
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:0 0 40px;">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:0 0 48px;">
         <tr>
-          <td width="33.33%" style="padding:0 12px;">
-            <div style="background:#f1f5f9;border-radius:16px;padding:24px;border:1px solid #e2e8f0;">
-              <div style="background:#6366f1;color:#fff;width:40px;height:40px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;">1</div>
-              <p style="font-weight:700;color:#111827;margin:0 0 8px;font-size:14px;">Paste Your RSS</p>
-              <p style="font-size:12px;color:#64748b;margin:0;">Drop your podcast's RSS feed URL into the dashboard.</p>
+          <td width="33.33%" style="padding:0 8px;">
+            <div style="background:#1e293b;border-radius:16px;padding:24px 16px;border:1px solid #334155;text-align:center;">
+              <div style="background:linear-gradient(135deg,#38bdf8,#818cf8);color:#fff;width:32px;height:32px;border-radius:10px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;font-family:'Space Grotesk',sans-serif;">1</div>
+              <p style="font-weight:600;color:#f8fafc;margin:0 0 8px;font-size:14px;">Paste RSS</p>
+              <p style="font-size:12px;color:#94a3b8;margin:0;line-height:1.4;">Drop your feed into the dashboard.</p>
             </div>
           </td>
-          <td width="33.33%" style="padding:0 12px;">
-            <div style="background:#f1f5f9;border-radius:16px;padding:24px;border:1px solid #e2e8f0;">
-              <div style="background:#6366f1;color:#fff;width:40px;height:40px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;">2</div>
-              <p style="font-weight:700;color:#111827;margin:0 0 8px;font-size:14px;">Connect YouTube</p>
-              <p style="font-size:12px;color:#64748b;margin:0;">Link your YouTube channel to auto-match videos to episodes.</p>
+          <td width="33.33%" style="padding:0 8px;">
+            <div style="background:#1e293b;border-radius:16px;padding:24px 16px;border:1px solid #334155;text-align:center;">
+              <div style="background:linear-gradient(135deg,#818cf8,#c084fc);color:#fff;width:32px;height:32px;border-radius:10px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;font-family:'Space Grotesk',sans-serif;">2</div>
+              <p style="font-weight:600;color:#f8fafc;margin:0 0 8px;font-size:14px;">Sync YT</p>
+              <p style="font-size:12px;color:#94a3b8;margin:0;line-height:1.4;">Link your channel for auto-matching.</p>
             </div>
           </td>
-          <td width="33.33%" style="padding:0 12px;">
-            <div style="background:#f1f5f9;border-radius:16px;padding:24px;border:1px solid #e2e8f0;">
-              <div style="background:#6366f1;color:#fff;width:40px;height:40px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;">3</div>
-              <p style="font-weight:700;color:#111827;margin:0 0 8px;font-size:14px;">Launch & Share</p>
-              <p style="font-size:12px;color:#64748b;margin:0;">Get a custom domain and share your beautiful podcast site.</p>
+          <td width="33.33%" style="padding:0 8px;">
+            <div style="background:#1e293b;border-radius:16px;padding:24px 16px;border:1px solid #334155;text-align:center;">
+              <div style="background:linear-gradient(135deg,#c084fc,#f472b6);color:#fff;width:32px;height:32px;border-radius:10px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;font-family:'Space Grotesk',sans-serif;">3</div>
+              <p style="font-weight:600;color:#f8fafc;margin:0 0 8px;font-size:14px;">Launch</p>
+              <p style="font-size:12px;color:#94a3b8;margin:0;line-height:1.4;">Share your stunning new website.</p>
             </div>
           </td>
         </tr>
       </table>
 
-      <a href="${dashboardUrl}/dashboard" style="display:inline-block;background:#111827;color:#fff;padding:18px 48px;border-radius:12px;font-size:16px;font-weight:700;text-decoration:none;margin-bottom:24px;box-shadow:0 4px 15px rgba(17,24,39,0.3);">Go to Dashboard</a>
+      <a href="${dashboardUrl}/dashboard" style="display:inline-block;background:linear-gradient(90deg,#38bdf8 0%,#818cf8 100%);color:#fff;padding:16px 40px;border-radius:12px;font-size:15px;font-weight:600;font-family:'Space Grotesk',sans-serif;text-decoration:none;margin-bottom:32px;text-transform:uppercase;letter-spacing:0.05em;box-shadow:0 10px 25px -5px rgba(56,189,248,0.4);">Enter Dashboard</a>
 
-      <div style="background:#eef2ff;border-radius:16px;padding:24px;border-left:4px solid #6366f1;text-align:left;margin-top:32px;">
-        <p style="margin:0 0 12px;color:#111827;font-weight:700;font-size:14px;">Pro Tips:</p>
-        <ul style="margin:0;padding-left:20px;list-style-position:inside;">
-          <li style="color:#374151;font-size:13px;margin-bottom:8px;">Your first podcast becomes your primary show and appears on your dashboard.</li>
-          <li style="color:#374151;font-size:13px;margin-bottom:8px;">Episodes sync automatically whenever your RSS feed updates.</li>
-          <li style="color:#374151;font-size:13px;">Customize your site's theme and layout to match your brand.</li>
+      <div style="background:rgba(56,189,248,0.05);border-radius:16px;padding:24px;border:1px solid rgba(56,189,248,0.1);text-align:left;">
+        <p style="margin:0 0 12px;color:#38bdf8;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.1em;font-family:'Space Grotesk',sans-serif;">⚡ Pro Tips</p>
+        <ul style="margin:0;padding-left:20px;list-style-position:outside;line-height:1.6;">
+          <li style="color:#cbd5e1;font-size:13px;margin-bottom:8px;">Your first podcast becomes your primary show automatically.</li>
+          <li style="color:#cbd5e1;font-size:13px;margin-bottom:8px;">Episodes sync perfectly whenever your RSS feed updates.</li>
+          <li style="color:#cbd5e1;font-size:13px;">Use the theme customizer to match your brand's aesthetic.</li>
         </ul>
       </div>
     </div>`;
@@ -89,18 +91,22 @@ export function getWelcomeEmailHtml(): string {
 export function getVerificationEmailHtml(verificationUrl: string): string {
   const html = `
     <div style="text-align:center;">
-      <p style="background:#dbeafe;color:#0284c7;padding:8px 16px;border-radius:99px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;display:inline-block;margin-bottom:24px;">Verify Your Email</p>
-      <h1 style="color:#111827;font-size:36px;font-weight:800;margin:0 0 24px;letter-spacing:-0.02em;">Verify Your Account</h1>
-      <p style="color:#64748b;font-size:16px;line-height:1.6;margin:0 0 32px;">Click the button below to verify your email and activate your PodSite Killer account.</p>
+      <div style="margin-bottom:32px;">
+        <span style="background:rgba(52,211,153,0.1);color:#34d399;padding:8px 16px;border-radius:99px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;display:inline-block;border:1px solid rgba(52,211,153,0.2);">Verification Required</span>
+      </div>
+      <h1 style="color:#f8fafc;font-size:36px;font-weight:700;margin:0 0 16px;font-family:'Space Grotesk',sans-serif;letter-spacing:-0.03em;">Verify Your Studio</h1>
+      <p style="color:#94a3b8;font-size:16px;line-height:1.6;margin:0 0 40px;font-weight:400;">You're one click away from launching your podcast universe. Verify your email to activate your account.</p>
       
-      <a href="${verificationUrl}" style="display:inline-block;background:#0284c7;color:#fff;padding:18px 48px;border-radius:12px;font-size:16px;font-weight:700;text-decoration:none;margin-bottom:32px;box-shadow:0 4px 15px rgba(2,132,199,0.3);">Verify Email Address</a>
+      <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:linear-gradient(90deg,#10b981 0%,#059669 100%);color:#fff;padding:16px 48px;border-radius:12px;font-size:15px;font-weight:600;font-family:'Space Grotesk',sans-serif;text-decoration:none;margin-bottom:40px;text-transform:uppercase;letter-spacing:0.05em;box-shadow:0 10px 25px -5px rgba(16,185,129,0.3);">Activate Account</a>
 
-      <p style="color:#64748b;font-size:13px;margin:0 0 24px;line-height:1.6;">Or copy and paste this link in your browser:</p>
-      <p style="color:#0284c7;font-size:12px;margin:0 0 32px;word-break:break-all;font-family:monospace;background:#f0f9ff;padding:16px;border-radius:8px;">${verificationUrl}</p>
+      <p style="color:#64748b;font-size:13px;margin:0 0 16px;font-family:'Space Grotesk',sans-serif;text-transform:uppercase;letter-spacing:0.1em;">Or paste this link</p>
+      <div style="background:#1e293b;border-radius:12px;padding:16px;border:1px solid #334155;margin-bottom:40px;">
+        <p style="color:#34d399;font-size:12px;margin:0;word-break:break-all;font-family:monospace;">{{ .ConfirmationURL }}</p>
+      </div>
 
-      <div style="background:#fef3c7;border-radius:16px;padding:16px;border-left:4px solid #f59e0b;text-align:left;margin-top:32px;">
-        <p style="margin:0 0 8px;color:#92400e;font-weight:700;font-size:13px;">💡 This link expires in 24 hours</p>
-        <p style="margin:0;color:#b45309;font-size:12px;">If you didn't create this account, you can safely ignore this email.</p>
+      <div style="background:rgba(245,158,11,0.05);border-radius:16px;padding:24px;border:1px solid rgba(245,158,11,0.1);text-align:left;">
+        <p style="margin:0 0 8px;color:#fbbf24;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.1em;font-family:'Space Grotesk',sans-serif;">⏳ Link expires in 24 hours</p>
+        <p style="margin:0;color:#94a3b8;font-size:13px;line-height:1.5;">If you didn't create this account, you can safely ignore this email.</p>
       </div>
     </div>`;
   return baseWrap(html);

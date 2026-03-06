@@ -108,7 +108,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   
   if (isUuid) {
     // First try to find by ID (UUID)
-    const byId = await supabase.from('podcasts').select('*, products(*)').eq('id', subdomain).maybeSingle();
+    const byId = await supabase.from('podcasts').select('*').eq('id', subdomain).maybeSingle();
     if (process.env.NODE_ENV === 'development') {
       console.log('Query by ID result:', byId);
     }
@@ -117,7 +117,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     
     // If not found by ID, try to find by custom_domain
     if (!podcast) {
-      const byDomain = await supabase.from('podcasts').select('*, products(*)').eq('custom_domain', subdomain).maybeSingle();
+      const byDomain = await supabase.from('podcasts').select('*').eq('custom_domain', subdomain).maybeSingle();
       if (process.env.NODE_ENV === 'development') {
         console.log('Query by custom_domain result:', byDomain);
       }
@@ -126,7 +126,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     }
   } else {
     // If not a UUID, try by custom_domain
-    const byDomain = await supabase.from('podcasts').select('*, products(*)').eq('custom_domain', subdomain).maybeSingle();
+    const byDomain = await supabase.from('podcasts').select('*').eq('custom_domain', subdomain).maybeSingle();
     if (process.env.NODE_ENV === 'development') {
       console.log('Query by custom_domain (non-UUID):', byDomain);
     }
@@ -135,7 +135,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     
     // If still not found, try to find by ID (in case the subdomain looks like a domain but is actually a UUID)
     if (!podcast) {
-      const byId = await supabase.from('podcasts').select('*, products(*)').eq('id', subdomain).maybeSingle();
+      const byId = await supabase.from('podcasts').select('*').eq('id', subdomain).maybeSingle();
       if (process.env.NODE_ENV === 'development') {
         console.log('Fallback query by ID:', byId);
       }

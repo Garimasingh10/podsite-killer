@@ -81,7 +81,7 @@ export async function GET(request: Request) {
 
   // Send welcome email for Google OAuth signups (fire-and-forget)
   if (data.user.email) {
-    fetch('/api/emails/welcome', {
+    fetch(`${url.origin}/api/emails/welcome`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: data.user.email }),

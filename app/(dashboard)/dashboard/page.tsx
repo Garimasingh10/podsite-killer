@@ -4,12 +4,12 @@ import { redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { NewPodcastForm } from '../_components/NewPodcastForm';
 import { SearchForm } from '../_components/SearchForm';
-import { ActivePodcastSync } from '../_components/ActivePodcastSync';
-import { Headphones, Clock, Layout } from 'lucide-react';
+import { Headphones, Layout, ExternalLink, Settings, Clock } from 'lucide-react';
 import ThemeEngine, { ThemeConfig } from '@/components/ThemeEngine';
+import { ActivePodcastSync } from '../_components/ActivePodcastSync';
 
 type PageProps = {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; active?: string }>;
 };
 
 export default async function DashboardPage({ searchParams }: PageProps) {
@@ -26,6 +26,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 
   const resolved = await searchParams;
   const q = (resolved.q ?? '').trim();
+  const activeId = resolved.active;
 
   let queryBuilder = supabase
     .from('podcasts')
@@ -56,17 +57,19 @@ export default async function DashboardPage({ searchParams }: PageProps) {
       theme_config: ThemeConfig;
     }[]) ?? [];
 
-  // Logic: First podcast in list is "Active", others are "Library"
-  const active = rows.length > 0 ? rows[0] : null;
-  const others = rows.length > 1 ? rows.slice(1) : [];
+  let active = activeId ? rows.find(r => r.id === activeId) : rows[0];
+  if (!active && rows.length > 0) active = rows[0]; // fallback
+  
+  const others = rows.filter(r => r.id !== active?.id);
 
+  // All podcasts go to Library section - centered grid layout
   const hasPodcasts = rows.length > 0;
-  const primaryColor = active?.theme_config?.primaryColor || '#6366f1';
-  const accentColor = active?.theme_config?.accentColor || '#8b5cf6';
+  const primaryColor = active?.theme_config?.primaryColor || rows[0]?.theme_config?.primaryColor || '#6366f1';
+  const accentColor = active?.theme_config?.accentColor || rows[0]?.theme_config?.accentColor || '#8b5cf6';
 
   return (
     <>
-      <ThemeEngine config={active?.theme_config || {}} scope=".dashboard-active-scope" />
+      <ThemeEngine config={active?.theme_config || rows[0]?.theme_config || {}} scope=".dashboard-active-scope" />
       <div
         className="dashboard-active-scope space-y-8 animate-in fade-in duration-700"
         style={{
@@ -249,7 +252,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                 return (
                   <Link
                     key={p.id}
-                    href={`/podcasts/${p.id}/episodes`}
+                    href={`/dashboard?active=${p.id}`}
                     className="group relative flex flex-col justify-between overflow-hidden rounded-[2.5rem] bg-zinc-950 border-4 border-white/5 p-8 transition-all hover:-translate-y-2 hover:border-[var(--podcast-primary)]/50 hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)]"
                     style={{ '--podcast-item-primary': pColor } as React.CSSProperties}
                   >
