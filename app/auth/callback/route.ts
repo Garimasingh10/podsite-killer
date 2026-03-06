@@ -79,6 +79,15 @@ export async function GET(request: Request) {
     hasSession: !!data.session,
   });
 
+  // Send welcome email for Google OAuth signups (fire-and-forget)
+  if (data.user.email) {
+    fetch('/api/emails/welcome', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: data.user.email }),
+    }).catch(() => {}); // Fire and forget, don't block redirect
+  }
+
   // HTML Bridge: Sets cookies via JS and THEN redirects.
   // This is the "Nuclear" fix for race conditions in server-side redirects.
   const html = `
@@ -116,3 +125,4 @@ export async function GET(request: Request) {
     },
   });
 }
+
