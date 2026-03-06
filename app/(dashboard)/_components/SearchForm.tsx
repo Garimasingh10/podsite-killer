@@ -37,7 +37,7 @@ export function SearchForm({
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder={placeholder}
-        className="flex-1 bg-transparent text-sm text-black focus:outline-none placeholder:text-slate-400 font-bold"
+        className="flex-1 bg-transparent text-sm text-black focus:outline-none placeholder:text-slate-400 font-bold font-[family-name:var(--font-body,inherit)]"
       />
       <button
         type="submit"

@@ -87,25 +87,25 @@ export default async function DashboardLayout({
           <nav className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
             <Link
               href="/dashboard"
-              className="hover:text-white transition-colors"
+              className="hover:text-[var(--podcast-primary,white)] hover:scale-105 transition-all duration-300 font-[family-name:var(--font-heading,inherit)]"
             >
               <span>Dashboard</span>
             </Link>
             <Link
               href="/dashboard/products"
-              className="hover:text-white transition-colors"
+              className="hover:text-[var(--podcast-primary,white)] hover:scale-105 transition-all duration-300 font-[family-name:var(--font-heading,inherit)]"
             >
               <span>Products</span>
             </Link>
             <Link
               href="/dashboard/domains"
-              className="hover:text-white transition-colors"
+              className="hover:text-[var(--podcast-primary,white)] hover:scale-105 transition-all duration-300 font-[family-name:var(--font-heading,inherit)]"
             >
               <span>Domains</span>
             </Link>
             <Link
               href="/dashboard?favorites=true"
-              className="hover:text-white transition-colors"
+              className="hover:text-[var(--podcast-primary,white)] hover:scale-105 transition-all duration-300 font-[family-name:var(--font-heading,inherit)]"
             >
               <span>Favorites</span>
             </Link>

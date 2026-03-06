@@ -95,10 +95,10 @@ export default function DashboardClient({
       <ThemeEngine config={activePodcast?.theme_config || {}} scope=".dashboard-active-scope" />
 
       {/* Header Info & Auto Refresh Status */}
-      <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-2 px-2">
+      <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-2 px-6 py-2 bg-white/5 rounded-full border border-white/5 backdrop-blur-sm shadow-inner">
         <div className="flex items-center gap-4">
-            <span className={showFavorites ? 'text-[var(--podcast-primary)]' : ''}>
-                {showFavorites ? 'Favorites View' : 'All Shows'}
+            <span className={showFavorites ? 'text-[var(--podcast-primary)] animate-pulse' : ''}>
+                {showFavorites ? '• Favorites View' : '• All Shows'}
             </span>
             {isRefreshing && (
                 <span className="flex items-center gap-1 text-[var(--podcast-primary)] animate-pulse">
@@ -108,30 +108,31 @@ export default function DashboardClient({
         </div>
         <button 
             onClick={() => { router.refresh(); setIsRefreshing(true); setTimeout(() => setIsRefreshing(false), 1000); }}
-            className="hover:text-[var(--podcast-primary)] transition-colors flex items-center gap-1"
+            className="hover:text-[var(--podcast-primary)] transition-all duration-300 flex items-center gap-1 font-[family-name:var(--font-heading)] hover:scale-105 active:scale-95"
         >
             <RefreshCcw size={10} /> Force Refresh
         </button>
       </div>
 
       {/* Top Welcome Section (Vibrant & Magic) */}
-      <section className="animate-fade-in-up rounded-[2.5rem] relative overflow-hidden p-10 mb-10 shadow-2xl border border-white/10"
+      <section className="animate-fade-in-up rounded-[2.5rem] relative overflow-hidden p-10 mb-10 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] border border-white/10 group"
         style={{
           background: `radial-gradient(circle at top right, ${primaryColor}44, transparent), radial-gradient(circle at bottom left, ${accentColor}22, #000)`,
         }}
       >
-        <div className="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-[var(--podcast-primary)] blur-[100px] opacity-20 animate-pulse" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none opacity-50" />
+        <div className="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-[var(--podcast-primary)] blur-[100px] opacity-20 animate-pulse group-hover:opacity-30 transition-opacity duration-700" />
         <div className="relative flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
           <div className="space-y-3">
-            <h1 className="text-5xl font-black tracking-tighter text-white leading-none italic">
+            <h1 className="text-5xl font-black tracking-tighter text-white leading-none italic drop-shadow-2xl">
               Welcome back, <span className="text-[var(--podcast-primary)]">Creator</span>
             </h1>
-            <p className="max-w-md text-[10px] leading-relaxed text-zinc-500 font-black uppercase tracking-[0.3em] opacity-80">
-              Studio Live / Paste RSS Feed
+            <p className="max-w-md text-[10px] leading-relaxed text-zinc-500 font-black uppercase tracking-[0.3em] opacity-80 flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" /> Studio Live / Paste RSS Feed
             </p>
           </div>
           <div className="flex w-full flex-col gap-4 sm:w-auto">
-            <div className="rounded-2xl bg-white/5 p-1 ring-1 ring-white/10 backdrop-blur-xl shadow-2xl">
+            <div className="rounded-2xl bg-white/5 p-1 ring-1 ring-white/10 backdrop-blur-xl shadow-2xl hover:ring-white/20 transition-all duration-500">
               <NewPodcastForm />
             </div>
           </div>
@@ -247,13 +248,13 @@ export default function DashboardClient({
               <div className="relative mt-12 grid grid-cols-2 gap-6">
                 <Link
                   href={`/podcasts/${activePodcast.id}/episodes`}
-                  className="flex flex-1 items-center justify-center gap-3 rounded-lg bg-[#0f172a] py-4 text-sm font-medium text-slate-300 transition-all hover:bg-[#1e293b]"
+                  className="flex flex-1 items-center justify-center gap-3 rounded-lg bg-[#0f172a] py-4 text-sm font-medium text-slate-300 transition-all duration-300 hover:bg-[var(--podcast-primary)] hover:text-black hover:shadow-[0_0_20px_var(--podcast-primary)] font-[family-name:var(--font-heading)]"
                 >
                   Manage Show
                 </Link>
                 <Link
                   href={`/dashboard/customize?siteId=${activePodcast.id}`}
-                  className="flex flex-1 items-center justify-center gap-3 rounded-lg bg-[#0f172a] py-4 text-sm font-medium text-slate-300 transition-all hover:bg-[#1e293b]"
+                  className="flex flex-1 items-center justify-center gap-3 rounded-lg bg-[#0f172a] py-4 text-sm font-medium text-slate-300 transition-all duration-300 hover:bg-[var(--podcast-primary)] hover:text-black hover:shadow-[0_0_20px_var(--podcast-primary)] font-[family-name:var(--font-heading)]"
                 >
                   Customize Site
                 </Link>

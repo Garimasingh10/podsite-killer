@@ -53,13 +53,13 @@ export function NewPodcastForm({ initialRss = '' }: { initialRss?: string }) {
             value={rssUrl}
             onChange={(e) => setRssUrl(e.target.value)}
             disabled={loading}
-            className="w-full rounded-2xl border-2 border-zinc-200 bg-white px-5 py-4 text-sm text-black shadow-inner placeholder:text-zinc-500 focus:border-[var(--podcast-primary)]/50 focus:outline-none focus:ring-4 focus:ring-[var(--podcast-primary)]/10 transition-all font-bold disabled:opacity-50"
+            className="w-full rounded-2xl border-2 border-zinc-200 bg-white px-5 py-4 text-sm text-black shadow-inner placeholder:text-zinc-500 focus:border-[var(--podcast-primary)]/50 focus:outline-none focus:ring-4 focus:ring-[var(--podcast-primary)]/10 transition-all font-bold disabled:opacity-50 font-[family-name:var(--font-body,inherit)]"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="shrink-0 rounded-2xl bg-[var(--podcast-primary)] px-8 py-4 text-xs font-black uppercase tracking-[0.2em] text-black shadow-2xl hover:scale-[1.05] disabled:opacity-60 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
+          className="shrink-0 rounded-2xl bg-[var(--podcast-primary)] px-8 py-4 text-xs font-black uppercase tracking-[0.2em] text-black shadow-2xl hover:scale-[1.05] disabled:opacity-60 disabled:cursor-not-allowed transition-all active:scale-[0.98] font-[family-name:var(--font-heading,inherit)] hover:bg-black hover:text-[var(--podcast-primary)]"
         >
           {loading ? (
             <span className="flex flex-col items-center">
