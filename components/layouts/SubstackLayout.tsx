@@ -43,10 +43,10 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
                                 )}
                             </Link>
                             <nav className="hidden items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500 md:flex">
-                                <Link href={`/${podcast.id}`} className="hover:text-[var(--primary)] transition-all duration-300 hover:tracking-[0.25em]">Home</Link>
-                                <Link href={`/${podcast.id}/episodes`} className="hover:text-[var(--primary)] transition-all duration-300 hover:tracking-[0.25em]">Archive</Link>
-                                <Link href={`/${podcast.id}#product`} className="hover:text-[var(--primary)] transition-all duration-300 hover:tracking-[0.25em]">Shop</Link>
-                                <Link href={`/${podcast.id}#host`} className="hover:text-[var(--primary)] transition-all duration-300 hover:tracking-[0.25em]">About</Link>
+                                <Link href={`/${podcast.id}`} className="hover:text-[var(--primary)] transition-all duration-300 hover:tracking-[0.25em] uppercase">Home</Link>
+                                <Link href={`/${podcast.id}/episodes`} className="hover:text-[var(--primary)] transition-all duration-300 hover:tracking-[0.25em] uppercase">Archive</Link>
+                                <Link href={`/${podcast.id}#product`} className="hover:text-[var(--primary)] transition-all duration-300 hover:tracking-[0.25em] uppercase">Shop</Link>
+                                <Link href={`/${podcast.id}#host`} className="hover:text-[var(--primary)] transition-all duration-300 hover:tracking-[0.25em] uppercase">About</Link>
                             </nav>
                         </div>
                         <div className="flex items-center gap-4">
@@ -66,9 +66,10 @@ export default function SubstackLayout({ children, podcast }: SubstackLayoutProp
                     {isMenuOpen && (
                         <div className="absolute inset-x-0 top-full border-b border-zinc-100 bg-white p-6 animate-in slide-in-from-top-2 duration-200 md:hidden">
                             <nav className="flex flex-col gap-6 text-lg font-bold italic">
-                                <Link href={`/${podcast.id}`} onClick={() => setIsMenuOpen(false)}>Home</Link>
-                                <Link href={`/${podcast.id}/episodes`} onClick={() => setIsMenuOpen(false)}>Archive</Link>
-                                <Link href={`/${podcast.id}#host`} onClick={() => setIsMenuOpen(false)}>About</Link>
+                                <Link href={`/${podcast.id}`} onClick={() => setIsMenuOpen(false)} className="uppercase">Home</Link>
+                                <Link href={`/${podcast.id}/episodes`} onClick={() => setIsMenuOpen(false)} className="uppercase">Archive</Link>
+                                <Link href={`/${podcast.id}#product`} onClick={() => setIsMenuOpen(false)} className="uppercase">Shop</Link>
+                                <Link href={`/${podcast.id}#host`} onClick={() => setIsMenuOpen(false)} className="uppercase">About</Link>
                                 <button className="mt-4 w-full rounded-full bg-black py-4 text-sm font-black uppercase tracking-widest text-white">
                                     Subscribe
                                 </button>

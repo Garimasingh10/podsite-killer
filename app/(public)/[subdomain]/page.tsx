@@ -301,7 +301,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
       layout === 'genz' ? GenZLayout :
         NetflixLayout;
 
-  const defaultLayout = ['hero', 'shorts', 'subscribe', 'product', 'grid', 'host'];
+  const defaultLayout = ['hero', 'subscribe', 'product', 'grid', 'host', 'shorts'];
   const rawLayout = (podcast.page_layout as string[]) || defaultLayout;
   const hiddenBlocks = themeConfig.hiddenBlocks || [];
 

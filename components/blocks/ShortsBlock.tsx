@@ -66,7 +66,7 @@ export default function ShortsBlock({ shorts }: { shorts: any[] }) {
 
             {/* Modal Player */}
             {selectedVideo && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 sm:p-8 animate-in fade-in duration-300">
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 sm:p-8 animate-in fade-in duration-300">
                     <button 
                         onClick={() => setSelectedVideo(null)}
                         className="absolute top-4 right-4 sm:top-10 sm:right-10 p-4 rounded-full bg-white/5 text-white hover:bg-white/10 transition-all"

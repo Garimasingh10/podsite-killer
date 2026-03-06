@@ -50,10 +50,10 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
 
                         <div className="flex items-center gap-6">
                             <nav className="hidden items-center gap-8 md:flex">
-                                {['Home', 'Drops', 'Shop', 'About'].map((item) => (
+                                {['HOME', 'ARCHIVE', 'SHOP', 'ABOUT'].map((item) => (
                                     <Link
                                         key={item}
-                                        href={item === 'Home' ? `/${podcast.id}` : item === 'Drops' ? `/${podcast.id}/episodes` : item === 'Shop' ? `/${podcast.id}#product` : `/${podcast.id}#host`}
+                                        href={item === 'HOME' ? `/${podcast.id}` : item === 'ARCHIVE' ? `/${podcast.id}/episodes` : item === 'SHOP' ? `/${podcast.id}#product` : `/${podcast.id}#host`}
                                         className="text-lg font-black uppercase italic transition-all hover:text-[var(--primary)]"
                                     >
                                         {item}
@@ -72,7 +72,8 @@ export default function GenZLayout({ children, podcast }: GenZLayoutProps) {
                         <div className="fixed inset-0 top-[88px] z-40 bg-white p-8 animate-in slide-in-from-right duration-300 md:hidden border-l-8 border-black">
                             <nav className="flex flex-col gap-8">
                                 <Link href={`/${podcast.id}`} onClick={() => setIsMenuOpen(false)} className="text-6xl font-black uppercase italic border-b-8 border-black pb-4">Home</Link>
-                                <Link href={`/${podcast.id}/episodes`} onClick={() => setIsMenuOpen(false)} className="text-6xl font-black uppercase italic border-b-8 border-black pb-4">Drops</Link>
+                                <Link href={`/${podcast.id}/episodes`} onClick={() => setIsMenuOpen(false)} className="text-6xl font-black uppercase italic border-b-8 border-black pb-4">Archive</Link>
+                                <Link href={`/${podcast.id}#product`} onClick={() => setIsMenuOpen(false)} className="text-6xl font-black uppercase italic border-b-8 border-black pb-4">Shop</Link>
                                 <Link href={`/${podcast.id}#host`} onClick={() => setIsMenuOpen(false)} className="text-6xl font-black uppercase italic border-b-8 border-black pb-4">About</Link>
                                 <div className="mt-8 flex gap-6">
                                     <div className="h-16 w-16 border-4 border-black flex items-center justify-center text-2xl font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">𝕏</div>

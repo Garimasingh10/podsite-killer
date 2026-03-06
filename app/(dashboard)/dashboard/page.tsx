@@ -192,17 +192,17 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                 <div className="relative mt-12 grid grid-cols-2 gap-6">
                   <Link
                     href={`/podcasts/${active.id}/episodes`}
-                    className="flex items-center justify-center gap-3 rounded-[1.5rem] bg-[var(--podcast-primary)] py-5 text-sm font-black uppercase tracking-widest text-black transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_var(--podcast-primary)] active:scale-[0.98]"
+                    className="flex flex-1 items-center justify-center gap-3 rounded-[1.5rem] bg-[var(--podcast-primary)] py-5 text-sm font-black uppercase tracking-widest text-black transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_var(--podcast-primary)] active:scale-[0.98]"
                   >
                     <Headphones size={20} strokeWidth={3} />
                     Manage Show
                   </Link>
                   <Link
-                    href={`/dashboard/products?podcastId=${active.id}`}
-                    className="flex items-center justify-center gap-3 rounded-[1.5rem] bg-white/5 py-5 text-sm font-black uppercase tracking-widest text-white border-2 border-white/10 transition-all hover:bg-white/10 hover:border-[var(--podcast-primary)]/50 hover:scale-[1.02] active:scale-[0.98]"
+                    href={`/dashboard/customize?siteId=${active.id}`}
+                    className="flex flex-1 items-center justify-center gap-3 rounded-[1.5rem] bg-white text-black py-5 text-sm font-black uppercase tracking-widest transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] active:scale-[0.98]"
                   >
-                    <ExternalLink size={20} strokeWidth={3} />
-                    Products
+                    <Layout size={20} strokeWidth={3} />
+                    Customize Site
                   </Link>
                 </div>
               </div>
