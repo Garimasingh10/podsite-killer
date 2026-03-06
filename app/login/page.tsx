@@ -18,10 +18,18 @@ function LoginContent() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [resendSent, setResendSent] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
 
   const errorFromUrl = searchParams.get('error');
   const displayMessage =
     message ?? (errorFromUrl ? decodeURIComponent(errorFromUrl) : null);
+  const showResendVerification =
+    resendSent ||
+    displayMessage?.includes('check your email') ||
+    displayMessage?.includes('verification link') ||
+    displayMessage?.includes('confirmation link') ||
+    displayMessage?.includes('Email not confirmed');
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +64,9 @@ function LoginContent() {
         return;
       }
       
-      setMessage('Account created! Please check your email for a verification link to activate your studio.');
+      setMessage(
+        'Account created! Check your email (and spam folder) for a verification link to activate your studio.'
+      );
       setLoading(false);
       return;
     }
@@ -343,6 +353,40 @@ function LoginContent() {
               </>
             )}
           </p>
+
+          {showResendVerification && email && (
+            <p className="mt-3 text-center text-xs text-slate-500">
+              Didn&apos;t get the email?{' '}
+              <button
+                type="button"
+                disabled={resendLoading}
+                onClick={async () => {
+                  setResendLoading(true);
+                  try {
+                    const res = await fetch('/api/auth/resend-confirmation', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email }),
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                      setResendSent(true);
+                      setMessage(data.message || 'Verification email sent. Check your inbox and spam.');
+                    } else {
+                      setMessage(data.error || 'Failed to resend.');
+                    }
+                  } catch {
+                    setMessage('Failed to resend verification email.');
+                  } finally {
+                    setResendLoading(false);
+                  }
+                }}
+                className="text-sky-400 hover:underline disabled:opacity-50"
+              >
+                {resendLoading ? 'Sending…' : 'Resend verification email'}
+              </button>
+            </p>
+          )}
 
           <p className="mt-2 text-center text-xs text-slate-500">
             <Link href="/" className="text-sky-400 hover:underline">
