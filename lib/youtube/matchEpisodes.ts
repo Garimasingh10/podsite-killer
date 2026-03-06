@@ -1,29 +1,64 @@
 // lib/youtube/matchEpisodes.ts
-import Fuse from 'fuse.js';
 import type { YouTubeVideo } from './fetchUploads';
+
+const STOP_WORDS = new Set([
+  'the', 'and', 'a', 'an', 'in', 'on', 'at', 'with', 'to', 'for', 'of', 'from', 'is', 'it', 'this', 'that',
+  'episode', 'ep', 'podcast', 'video', 'show', 'audio', 'official', 'part', 'pt',
+]);
+
+function getWords(text: string): string[] {
+  if (!text) return [];
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s]/g, ' ')
+    .split(/\s+/)
+    .filter((w) => w.length > 0 && !STOP_WORDS.has(w));
+}
 
 export type EpisodeForMatch = {
   id: string;
   title: string | null;
   published_at: string | null;
+  duration_seconds?: number | null;
 };
 
 export type MatchResult = {
   episodeId: string;
   videoId: string;
-  score: number; // 0–1, higher = better
+  score: number; // 0–100, only matches with score > 70 are returned
 };
 
-// Helper: Check if dates are within 2 days of each other
-function areDatesClose(d1: string | null, d2: string | null, days = 2): boolean {
-  if (!d1 || !d2) return false;
-  const date1 = new Date(d1).getTime();
-  const date2 = new Date(d2).getTime();
-  if (isNaN(date1) || isNaN(date2)) return false;
+// Score: date 30 pts, title 40 pts, duration 30 pts. > 70 auto-match, 40–70 suggest, < 40 ignore.
+function scoreMatch(
+  ep: EpisodeForMatch,
+  vid: YouTubeVideo,
+): number {
+  let datePoints = 0;
+  if (ep.published_at && vid.publishedAt) {
+    const diffHours = Math.abs(new Date(ep.published_at).getTime() - new Date(vid.publishedAt).getTime()) / (1000 * 60 * 60);
+    if (diffHours <= 48) datePoints = 30;
+    else if (diffHours <= 168) datePoints = Math.max(0, 30 - (diffHours - 48) / 4);
+  }
 
-  const diff = Math.abs(date1 - date2);
-  const msInDay = 1000 * 60 * 60 * 24;
-  return diff <= msInDay * days;
+  let titlePoints = 0;
+  if (ep.title && vid.title) {
+    const epWords = getWords(ep.title);
+    const vidWords = new Set(getWords(vid.title));
+    if (epWords.length > 0) {
+      const overlap = epWords.filter((w) => vidWords.has(w)).length;
+      titlePoints = (overlap / epWords.length) * 40;
+    }
+  }
+
+  let durationPoints = 0;
+  const epDur = ep.duration_seconds ?? 0;
+  const vidDur = vid.durationSeconds ?? 0;
+  if (epDur > 0 && vidDur > 0) {
+    const ratio = Math.min(epDur, vidDur) / Math.max(epDur, vidDur);
+    durationPoints = ratio >= 0.9 ? 30 : ratio >= 0.5 ? ratio * 30 : 0;
+  }
+
+  return datePoints + titlePoints + durationPoints;
 }
 
 export function matchEpisodesToVideos(
@@ -32,60 +67,26 @@ export function matchEpisodesToVideos(
 ): MatchResult[] {
   if (!episodes.length || !videos.length) return [];
 
-  // Fuse settings for multi-field search
-  const fuse = new Fuse(videos, {
-    includeScore: true,
-    threshold: 0.6,
-    keys: [
-      { name: 'title', weight: 0.7 },
-      { name: 'description', weight: 0.3 }
-    ],
-    ignoreLocation: true,
-  });
-
   const results: MatchResult[] = [];
+  const usedVideoIds = new Set<string>();
   const MAX_LINKS = 100;
 
   for (const ep of episodes) {
     if (!ep.title) continue;
 
-    const matches = fuse.search(ep.title);
-    if (!matches.length) continue;
+    let best: { videoId: string; score: number } | null = null;
 
-    let bestMatch: MatchResult | null = null;
-
-    for (const m of matches) {
-      const vid = m.item;
-      const score = m.score ?? 1;
-      const similarity = 1 - score;
-
-      const isDateClose = areDatesClose(ep.published_at, vid.publishedAt, 7); // 7 day tolerance
-
-      // Multi-stage criteria:
-      // A) High similarity title match (>0.75)
-      // B) Medium similarity (>0.3) + Close date
-      // C) Topic Discovery: High similarity in description or partial title match
-
-      const strongTitleMatch = similarity > 0.75;
-      const probableMatch = similarity > 0.3 && isDateClose;
-      const topicMatch = similarity > 0.5 && vid.description.toLowerCase().includes(ep.title.toLowerCase().slice(0, 15));
-
-      if (strongTitleMatch || probableMatch || topicMatch) {
-        // Boost similarity if dates match
-        const finalSimilarity = isDateClose ? Math.min(1, similarity + 0.2) : similarity;
-
-        if (!bestMatch || finalSimilarity > bestMatch.score) {
-          bestMatch = {
-            episodeId: ep.id,
-            videoId: vid.id,
-            score: finalSimilarity,
-          };
-        }
-      }
+    for (const vid of videos) {
+      if (usedVideoIds.has(vid.id)) continue;
+      const score = scoreMatch(ep, vid);
+      if (score < 40) continue; // ignore
+      if (!best || score > best.score) best = { videoId: vid.id, score };
     }
 
-    if (bestMatch) {
-      results.push(bestMatch);
+    // Only auto-match when score > 70
+    if (best && best.score > 70) {
+      results.push({ episodeId: ep.id, videoId: best.videoId, score: best.score });
+      usedVideoIds.add(best.videoId);
       if (results.length >= MAX_LINKS) break;
     }
   }

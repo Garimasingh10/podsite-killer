@@ -15,19 +15,6 @@ import ProductBlock from '@/components/blocks/ProductBlock';
 
 const PAGE_SIZE = 20;
 
-// Helper to detect if we should show fallback
-function isMainAppHost(host: string | null) {
-  if (!host) return false;
-  const rootDomain = host.split(':')[0].toLowerCase();
-  return (
-    rootDomain === 'localhost' ||
-    rootDomain === '127.0.0.1' ||
-    rootDomain === 'podsite-killer.vercel.app' ||
-    rootDomain === 'makemypodcastsite.com' ||
-    host.includes('vercel.app')
-  );
-}
-
 // NOTE: params & searchParams are Promises here
 type PageProps = {
   params: Promise<{ subdomain: string }>;
@@ -36,43 +23,32 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { subdomain } = await params;
-  const headerList = await headers();
-  const host = headerList.get('host');
-
   const supabase = await createSupabaseServerClient();
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subdomain);
-  const { data: dbPodcast } = await supabase
-    .from('podcasts')
-    .select('title, description')
-    .or(isUuid ? `id.eq.${subdomain},custom_domain.eq.${subdomain}` : `custom_domain.eq.${subdomain}`)
-    .maybeSingle();
-
-  let podcast = dbPodcast;
-
-  if (!podcast && isMainAppHost(host)) {
-    podcast = {
-      title: 'Ready Set Do',
-      description: 'The ultimate podcast show for creators and innovators.'
-    } as any;
-  }
-
-  if (!podcast) return { title: 'Podcast Not Found' };
+  const { data: podcast } = isUuid
+    ? await supabase.from('podcasts').select('title, description').eq('id', subdomain).maybeSingle()
+    : await supabase.from('podcasts').select('title, description').eq('custom_domain', subdomain).maybeSingle();
+  const podcastFallback = !podcast && isUuid
+    ? await supabase.from('podcasts').select('title, description').eq('custom_domain', subdomain).maybeSingle()
+    : { data: null };
+  const meta = podcast ?? podcastFallback.data;
+  if (!meta) return { title: 'Podcast Not Found' };
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://podsite-killer.vercel.app';
   const ogUrl = new URL(`${baseUrl}/api/og/${subdomain}`);
 
   return {
-    title: podcast.title || 'Podcast',
-    description: podcast.description,
+    title: meta.title || 'Podcast',
+    description: meta.description,
     openGraph: {
-      title: podcast.title || 'Podcast',
-      description: podcast.description || '',
+      title: meta.title || 'Podcast',
+      description: meta.description || '',
       images: [ogUrl.toString()],
     },
     twitter: {
       card: 'summary_large_image',
-      title: podcast.title || 'Podcast',
-      description: podcast.description || '',
+      title: meta.title || 'Podcast',
+      description: meta.description || '',
       images: [ogUrl.toString()],
     },
   };
@@ -80,9 +56,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PodcastHome({ params, searchParams }: PageProps) {
   const { subdomain } = await params;
-  const headerList = await headers();
-  const host = headerList.get('host');
-
   const { page: pageParam, q: qParam } = await searchParams;
   const q = qParam?.trim();
 
@@ -93,43 +66,23 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
   const supabase = await createSupabaseServerClient();
 
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subdomain);
-  const { data: dbPodcast, error: dbError } = await supabase
-    .from('podcasts')
-    .select('*, products(*)')
-    .or(isUuid ? `id.eq.${subdomain},custom_domain.eq.${subdomain}` : `custom_domain.eq.${subdomain}`)
-    .maybeSingle();
 
-  let podcast = dbPodcast;
-  let podcastError = dbError;
-
-  // GUARANTEED FALLBACK: ONLY for the main "Ready Set Do" home experience. 
-  // If the subdomain provided is strictly a root domain (localhost or main domain), we force the fallback.
-  // If it's a UUID or custom domain and NOT found, we show the real 404.
-  const isExplicitRoot =
-    subdomain.toLowerCase() === 'makemypodcastsite.com' ||
-    subdomain.toLowerCase() === 'localhost' ||
-    subdomain.toLowerCase() === '127.0.0.1';
-
-  if ((!podcast || podcastError) && isExplicitRoot && isMainAppHost(host)) {
-    console.log('>>> PodSite Killer: Activating PREMIUM FALLBACK for root host:', host);
-    podcast = {
-      id: 'default-podcast-id',
-      title: 'Ready Set Do',
-      description: 'The ultimate podcast show for creators and innovators. This is a premium local fallback to ensure your site is always working.',
-      custom_domain: 'makemypodcastsite.com',
-      owner_id: '00000000-0000-0000-0000-000000000000',
-      rss_url: 'https://feeds.simplecast.com/Sl5CSM3S',
-      theme_config: {
-        primaryColor: '#6366f1',
-        accentColor: '#8b5cf6',
-        imageUrl: 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=1600&auto=format&fit=crop&q=80',
-        layout: 'netflix',
-        tagline: 'The Future of Content Creation'
-      },
-      page_layout: ['hero', 'shorts', 'subscribe', 'grid', 'host'],
-      products: []
-    } as any;
-    podcastError = null;
+  // Prefer id lookup when segment is UUID (View site from dashboard); else custom_domain
+  let podcast: { id: string; [k: string]: unknown } | null = null;
+  let podcastError: unknown = null;
+  if (isUuid) {
+    const byId = await supabase.from('podcasts').select('*, products(*)').eq('id', subdomain).maybeSingle();
+    podcast = byId.data;
+    podcastError = byId.error;
+    if (!podcast) {
+      const byDomain = await supabase.from('podcasts').select('*, products(*)').eq('custom_domain', subdomain).maybeSingle();
+      podcast = byDomain.data;
+      podcastError = byDomain.error;
+    }
+  } else {
+    const byDomain = await supabase.from('podcasts').select('*, products(*)').eq('custom_domain', subdomain).maybeSingle();
+    podcast = byDomain.data;
+    podcastError = byDomain.error;
   }
 
   if (podcastError || !podcast) {
@@ -155,30 +108,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
             >
               Create Your Own
             </Link>
-
-            <div className="mt-8 p-6 bg-amber-500/5 border border-amber-500/20 rounded-2xl text-left max-w-sm">
-              <h3 className="text-amber-500 text-[10px] font-black uppercase tracking-[0.2em] mb-2 font-sans">Debug Mode</h3>
-              <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                If you are developing locally, ensure your database has a podcast matching this domain.
-              </p>
-              <div className="space-y-3">
-                <div className="space-y-1">
-                  <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">1. Seed Database</p>
-                  <code className="block bg-black/40 p-2 rounded text-[10px] font-mono text-amber-200 border border-amber-500/10">
-                    node seed-podcasts.js
-                  </code>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">2. Update Hosts File</p>
-                  <p className="text-[9px] text-slate-500 italic">Add <code className="text-amber-500">127.0.0.1 {String(subdomain)}</code></p>
-                </div>
-              </div>
-            </div>
           </div>
-
-          <p className="text-[10px] text-slate-600 uppercase tracking-[0.2em] font-medium pt-8">
-            Powered by PodSite Killer
-          </p>
         </div>
       </main>
     );
@@ -194,33 +124,7 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
     episodesQuery = episodesQuery.ilike('title', `%${q}%`);
   }
 
-  const { data: dbEpisodes, error: dbEpError } = await episodesQuery.range(from, to);
-  let episodes = dbEpisodes;
-  let episodesError = dbEpError;
-
-  // GUARANTEED FALLBACK: If episodes are missing, provide samples
-  if ((!episodes || episodes.length === 0) && isMainAppHost(host)) {
-    console.log('>>> PodSite Killer: Providing PREMIUM FALLBACK episodes for host:', host);
-    episodes = [
-      {
-        id: 'ep1',
-        title: 'The Future of AI Agents',
-        slug: 'future-of-ai-agents',
-        published_at: new Date().toISOString(),
-        image_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=60',
-        youtube_video_id: null
-      },
-      {
-        id: 'ep2',
-        title: 'Building Premium Web Apps',
-        slug: 'building-premium-web-apps',
-        published_at: new Date(Date.now() - 86400000).toISOString(),
-        image_url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60',
-        youtube_video_id: null
-      }
-    ] as any;
-    episodesError = null;
-  }
+  const { data: episodes, error: episodesError } = await episodesQuery.range(from, to);
 
   if (episodesError) {
     console.error('episodesError', episodesError);
@@ -269,7 +173,8 @@ export default async function PodcastHome({ params, searchParams }: PageProps) {
               case 'subscribe':
                 return <SubscribeBlock key="subscribe" podcast={podcastWithImage} />;
               case 'product':
-                return podcast.products?.[0] ? <ProductBlock key="product" product={podcast.products[0]} /> : null;
+                // Check if products exist in the data (we are not joining products currently to avoid schema errors)
+                return (podcast as any).products?.[0] ? <ProductBlock key="product" product={(podcast as any).products[0]} /> : null;
               case 'host':
                 return <HostBlock key="host" podcast={podcastWithImage} />;
               default:

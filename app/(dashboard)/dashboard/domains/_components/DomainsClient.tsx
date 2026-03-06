@@ -45,12 +45,17 @@ export default function DomainsClient({ podcastId, initialDomain }: { podcastId:
     const checkVerification = async () => {
         setIsSubmitting(true);
         try {
-            // Simulate API check for demo purposes, or link to a real check
             const res = await fetch(`/api/domains/check?domain=${savedDomain}`);
             const data = await res.json();
             if (data.verified) {
                 setIsVerified(true);
                 router.refresh();
+                // Send "Your domain is live" email to owner
+                fetch('/api/emails/domain-live', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ domain: savedDomain, podcastId }),
+                }).catch(() => {});
             }
         } catch (err) {
             console.error('Verification check failed');

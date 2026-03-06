@@ -67,6 +67,12 @@ function LoginContent() {
       setMessage(
         'Account created! Check your email (and spam folder) for a verification link to activate your studio.'
       );
+      // Send welcome email (onboarding) — fire-and-forget
+      fetch('/api/emails/welcome', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      }).catch(() => {});
       setLoading(false);
       return;
     }

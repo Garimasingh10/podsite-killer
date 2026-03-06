@@ -58,7 +58,7 @@ export async function POST(req: Request) {
 
   const { data: episodesRaw, error: episodesError } = await supabase
     .from('episodes')
-    .select('id, title, published_at')
+    .select('id, title, published_at, duration_seconds')
     .eq('podcast_id', podcast.id)
     .order('published_at', { ascending: false });
 
@@ -74,6 +74,7 @@ export async function POST(req: Request) {
       id: string;
       title: string | null;
       published_at: string | null;
+      duration_seconds?: number | null;
     }[]) ?? [];
 
   if (!episodes.length) {
@@ -91,7 +92,6 @@ export async function POST(req: Request) {
     );
   }
 
-  // Fetch last 50 uploads using your helper
   const videos = await fetchChannelUploads(apiKey, channelId);
 
   if (!videos.length) {
@@ -101,12 +101,12 @@ export async function POST(req: Request) {
     );
   }
 
-  // matchEpisodesToVideos(episodes, videos)
   const pairings = matchEpisodesToVideos(
     episodes.map((e) => ({
       id: e.id,
       title: e.title ?? '',
       published_at: e.published_at,
+      duration_seconds: e.duration_seconds ?? null,
     })),
     videos,
   );

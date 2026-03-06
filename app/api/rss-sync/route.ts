@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import Parser from 'rss-parser';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { slugify } from '@/lib/utils/slugify';
+import { getNewEpisodeEmailHtml, sendResend } from '@/lib/emails';
 
 const parser = new Parser({
   customFields: {
@@ -87,6 +88,16 @@ export async function POST(req: Request) {
 
     const slug = slugify(item.title || guid);
 
+    let durationSeconds: number | null = null;
+    const dur = (item as any)['itunes:duration'] ?? (item as any).itunes?.duration;
+    if (typeof dur === 'number' && dur >= 0) durationSeconds = Math.round(dur);
+    else if (typeof dur === 'string') {
+      const parts = dur.split(':').map((p: string) => parseInt(p, 10));
+      if (parts.length === 3) durationSeconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
+      else if (parts.length === 2) durationSeconds = parts[0] * 60 + parts[1];
+      else if (parts.length === 1) durationSeconds = parts[0];
+    }
+
     const { error } = await supabase.from('episodes').upsert(
       {
         podcast_id: podcast.id,
@@ -97,11 +108,19 @@ export async function POST(req: Request) {
         audio_url: audioUrl,
         image_url: imageUrl,
         published_at: publishedAt,
+        ...(durationSeconds != null && { duration_seconds: durationSeconds }),
       },
       { onConflict: 'podcast_id,guid' },
     );
 
     if (!error) episodesProcessed += 1;
+  }
+
+  // New episode notification (trigger: new_episode_detected)
+  if (episodesProcessed > 0 && user?.email && feed?.items?.[0]) {
+    const title = feed.items[0].title || 'New episode';
+    const html = getNewEpisodeEmailHtml(title);
+    sendResend(user.email, 'New episode detected 🎙', html).catch((e) => console.error('New episode email failed', e));
   }
 
   return NextResponse.json({
