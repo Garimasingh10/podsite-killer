@@ -14,7 +14,6 @@ export function NewPodcastForm({ initialRss = '' }: { initialRss?: string }) {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
-    setImportSuccess(null);
 
     const res = await fetch('/api/podcasts/import', {
       method: 'POST',
