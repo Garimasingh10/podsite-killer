@@ -86,15 +86,19 @@ export async function GET(request: Request) {
     // We run the fetch directly to Resend instead of internal API route looping
     // to prevent serverless function timeouts/drops.
     try {
-      const { getWelcomeEmailHtml, sendResend } = await import('@/lib/emails');
-      const html = getWelcomeEmailHtml();
-      await sendResend(data.user.email, 'Welcome to PodSite 🚀', html);
-      
-      // Mark user as having received the welcome blast
-      await supabase.auth.updateUser({
-        data: { welcome_email_sent: true }
-      });
-      console.log('Welcome Email dispatched successfully.');
+      if (process.env.RESEND_API_KEY) {
+        const { getWelcomeEmailHtml, sendResend } = await import('@/lib/emails');
+        const html = getWelcomeEmailHtml();
+        await sendResend(data.user.email, 'Welcome to PodSite 🚀', html);
+        
+        // Mark user as having received the welcome blast
+        await supabase.auth.updateUser({
+          data: { welcome_email_sent: true }
+        });
+        console.log('Welcome Email dispatched successfully.');
+      } else {
+        console.warn('RESEND_API_KEY missing - skipping welcome email');
+      }
     } catch (emailErr) {
       console.error('Failed to dispatch welcome email:', emailErr);
     }
