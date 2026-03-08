@@ -21,6 +21,8 @@ export default function ThemeCustomizer({
     const [isGenerating, setIsGenerating] = useState(false);
     const [aiPrompt, setAiPrompt] = useState('');
     const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [aiStatus, setAiStatus] = useState<string | null>(null);
+    const [aiError, setAiError] = useState<string | null>(null);
     const [localFontUrl, setLocalFontUrl] = useState(config.customFontUrl || '');
 
     function updateConfig(newConfig: Partial<ThemeConfig>) {
@@ -67,6 +69,8 @@ export default function ThemeCustomizer({
             setPreviewImage(base64);
             
             setIsGenerating(true);
+            setAiStatus('Magic Designer at work...');
+            setAiError(null);
             try {
                 const res = await fetch('/api/ai/generate-theme', {
                     method: 'POST',
@@ -74,14 +78,24 @@ export default function ThemeCustomizer({
                     body: JSON.stringify({ image: base64, prompt: aiPrompt }),
                 });
 
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    throw new Error(errorData.error || `Server error: ${res.status}`);
+                }
+
                 const data = await res.json();
                 if (data.themeConfig) {
+                    setAiStatus('Design complete!');
                     onChange({ ...config, ...data.themeConfig });
+                } else {
+                    throw new Error('AI failed to generate a theme for this image.');
                 }
-            } catch (err) {
+            } catch (err: any) {
                 console.error('AI Theme Generation failed:', err);
+                setAiError(err.message || 'Connection failed.');
             } finally {
                 setIsGenerating(false);
+                setTimeout(() => setAiStatus(null), 5000);
             }
         };
         reader.readAsDataURL(file);
@@ -136,6 +150,18 @@ export default function ThemeCustomizer({
                             <p className="text-[10px] uppercase tracking-widest leading-relaxed opacity-60">
                                 Upload a screenshot or describe a style, and let AI build your theme instantly.
                             </p>
+
+                            {aiError && (
+                                <p className="text-[10px] font-bold text-red-500 bg-red-500/10 border border-red-500/20 px-3 py-2 rounded-lg">
+                                    ⚠️ {aiError}
+                                </p>
+                            )}
+                            
+                            {aiStatus && !aiError && (
+                                <p className="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-1 rounded animate-pulse">
+                                    {aiStatus}
+                                </p>
+                            )}
                             
                             <input 
                                 type="text"
