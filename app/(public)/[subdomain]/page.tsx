@@ -300,13 +300,6 @@ async function PodcastHomeClient({ params, searchParams }: PageProps) {
     latest_video_id: latest?.youtube_video_id,
     title: podcast.title as string // Ensure title is explicitly passed
   };
-  const layout = themeConfig.layout || 'netflix';
-
-  const LayoutComponent =
-    layout === 'substack' ? SubstackLayout :
-      layout === 'genz' ? GenZLayout :
-        NetflixLayout;
-
   const defaultLayout = ['hero', 'subscribe', 'product', 'grid', 'host', 'shorts'];
   const rawLayout = (podcast.page_layout as string[]) || defaultLayout;
   const hiddenBlocks = themeConfig.hiddenBlocks || [];
@@ -362,7 +355,6 @@ async function PodcastHomeClient({ params, searchParams }: PageProps) {
     <PodcastPageWrapper
       podcast={podcastWithImage}
       themeConfig={themeConfig}
-      layoutComponent={LayoutComponent}
       pageLayout={pageLayout}
       blockDict={blockDict}
     />

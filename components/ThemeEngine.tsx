@@ -29,7 +29,15 @@ export interface ThemeConfig {
     rssUrlOverride?: string;
 }
 
-export default function ThemeEngine({ config: initialConfig, scope }: { config: ThemeConfig, scope?: string }) {
+export default function ThemeEngine({ 
+    config: initialConfig, 
+    scope,
+    onConfigChange 
+}: { 
+    config: ThemeConfig, 
+    scope?: string,
+    onConfigChange?: (config: ThemeConfig) => void 
+}) {
     const [config, setConfig] = useState(initialConfig);
 
     useEffect(() => {
@@ -40,13 +48,15 @@ export default function ThemeEngine({ config: initialConfig, scope }: { config: 
         // Listen for real-time updates from parent (SplitScreenEditor)
         const handleMessage = (event: MessageEvent) => {
             if (event.data?.type === 'UPDATE_THEME') {
-                setConfig(prev => ({ ...prev, ...event.data.payload }));
+                const newConfig = { ...config, ...event.data.payload };
+                setConfig(newConfig);
+                if (onConfigChange) onConfigChange(newConfig);
             }
         };
 
         window.addEventListener('message', handleMessage);
         return () => window.removeEventListener('message', handleMessage);
-    }, []);
+    }, [config, onConfigChange]);
 
     const cssVariables = useMemo(() => {
         const vars: Record<string, string> = {};
