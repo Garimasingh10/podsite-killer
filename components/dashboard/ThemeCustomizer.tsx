@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabaseBrowser';
 import { ThemeConfig } from '@/components/ThemeEngine';
 import { extractColorsFromImage } from '@/lib/utils/colorUtils';
-import { Wand2, Layout, Palette, Type, Square } from 'lucide-react';
+import { Wand2, Layout, Palette, Type, Square, Upload, Sparkles } from 'lucide-react';
 
 export default function ThemeCustomizer({
     config,
@@ -18,6 +18,9 @@ export default function ThemeCustomizer({
     imageUrl?: string,
 }) {
     const [isExtracting, setIsExtracting] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [aiPrompt, setAiPrompt] = useState('');
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [localFontUrl, setLocalFontUrl] = useState(config.customFontUrl || '');
 
     function updateConfig(newConfig: Partial<ThemeConfig>) {
@@ -54,6 +57,36 @@ export default function ThemeCustomizer({
         }
     }
 
+    async function handleAIGenerate(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+            const base64 = reader.result as string;
+            setPreviewImage(base64);
+            
+            setIsGenerating(true);
+            try {
+                const res = await fetch('/api/ai/generate-theme', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: base64, prompt: aiPrompt }),
+                });
+
+                const data = await res.json();
+                if (data.themeConfig) {
+                    onChange({ ...config, ...data.themeConfig });
+                }
+            } catch (err) {
+                console.error('AI Theme Generation failed:', err);
+            } finally {
+                setIsGenerating(false);
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+
     const layouts = [
         { id: 'netflix', name: 'Netflix', desc: 'Video-First' },
         { id: 'substack', name: 'Substack', desc: 'Typography' },
@@ -80,6 +113,77 @@ export default function ThemeCustomizer({
                         <Wand2 size={14} className={isExtracting ? 'animate-spin' : ''} />
                         {isExtracting ? 'Analyzing...' : 'Magic Theme'}
                     </button>
+                </div>
+
+                {/* AI Magic Section */}
+                <div 
+                    style={{ 
+                        borderRadius: config.cornerRadius || '8px',
+                        borderColor: config.primaryColor + '30',
+                        backgroundColor: config.primaryColor + '05',
+                    }}
+                    className="border-2 border-dashed p-6 space-y-4 relative overflow-hidden group"
+                >
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <Sparkles size={120} style={{ color: config.primaryColor }} />
+                    </div>
+                    
+                    <div className="relative z-10 flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+                        <div className="flex-1 space-y-2">
+                            <h4 className="text-sm font-black uppercase tracking-tighter flex items-center gap-2" style={{ color: config.primaryColor }}>
+                                <Sparkles size={16} /> AI Magic Designer
+                            </h4>
+                            <p className="text-[10px] uppercase tracking-widest leading-relaxed opacity-60">
+                                Upload a screenshot or describe a style, and let AI build your theme instantly.
+                            </p>
+                            
+                            <input 
+                                type="text"
+                                placeholder="e.g. 'Dark mode with neon accents and sharp corners'"
+                                value={aiPrompt}
+                                onChange={(e) => setAiPrompt(e.target.value)}
+                                style={{ 
+                                    borderRadius: config.cornerRadius === '16px' ? '8px' : config.cornerRadius,
+                                    backgroundColor: config.primaryColor + '10',
+                                    borderColor: config.primaryColor + '20',
+                                    color: config.primaryColor
+                                }}
+                                className="w-full mt-2 px-3 py-2 text-[11px] focus:outline-none placeholder:opacity-30 border transition-all"
+                            />
+                        </div>
+
+                        <div className="shrink-0 w-full sm:w-auto">
+                            <label 
+                                className={`flex flex-col items-center justify-center gap-2 px-6 py-8 border-2 border-dashed rounded-xl cursor-pointer transition-all hover:bg-black/20 ${isGenerating ? 'opacity-50 pointer-events-none' : ''}`}
+                                style={{ 
+                                    borderColor: config.primaryColor + '40',
+                                    backgroundColor: config.primaryColor + '0A'
+                                }}
+                            >
+                                {isGenerating ? (
+                                    <>
+                                        <Wand2 size={24} className="animate-spin" style={{ color: config.primaryColor }} />
+                                        <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: config.primaryColor }}>Designing...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        {previewImage ? (
+                                            <div className="relative w-16 h-16 rounded-md overflow-hidden border border-white/10">
+                                                <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
+                                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                                    <Upload size={14} className="text-white" />
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <Upload size={24} style={{ color: config.primaryColor }} />
+                                        )}
+                                        <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: config.primaryColor }}>Upload Screenshot</span>
+                                    </>
+                                )}
+                                <input type="file" accept="image/*" onChange={handleAIGenerate} className="hidden" />
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
