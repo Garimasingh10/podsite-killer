@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { suggestPodcastDescription } from '@/lib/ai/gemini';
+import { suggestPodcastDescription } from '@/lib/ai/openai';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 
 export async function POST(req: Request) {

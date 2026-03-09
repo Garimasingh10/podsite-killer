@@ -1,13 +1,13 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import OpenAI from 'openai';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'dummy_key_for_build');
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || 'dummy_key_for_build',
+});
 
 export async function suggestPodcastDescription(title: string, currentDescription: string) {
-    if (!process.env.GEMINI_API_KEY) {
-        throw new Error('GEMINI_API_KEY is not set');
+    if (!process.env.OPENAI_API_KEY) {
+        throw new Error('OPENAI_API_KEY is not set');
     }
-
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     const prompt = `You are a strict summarization assistant.
     Use ONLY the provided podcast data. Do NOT invent names, dates, or details. 
@@ -20,20 +20,24 @@ export async function suggestPodcastDescription(title: string, currentDescriptio
     Your tone should be professional and informative.
     Return ONLY the description text.`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text().trim();
+    const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+            { role: "system", content: "You are a helpful assistant." },
+            { role: "user", content: prompt }
+        ],
+    });
+
+    return response.choices[0].message.content?.trim() || "";
 }
 
 /**
  * VISION AI: Analyze a screenshot and return structured ThemeConfig
  */
 export async function generateThemeFromImage(imageBase64: string, userText?: string) {
-    if (!process.env.GEMINI_API_KEY) {
-        throw new Error('GEMINI_API_KEY is not set');
+    if (!process.env.OPENAI_API_KEY) {
+        throw new Error('OPENAI_API_KEY is not set');
     }
-
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     const prompt = `Analyze this screenshot of a website and extract its design system.
     
@@ -61,22 +65,27 @@ export async function generateThemeFromImage(imageBase64: string, userText?: str
     const mimeType = match[1];
     const data = match[2];
 
-    const result = await model.generateContent([
-        prompt,
-        {
-            inlineData: {
-                data,
-                mimeType
-            }
-        }
-    ]);
+    const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+            {
+                role: "user",
+                content: [
+                    { type: "text", text: prompt },
+                    {
+                        type: "image_url",
+                        image_url: {
+                            url: `data:${mimeType};base64,${data}`,
+                        },
+                    },
+                ],
+            },
+        ],
+        response_format: { type: "json_object" },
+    });
 
-    const response = await result.response;
-    const text = response.text();
+    const text = response.choices[0].message.content;
+    if (!text) throw new Error('AI failed to return a valid JSON object');
     
-    // Clean up response (Gemini sometimes adds markdown code blocks)
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('AI failed to return a valid JSON object');
-    
-    return JSON.parse(jsonMatch[0]);
+    return JSON.parse(text);
 }
