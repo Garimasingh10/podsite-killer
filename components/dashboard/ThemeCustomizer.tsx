@@ -63,14 +63,39 @@ export default function ThemeCustomizer({
         const file = e.target.files?.[0];
         if (!file) return;
 
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-            const base64 = reader.result as string;
-            setPreviewImage(base64);
+        const img = new Image();
+        const objectUrl = URL.createObjectURL(file);
+
+        img.onload = async () => {
+            URL.revokeObjectURL(objectUrl);
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            const MAX_DIMENSION = 800; // Scale down safely for AI
+
+            if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+                if (width > height) {
+                    height = Math.round((height * MAX_DIMENSION) / width);
+                    width = MAX_DIMENSION;
+                } else {
+                    width = Math.round((width * MAX_DIMENSION) / height);
+                    height = MAX_DIMENSION;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx?.drawImage(img, 0, 0, width, height);
             
+            // Compress to JPEG to save space, even if original was PNG
+            const base64 = canvas.toDataURL('image/jpeg', 0.7);
+
+            setPreviewImage(base64);
             setIsGenerating(true);
             setAiStatus('Magic Designer at work...');
             setAiError(null);
+
             try {
                 const res = await fetch('/api/ai/generate-theme', {
                     method: 'POST',
@@ -79,8 +104,16 @@ export default function ThemeCustomizer({
                 });
 
                 if (!res.ok) {
-                    const errorData = await res.json();
-                    throw new Error(errorData.error || `Server error: ${res.status}`);
+                    const text = await res.text();
+                    let errorMessage = `Server error: ${res.status}`;
+                    try {
+                        const errorData = JSON.parse(text);
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        errorMessage = text.length > 100 ? text.substring(0, 100) + '...' : text;
+                        if (res.status === 413) errorMessage = "Image is too large. Please select a smaller one.";
+                    }
+                    throw new Error(errorMessage);
                 }
 
                 const data = await res.json();
@@ -98,7 +131,7 @@ export default function ThemeCustomizer({
                 setTimeout(() => setAiStatus(null), 5000);
             }
         };
-        reader.readAsDataURL(file);
+        img.src = objectUrl;
     }
 
     const layouts = [
