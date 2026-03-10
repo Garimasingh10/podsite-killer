@@ -59,8 +59,51 @@ export default function ThemeCustomizer({
         }
     }
 
-    async function handleAIGenerate(e: React.ChangeEvent<HTMLInputElement>) {
-        const file = e.target.files?.[0];
+    async function handleAIGenerate(e?: React.ChangeEvent<HTMLInputElement> | any) {
+        const file = e?.target?.files?.[0];
+
+        // Text-only generation fallback
+        if (!file && aiPrompt.trim().length > 0) {
+            setIsGenerating(true);
+            setAiStatus('Magic Designer at work...');
+            setAiError(null);
+
+            try {
+                const res = await fetch('/api/ai/generate-theme', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: null, prompt: aiPrompt }),
+                });
+
+                if (!res.ok) {
+                    const text = await res.text();
+                    let errorMessage = `Server error: ${res.status}`;
+                    try {
+                        const errorData = JSON.parse(text);
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        errorMessage = text.length > 100 ? text.substring(0, 100) + '...' : text;
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                const data = await res.json();
+                if (data.themeConfig) {
+                    setAiStatus('Design complete!');
+                    onChange({ ...config, ...data.themeConfig });
+                } else {
+                    throw new Error('AI failed to generate a theme.');
+                }
+            } catch (err: any) {
+                console.error('AI Theme Generation failed:', err);
+                setAiError(err.message || 'Connection failed.');
+            } finally {
+                setIsGenerating(false);
+                setTimeout(() => setAiStatus(null), 5000);
+            }
+            return;
+        }
+
         if (!file) return;
 
         const img = new Image();
