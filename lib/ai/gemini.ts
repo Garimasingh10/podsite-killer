@@ -28,14 +28,14 @@ export async function suggestPodcastDescription(title: string, currentDescriptio
 /**
  * VISION AI: Analyze a screenshot and return structured ThemeConfig
  */
-export async function generateThemeFromImage(imageBase64: string, userText?: string) {
+export async function generateThemeFromImage(imageBase64: string | null, userText?: string) {
     if (!process.env.GEMINI_API_KEY) {
         throw new Error('GEMINI_API_KEY is not set');
     }
 
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-    const prompt = `Analyze this screenshot of a website and extract its design system.
+    let prompt = `Analyze this screenshot of a website and extract its design system.
     
     Task: Identify the color palette, typography styles, and layout structure.
     Optional User Preference: "${userText || 'None provided'}"
@@ -54,22 +54,45 @@ export async function generateThemeFromImage(imageBase64: string, userText?: str
     If you cannot determine a value, use modern defaults (Inter, #0ea5e9, netflix).
     Return ONLY valid JSON.`;
 
-    // Extract mime type and base64 data
-    const match = imageBase64.match(/^data:(image\/\w+);base64,(.+)$/);
-    if (!match) throw new Error('Invalid image format. Expected data:image/...;base64,...');
+    if (!imageBase64) {
+        prompt = `Generate a website design system based on this description.
+        
+        User Preference: "${userText || 'Modern and professional'}"
 
-    const mimeType = match[1];
-    const data = match[2];
-
-    const result = await model.generateContent([
-        prompt,
+        Output your findings STRICTLY as a JSON object matching this schema:
         {
+          "primaryColor": "hex string",
+          "backgroundColor": "hex string",
+          "accentColor": "hex string",
+          "fontHeading": "Standard Google Font name (e.g. 'Inter', 'Fraunces')",
+          "fontBody": "Standard Google Font name",
+          "cornerRadius": "0px or 8px or 16px",
+          "layout": "netflix or substack or genz or minimal"
+        }
+
+        Use modern defaults and ensure good contrast.
+        Return ONLY valid JSON.`;
+    }
+
+    let contents: any[] = [prompt];
+
+    if (imageBase64) {
+        // Extract mime type and base64 data
+        const match = imageBase64.match(/^data:(image\/\w+);base64,(.+)$/);
+        if (!match) throw new Error('Invalid image format. Expected data:image/...;base64,...');
+
+        const mimeType = match[1];
+        const data = match[2];
+
+        contents.push({
             inlineData: {
                 data,
                 mimeType
             }
-        }
-    ]);
+        });
+    }
+
+    const result = await model.generateContent(contents);
 
     const response = await result.response;
     const text = response.text();

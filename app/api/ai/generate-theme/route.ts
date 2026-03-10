@@ -13,8 +13,8 @@ export async function POST(req: Request) {
     try {
         const { image, prompt } = await req.json();
 
-        if (!image) {
-            return NextResponse.json({ error: 'Image is required' }, { status: 400 });
+        if (!image && !prompt) {
+            return NextResponse.json({ error: 'Image or prompt is required' }, { status: 400 });
         }
 
         const themeConfig = await generateThemeFromImage(image, prompt);
