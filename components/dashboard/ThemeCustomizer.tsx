@@ -151,7 +151,7 @@ export default function ThemeCustomizer({
             {/* Visual Engine / Layout Selection */}
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">Visual Engine</h3>
+                    <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: config.primaryColor }}>Visual Engine</h3>
                     <button
                         onClick={handleMagicTheme}
                         disabled={!imageUrl || isExtracting}
@@ -211,9 +211,28 @@ export default function ThemeCustomizer({
                             />
                         </div>
 
-                        <div className="shrink-0 w-full sm:w-auto">
+                        <div className="shrink-0 w-full sm:w-auto flex flex-col gap-2">
+                            {aiPrompt.trim().length > 0 && (
+                                <button
+                                    onClick={() => {
+                                        if (isGenerating || isExtracting) return;
+                                        setPreviewImage(null);
+                                        const syntheticEvent = { target: { files: [] } } as any;
+                                        handleAIGenerate(syntheticEvent);
+                                    }}
+                                    disabled={isGenerating || isExtracting}
+                                    style={{ 
+                                        backgroundColor: config.primaryColor,
+                                        color: '#000000',
+                                        borderRadius: config.cornerRadius === '16px' ? '8px' : config.cornerRadius,
+                                    }}
+                                    className="w-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all hover:opacity-80 active:scale-95 disabled:opacity-50"
+                                >
+                                    {isGenerating ? 'Designing...' : 'Generate Theme'}
+                                </button>
+                            )}
                             <label 
-                                className={`flex flex-col items-center justify-center gap-2 px-6 py-8 border-2 border-dashed rounded-xl cursor-pointer transition-all hover:bg-black/20 ${isGenerating ? 'opacity-50 pointer-events-none' : ''}`}
+                                className={`flex flex-col items-center justify-center gap-2 px-6 py-4 border-2 border-dashed rounded-xl cursor-pointer transition-all hover:bg-black/20 ${isGenerating ? 'opacity-50 pointer-events-none' : ''}`}
                                 style={{ 
                                     borderColor: config.primaryColor + '40',
                                     backgroundColor: config.primaryColor + '0A'
@@ -270,7 +289,7 @@ export default function ThemeCustomizer({
                 {/* Left Column: Colors */}
                 <div className="space-y-8">
                     <div className="space-y-4">
-                        <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">
+                                        <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: config.primaryColor, opacity: 0.7 }}>
                             <Palette size={14} /> Color Presets
                         </h4>
                         <div className="flex flex-wrap gap-2">
@@ -296,7 +315,7 @@ export default function ThemeCustomizer({
                     </div>
 
                     <div className="space-y-4">
-                        <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">
+                        <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: config.primaryColor, opacity: 0.7 }}>
                             Custom Colors
                         </h4>
                         <div className="space-y-3">
@@ -370,7 +389,7 @@ export default function ThemeCustomizer({
                 {/* Right Column: Typography & Shapes */}
                 <div className="space-y-8">
                     <div className="space-y-4">
-                        <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">
+                        <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: config.primaryColor, opacity: 0.7 }}>
                             <Type size={14} /> Typography
                         </h4>
                         <div className="flex flex-col gap-2">
@@ -451,7 +470,7 @@ export default function ThemeCustomizer({
                     </div>
 
                     <div className="space-y-4">
-                        <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">
+                        <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: config.primaryColor, opacity: 0.7 }}>
                             <Square size={14} /> Corner Radius
                         </h4>
                         <div className="grid grid-cols-3 gap-3">
@@ -480,19 +499,21 @@ export default function ThemeCustomizer({
 
             {/* Episode Behavior Section */}
             <div className="pt-10 border-t border-white/5 space-y-6">
-                <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">Episode Behavior</h3>
+                <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: config.primaryColor }}>Episode Behavior</h3>
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div className="space-y-4">
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-slate-600">Default Player Mode</label>
+                        <label className="block text-[10px] font-black uppercase tracking-widest" style={{ color: config.primaryColor, opacity: 0.7 }}>Default Player Mode</label>
                         <div className="grid grid-cols-3 gap-2">
                             {['auto', 'audio', 'video'].map((m) => (
                                 <button
                                     key={m}
                                     onClick={() => updateConfig({ playerMode: m as any })}
-                                    className={`rounded-xl border py-3 text-[10px] font-black uppercase tracking-widest transition-all ${config.playerMode === m
-                                        ? 'border-primary bg-primary/20 text-primary'
-                                        : 'border-slate-800 bg-slate-950 text-slate-500 hover:border-slate-700'
-                                        }`}
+                                    style={{
+                                        borderColor: config.playerMode === m ? config.primaryColor : config.primaryColor + '40',
+                                        backgroundColor: config.playerMode === m ? config.primaryColor + '20' : 'transparent',
+                                        color: config.playerMode === m ? config.primaryColor : config.primaryColor + '80'
+                                    }}
+                                    className={`rounded-xl border py-3 text-[10px] font-black uppercase tracking-widest transition-all hover:border-[var(--primary)]`}
                                 >
                                     {m}
                                 </button>
@@ -500,24 +521,26 @@ export default function ThemeCustomizer({
                         </div>
                     </div>
                     <div className="space-y-4">
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-slate-600">Preferences</label>
+                        <label className="block text-[10px] font-black uppercase tracking-widest" style={{ color: config.primaryColor, opacity: 0.7 }}>Preferences</label>
                         <div className="flex flex-col gap-3">
-                            <label className="flex items-center justify-between cursor-pointer rounded-xl border border-slate-800 bg-slate-950 p-3 hover:border-slate-700 transition-all">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase">Sticky Player</span>
+                            <label style={{ borderColor: config.primaryColor + '40', backgroundColor: config.primaryColor + '0A' }} className="flex items-center justify-between cursor-pointer rounded-xl border p-3 hover:border-[var(--primary)] transition-all">
+                                <span className="text-[10px] font-bold uppercase" style={{ color: config.primaryColor + 'CC' }}>Sticky Player</span>
                                 <input
                                     type="checkbox"
                                     checked={!!config.stickyPlayer}
                                     onChange={(e) => updateConfig({ stickyPlayer: e.target.checked })}
                                     className="h-4 w-4 rounded border-slate-800 bg-slate-900 text-primary focus:ring-primary/20"
+                                    style={{ accentColor: config.primaryColor }}
                                 />
                             </label>
-                            <label className="flex items-center justify-between cursor-pointer rounded-xl border border-slate-800 bg-slate-950 p-3 hover:border-slate-700 transition-all">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase">Clickable Timestamps</span>
+                            <label style={{ borderColor: config.primaryColor + '40', backgroundColor: config.primaryColor + '0A' }} className="flex items-center justify-between cursor-pointer rounded-xl border p-3 hover:border-[var(--primary)] transition-all">
+                                <span className="text-[10px] font-bold uppercase" style={{ color: config.primaryColor + 'CC' }}>Clickable Timestamps</span>
                                 <input
                                     type="checkbox"
                                     checked={!!config.showTimestamps}
                                     onChange={(e) => updateConfig({ showTimestamps: e.target.checked })}
                                     className="h-4 w-4 rounded border-slate-800 bg-slate-900 text-primary focus:ring-primary/20"
+                                    style={{ accentColor: config.primaryColor }}
                                 />
                             </label>
                         </div>
